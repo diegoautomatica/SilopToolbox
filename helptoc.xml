@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!-- $Revision$ $Date$ -->
+
+<toc version="1.0">
+
+<tocitem target="./simur.html" image="$toolbox/matlab/icons/book_mat.gif">SiMuR Toolbox
+
+<tocitem target="./html/indexsgf.html" image="$toolbox/matlab/icons/pagesicon.gif">Listado de funciones
+</tocitem>
+
+<tocitem target="./Silop Toolbox Manual.pdf" image="$toolbox/matlab/icons/pdficon.gif">Documentación completa</tocitem>
+
+</tocitem>
+</toc>

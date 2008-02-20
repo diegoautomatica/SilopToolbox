@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" Detecta los eventos del paso a partir de las velocidades de giro de las " />
+<meta name="keywords" content="   " />
+<title>Documentation of  eventosPiernaG</title>
+</head>
+<body >
+<h1 >Documentation of  eventosPiernaG</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[eventos]=eventosPiernaG(tibia_L, tibia_R,fh)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+
+ Detecta los eventos del paso a partir de las velocidades de giro de las
+ tibias izquierda y derecha.
+
+   [eventos]=eventosPiernaG(tibia_L, tibia_R)
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function eventosPiernaG</h2>
+<pre>
+function [eventos]=eventosPiernaG(tibia_L, tibia_R,fh)
+
+<em class="mcom">% Corrige el signo para que el maximo absoluto sea positivo</em>
+[m,p]=max(abs(tibia_L));
+if (tibia_L(p)&lt;0)
+    tibia_L=-tibia_L;
+end
+[m,p]=max(abs(tibia_R));
+if (tibia_R(p)&lt;0)
+    tibia_R=-tibia_R;
+end
+
+<em class="mcom">% Filtra las se–ales mas bajas.</em>
+<em class="mcom">% El umbral se fija en 0.75 rad/s</em>
+<em class="mcom">%tibia_L=tibia_L.*(abs(tibia_L)&gt;0.55);</em>
+<em class="mcom">%tibia_R=tibia_R.*(abs(tibia_R)&gt;0.55);</em>
+
+
+n=4;
+filtro=ones(2*n+1,1); filtro=filtro/sum(filtro);
+tmp_signal=conv(tibia_L,filtro);
+tmp_signal=tmp_signal(1+n:end-n);
+[MSL1,m,p]=picos(tmp_signal.*(tmp_signal&gt;0),11);
+[MSL2,m,p]=picos(tmp_signal.*(tmp_signal&lt;0),7);
+
+n=4;
+filtro=ones(2*n+1,1); filtro=filtro/sum(filtro);
+tmp_signal=conv(tibia_R,filtro);
+tmp_signal=tmp_signal(1+n:end-n);
+[MSR1,m,p]=picos(tmp_signal.*(tmp_signal&gt;0),11);
+[MSR2,m,p]=picos(tmp_signal.*(tmp_signal&lt;0),7);
+
+r1=[];
+r2=[];
+eventos=zeros(length(tibia_L),8);
+for k=MSL1'
+    k2=(find(abs(MSR2-k)&lt;15));
+    if (any(k2) &amp; tibia_L(k)&gt;1)
+        eventos(k,1)=1;
+        eventos(MSR2(k2),6)=1;
+    end,
+end
+for k=MSR1'
+    k2=find(abs(MSL2-k)&lt;15);
+    if (any(k2) &amp; tibia_R(k)&gt;1)
+        eventos(k,5)=1;
+        eventos(MSL2(k2),2)=1;
+    end,
+end
+
+<em class="mcom">% Buscar HS</em>
+MSL1=find(eventos(:,1)); <em class="mcom">% Evento Midstance del swing en la pierna izda</em>
+MSL2=find(eventos(:,2)); <em class="mcom">% Evento Midstance de la fase de apoyo izda</em>
+MSR1=find(eventos(:,5)); <em class="mcom">% Evento Midstance del swing en la pierna dcha</em>
+MSR2=find(eventos(:,6)); <em class="mcom">% Evento Midstance de la fase de apoyo dcha</em>
+
+for k=1:length(MSL1) <em class="mcom">% para cada evento midstance detectado</em>
+    <em class="mcom">% se busca el midstance correspondiente a la fase de apoyo de la misma</em>
+    <em class="mcom">% pierna que verifique: ser posterior y que no este a mas de 2</em>
+    <em class="mcom">% segundos.</em>
+    k2=find(MSL2&gt;MSL1(k) &amp; MSL2&lt;min(MSL1(k)+2*64,length(tibia_L)),1);
+    if (~isempty(k2))
+        <em class="mcom">% si se ha encontrado al menos un k2, se buscan picos a escala 1</em>
+        <em class="mcom">% entre k1 y k2</em>
+        [pmax,pmin,plocal]=picos(tibia_L(MSL1(k):MSL2(k2)),1);
+        <em class="mcom">% Nos quedamos con los maximos que siguen al primer minimo</em>
+        pmax=pmax(find(pmax&gt;pmin(1)));
+        if (length(pmin)&gt;0)
+            <em class="mcom">% Marcamos el primer minimo como un posible HS</em>
+            eventos(pmin(1)+MSL1(k)-1,3)=1; 
+        end
+        if (length(pmax)&gt;0)
+            <em class="mcom">% Marcamos el maximo que sigue el primer minimo como el segundo</em>
+            <em class="mcom">% candido a HS</em>
+            eventos(pmax(1)+MSL1(k)-1,3)=2;
+        end
+        if (length(pmin)&gt;1)
+            <em class="mcom">% El segundo mínimo es el siguiente candidato a HS</em>
+            eventos(pmin(2)+MSL1(k)-1,3)=3;
+        end
+    end
+end
+for k=1:length(MSR1)
+    k2=find(MSR2&gt;MSR1(k) &amp; MSR2&lt;min(MSR1(k)+2*64,length(tibia_R)),1);
+    if (~isempty(k2))
+        [pmax,pmin,plocal]=picos(tibia_R(MSR1(k)+5:MSR2(k2)),1);
+        pmax=pmax(find(pmax&gt;pmin(1)));
+        if (length(pmin)&gt;0)
+            eventos(pmin(1)+MSR1(k)+4,7)=1;
+        end
+        if (length(pmax)&gt;0)
+            eventos(pmax(1)+MSR1(k)+4,7)=2;
+        end
+        if (length(pmin)&gt;1)
+            eventos(pmin(2)+MSR1(k)+4,7)=3;
+        end
+    end
+end
+
+<em class="mcom">% Buscar TO</em>
+for k=1:length(MSL2) <em class="mcom">% Para cada evento midstance de la fase de apoyo</em>
+    <em class="mcom">% se busca el siguiente midstance correspondiente a una fase de swing</em>
+    k2=find(MSL1&gt;MSL2(k) &amp; MSL1&lt;min(MSL2(k)+64,length(tibia_L)),1);
+    if (~isempty(k2))
+        <em class="mcom">% si se encontro</em>
+        <em class="mcom">% se busca el evento TO como el mínimo absoluto entre ambos eventos</em>
+        <em class="mcom">% de midswing</em>
+        [m,p]=min(tibia_L(MSL2(k):MSL1(k2)));
+        eventos(p+MSL2(k)-1,4)=1;
+    end
+end
+for k=1:length(MSR2)
+    k2=find(MSR1&gt;MSR2(k) &amp; MSR1&lt;min(MSR2(k)+64,length(tibia_R)),1);
+    if (~isempty(k2))
+        [m,p]=min(tibia_R(MSR2(k):MSR1(k2)));
+        eventos(p+MSR2(k)-1,8)=1;
+    end
+end
+
+if (nargin&gt;2)
+    figure;
+    plot(tibia_L)
+    hold
+    plot(tibia_R,'g')
+    plot(find(eventos(:,6)),tibia_R(find(eventos(:,6))),'m*');
+    plot(find(eventos(:,5)),tibia_R(find(eventos(:,5))),'ms');
+    plot(find(eventos(:,7)),tibia_R(find(eventos(:,7))),'md');
+    plot(find(eventos(:,8)),tibia_R(find(eventos(:,8))),'mo');
+    plot(find(eventos(:,2)),tibia_L(find(eventos(:,2))),'r*');
+    plot(find(eventos(:,1)),tibia_L(find(eventos(:,1))),'rs');
+    plot(find(eventos(:,3)),tibia_L(find(eventos(:,3))),'rd');
+    plot(find(eventos(:,4)),tibia_L(find(eventos(:,4))),'ro');
+end
+
+
+
+
+function [pmax,pmin,plocal]=picos(datos,n)
+
+
+der_dch=[diff(datos); 0];
+der_izd=[0; diff(datos)];
+minimos=[];
+maximos=[];
+
+prod=[];
+for desp=1:n
+    prod=[prod [datos((desp+1):end)-datos(1:(end-desp)); zeros(desp,1)].*[zeros(desp,1); datos((desp+1):end)-datos(1:(end-desp))]];
+end
+prod=all(prod&lt;0,2);
+p=find(prod);
+
+<em class="mcom">% Determinar si son maximos o minimos</em>
+tmp=(ones(length(p),1)*(-n:n)+p*ones(1,2*n+1));
+tmp=datos(tmp);
+minimos=(datos(p)==min(tmp,[],2));
+maximos=(datos(p)==max(tmp,[],2));
+pmax=[p maximos minimos];
+
+if (nargout&gt;1)
+    pmax=p(find(maximos));
+    pmin=p(find(minimos));
+    plocal=p(find(~maximos &amp; ~minimos));
+end</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

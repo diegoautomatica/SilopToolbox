@@ -1,0 +1,29 @@
+<productinfo
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="optional">
+<?xml-stylesheet type="text/xsl" href="optional"?>
+
+<matlabrelease>14</matlabrelease>
+<name>silop</name>
+<type>toolbox</type>
+<icon>./logosimur.gif</icon>
+<help_location>../</help_location>
+
+<list>
+
+<listitem>
+<label>Demo</label>
+<callback>echodemo silopdemo</callback>
+<icon>$toolbox/matlab/icons/demoicon.gif</icon>
+</listitem>
+
+
+<listitem>
+<label>Simur Web Site</label>
+<callback>web http://www.isa.uniovi.es/simur;</callback>
+<icon>$toolbox/matlab/icons/webicon.gif</icon>
+</listitem>
+
+</list>
+
+</productinfo>

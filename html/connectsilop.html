@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados " />
+<meta name="keywords" content=" simula_muestreo silopdemo " />
+<title>Documentation of  connectsilop</title>
+</head>
+<body >
+<h1 >Documentation of  connectsilop</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>CONFIG = connectsilop(conf, modo_simulacion, log)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados
+
+ CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados, o en el caso de trabajar
+ en modo simulación con el fichero en el que esté guardado un log capturado por los XSens
+ 
+ Syntax: 
+   CONFIG = connectsilop(CONFIG, simulacion,log);
+
+   Parámetros de entrada:
+		CONFIG     Estructura de configuración de los sensores y algoritmos
+		simulacion Parámetro que indica si se realiza la simulación o no. Por defecto vale 0 (no se simula)
+               log        Fichero del que leer los datos
+   Parámetros de salida: 
+	CONFIG  Estructura de configuración de los sensores y algoritmos de la aplicación	
+ 
+ Examples: 
+   
+
+ See also: 
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
+</ul>
+</td><td>
+<ul>
+<li><a class="mfun" href="silopdemo.html">silopdemo</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function connectsilop</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Antonio López</em>
+<em class="mcom">% History:  24.01.2008  creado</em>
+<em class="mcom">%           24.01.2008 Incorporado a la toolbox</em>
+<em class="mcom">%</em>
+
+function CONFIG = connectsilop(conf, modo_simulacion, log)
+    
+    if (nargin&lt;2)
+	modo_simulacion=1; <em class="mcom">%Cambiar en el futuro. Cuando tengamos el modo real funcionando.</em>
+	log='test.log';
+    end	
+    
+    CONFIG=conf;
+    global SILOP_DATA_BUFFER;
+    SILOP_DATA_BUFFER = [];
+
+    if(modo_simulacion)
+        <em class="mcom">%Dejamos una simulación sólo de datos del COG para esta versión. </em>
+	<em class="mcom">%En v0.7 tendrá que haber un formato de guardado y cargado de datos</em>
+        CONFIG.SENHALES.COG.Acc_Z = 2;
+        CONFIG.SENHALES.COG.Acc_Y = 3;
+        CONFIG.SENHALES.COG.Acc_X = 4;
+        CONFIG.SENHALES.COG.G_Z = 5;
+        CONFIG.SENHALES.COG.G_Y = 6;
+        CONFIG.SENHALES.COG.G_X = 7;
+        CONFIG.SENHALES.COG.MG_Z = 8;
+        CONFIG.SENHALES.COG.MG_Y = 9;
+        CONFIG.SENHALES.COG.MG_X = 10;
+            
+        CONFIG.SENHALES.NUMEROSENHALES = 10;
+        
+	global t
+	t = timer('TimerFcn', {@<a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
+        CONFIG.BUS.Temporizador = t;
+
+         
+    else
+        <em class="mcom">%Crear el bus para muestreo de verdad en tiempo real</em>
+	<em class="mcom">% A añadir por RAFA</em>
+        <em class="mcom">% llamar a Crearxbusmaster.</em>
+	<em class="mcom">% Comprobar en que orden llegarán las señales y rellenar con ello las </em>
+	<em class="mcom">% estructuras CONFIG.SENHALES</em>
+
+    end
+
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

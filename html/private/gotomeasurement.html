@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement " />
+<meta name="keywords" content=" leerxbusdata iniciacaptura " />
+<title>Documentation of  gotomeasurement</title>
+</head>
+<body >
+<h1 >Documentation of  gotomeasurement</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[XBusMaster,error]=gotomesurement(XBusMaster)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement
+
+ GOTOMEASUREMENT Envía al dispositivo Xbus Master un mensaje que le obliga
+ a pasar al modo measurement
+ 
+ Syntax: [XBusMaster,error]=gotomeasurement(XBusMaster)
+ 
+ Input parameters:
+   XBusMaster-&gt; Objeto con la información del dispositivo.
+
+ Output parameters:
+   XBusMaster- Es el mismo objeto de entrada que puede haber sido
+               modificado durante la llamada.
+   error     - 0 si no se produjo ningún error y 1 en caso contrario.
+               (nop hubo mensaje de ack)
+
+ Examples:
+ &gt;&gt; xb=<a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
+ &gt;&gt; [xb,error]=gotomeasurement(xb);
+
+ See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../continuarcaptura.html">continuarcaptura</a>,
+           <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="../private/leerXBusData.html">leerXBusData</a></li>
+</ul>
+</td><td>
+<ul>
+<li><a class="mfun" href="../iniciacaptura.html">iniciacaptura</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function gotomeasurement</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
+<em class="mcom">% History:  04.12.07    creacion del archivo</em>
+<em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
+
+function [XBusMaster,error]=gotomesurement(XBusMaster)
+
+global SILOP_DATA_BUFFER;
+
+SILOP_DATA_BUFFER=zeros(XBusMaster.buffer,XBusMaster.Data);
+
+
+
+
+<em class="mcom">% El proceso se queda bloqueado hasta recibir el ack</em>
+
+<em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+msg=[250,255,16,0];
+<em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+msg=[msg 256-mod(sum(msg(2:end)),256)];
+<em class="mcom">% Se envia por el puerto serie </em>
+if (XBusMaster.puerto.BytesAvailable&gt;0)
+    <em class="mcom">% Vaciar el puerto </em>
+    <em class="mcom">% OJO!!! Los datos se perderan</em>
+    disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+    fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    
+end
+<em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+tout=XBusMaster.puerto.TimeOut;
+XBusMaster.puerto.TimeOut=1;
+fwrite(XBusMaster.puerto,msg,'uint8');
+<em class="mcom">% Se espera a recibir la contestacion</em>
+<em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
+msg=[];
+[ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
+error=0;
+if (~isempty(msg))
+    disp(msg);
+    error=1;
+else
+    if (mod(sum(ack(2:end)),256)~=0)
+        disp('Error de checksum');
+        error=1;
+    else
+        if (ack(3)~=17)
+            disp('Error en la secuencia de mensajes');
+            error=1;
+        end
+    end
+end
+bytes=(2+XBusMaster.Conf.Dev(1).DataLength*XBusMaster.Conf.DevNum);
+if (bytes&gt;254)
+    bytes=bytes+6+1;
+else
+    bytes=bytes+4+1;
+end
+<em class="mcom">% XBusMaster.puerto.BytesAvailableFcnCount=bytes;</em>
+leerXBusDatahandle=@<a class="mfun" href="../private/leerxbusdata.html">leerXBusData</a>;
+XBusMaster.puerto.BytesAvailableFcn={leerXBusDatahandle, XBusMaster};
+XBusMaster.puerto.RequestToSend='on';
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

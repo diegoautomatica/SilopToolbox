@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" INITBUS Envía el mensaje InitBus al objeto XBusMaster " />
+<meta name="keywords" content="  creaxbusmaster " />
+<title>Documentation of  InitBus</title>
+</head>
+<body >
+<h1 >Documentation of  InitBus</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[XBusMaster,error]=InitBus(XBusMaster)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ INITBUS Envía el mensaje InitBus al objeto XBusMaster
+
+ INITBUS Envía el mensaje InitBus al objeto XBusMaster. El proceso
+         se queda bloqueado hasta recibir la información
+ 
+ Syntax: [XBusMaster,error]=InitBus(XBusMaster)
+ 
+ Input parameters:
+   XBusMaster-&gt; Objeto con la información del dispositivo.
+
+ Output parameters:
+   XBusMaster- Es el mismo objeto de entrada que puede haber sido
+               modificado durante la llamada.
+   error     - 0 si no se produjo ningún error y 1 en caso contrario.
+               si no se recibe el mensaje con la descripción de los dispositivos
+               conectados
+
+ Examples:
+ &gt;&gt; [xb,error]=InitBus(xb);
+
+ See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../continuarcaptura.html">continuarcaptura</a>,
+           <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function InitBus</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
+<em class="mcom">% History:  04.12.07    creacion del archivo</em>
+<em class="mcom">%           18.12.07    pasada a private por Diego.</em>
+
+function [XBusMaster,error]=InitBus(XBusMaster)
+
+<em class="mcom">% Envia el mensaje InitBus al objeto XBusMaster</em>
+<em class="mcom">% error vale 1 si no se recibe el mensaje con la descripcion</em>
+<em class="mcom">% de los dispositivos conectados</em>
+<em class="mcom">% El proceso se queda bloqueado hasta recibir la informacion</em>
+
+<em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+msg=[250,255,2,0];
+<em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+msg=[msg 256-mod(sum(msg(2:end)),256)];
+<em class="mcom">% Se envia por el puerto serie </em>
+if (XBusMaster.puerto.BytesAvailable&gt;0)
+    <em class="mcom">% Vaciar el puerto </em>
+    <em class="mcom">% OJO!!! Los datos se perderan</em>
+    disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+    fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+end
+<em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+tout=XBusMaster.puerto.TimeOut;
+XBusMaster.puerto.TimeOut=1;
+fwrite(XBusMaster.puerto,msg,'uint8');
+<em class="mcom">% Se espera a recibir la contestacion</em>
+<em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
+msg=[];
+<em class="mcom">% Primero se leen 4 bytes para concer la longitud total del mensaje</em>
+<em class="mcom">% NOTA: Al no conocer la longitud total de mensaje, si especificamos el</em>
+<em class="mcom">% maximo valor posible, la funcion fread se bloquearia hasta que venciese</em>
+<em class="mcom">% el tout.</em>
+[ack1,cnt1,msg]=fread(XBusMaster.puerto,4,'uint8');
+if (cnt1&lt;4 || ~isempty(msg))
+    error=1;
+    disp(msg);
+    return;
+else
+    if (ack1(3)~=3)
+        disp('Error en la secuencia de mensajes');
+        error=1;
+        return;
+    end
+end
+error=0;
+<em class="mcom">% de momento no se ha detectado ningun error y se continua con la lectura</em>
+<em class="mcom">% del resto del mensaje ack1(end)+1 bytes</em>
+[ack2,cnt2,msg]=fread(XBusMaster.puerto,ack1(end)+1,'uint8');
+ack=[ack1; ack2];
+if (~isempty(msg))
+    disp(msg);
+    error=1;
+    return;
+else
+    if (mod(sum(ack(2:end)),256)~=0)
+        disp('Error de checksum');
+        error=1;
+        return;
+    end
+    XBusMaster.ndisp=ack(4)/4;
+    XBusMaster.sensores.ID=reshape(ack(5:(end-1)),[4 XBusMaster.ndisp]);
+    XBusMaster.sensores.Cadena=reshape(sprintf('<em class="mcom">%02X',double(ack(5:(end-1)))),[2*4 XBusMaster.ndisp]);</em>
+end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

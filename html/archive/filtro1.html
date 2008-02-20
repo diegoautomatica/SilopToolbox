@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" % function Y=filtro1 (datos,orden,corte) " />
+<meta name="keywords" content="   " />
+<title>Documentation of  filtro1</title>
+</head>
+<body >
+<h1 >Documentation of  filtro1</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsarchive.html">Local contents</a>
+ | Local Index (<a href = "indexslfarchive.html">short</a> | <a href = "indexllfarchive.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>Y=filtro0 (datos,orden,corte)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+% function Y=filtro1 (datos,orden,corte)
+%
+% Implementacion de un filtro paso bajo de fase 0
+%
+% -&gt;...: Datos a filtrar, orden del filtro y frec de corte normalizada
+% Frecuencias normales: 0.05 para filtrar a 2.5Hz con los datos a 50
+% &lt;- Y: datos filtrados.     
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function filtro1</h2>
+<pre>
+
+
+%<em class="mcom">% Ultima modificaci—n: JC, 18-may-06 -&gt; comentarios</em>
+
+function Y=<a class="mfun" href="../filtro0.html">filtro0</a> (datos,orden,corte)
+
+[b,a]=butter(orden,corte,'low');
+
+Y=filtfilt(b,a,datos);
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

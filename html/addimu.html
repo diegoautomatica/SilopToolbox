@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" ADDIMU Añade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox " />
+<meta name="keywords" content="  silopdemo " />
+<title>Documentation of  addimu</title>
+</head>
+<body >
+<h1 >Documentation of  addimu</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>CONFIG=addimu(donde, serie, conf)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ ADDIMU Añade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
+
+ ADDIMU añade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox. 
+ Se debe incluir la lista completa de IMUs a usar antes de realizar la conexión
+ 
+ Syntax: 
+   CONFIG=addimu(posicion,numserie,CONFIG);
+
+   Parámetros de entrada: 
+ 	posicion -&gt; Cadena de texto conteniendo la posición en la que está el sensor.
+		    Puede ser: 'COG','MUSLO_DCHO','MUSLO_IZDO','TIBIA_DCHA','TIBIA_IZDA','PIE_DCHO' o 'PIE_IZDO'.
+	numserie -&gt; numero de serie
+	CONFIG   -&gt; estructura de configuración de la aplicación antes de añadir el sensor
+   Parámetros de salida: 
+	CONFIG  Estructura de configuración de la aplicación después de añadir el sensor
+ 
+ Examples: 
+   
+
+ See also: 
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="silopdemo.html">silopdemo</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function addimu</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Antonio López</em>
+<em class="mcom">% History:  24.01.2008  creado</em>
+<em class="mcom">%           24.01.2008 Incorporado a la toolbox</em>
+<em class="mcom">%</em>
+
+function CONFIG=addimu(donde, serie, conf)
+
+    CONFIG = conf;
+
+    switch donde
+        
+        case 'COG',
+            CONFIG.SENHALES.COG.Serie = serie;
+        case 'MUSLO_DCHO',
+            CONFIG.SENHALES.MUSLO_DCHO.serie = serie;
+        case 'MUSLO_IZDO',
+            CONFIG.SENHALES.MUSLO_IZDO.serie = serie;
+        case 'TIBIA_DCHA',
+            CONFIG.SENHALES.TIBIA_DCHA.serie = serie;
+        case 'TIBIA_IZDA',
+            CONFIG.SENHALES.TIBIA_IZDA.serie = serie;
+        case 'PIE_DCHO',
+            CONFIG.SENHALES.PIE_DCHO.serie = serie;
+        case 'PIE_IZDO',
+            CONFIG.SENHALES.PIE_IZDO.serie = serie;
+            
+        otherwise
+            warning('posición de IMU no reconocida')
+    end;
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

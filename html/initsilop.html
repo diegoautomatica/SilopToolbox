@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" INITSILOP Inicializa el sistema de procesamiento de las aplicaciones estandar de la toolbox " />
+<meta name="keywords" content="  silopdemo " />
+<title>Documentation of  initsilop</title>
+</head>
+<body >
+<h1 >Documentation of  initsilop</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>CONFIG = initsilop()</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ INITSILOP Inicializa el sistema de procesamiento de las aplicaciones estandar de la toolbox
+
+ INITSILOP Inicializa el sistema de procesamiento de las aplicaciones estandar de la toolbox. 
+ Debe ser el primer comando usado en dichas aplicaciones.
+ 
+ Syntax: 
+   CONFIG=initsilop();
+
+   Parámetros de entrada: Ninguno
+   Parámetros de salida: 
+	CONFIG  Estructura de configuración de los sensores y algoritmos de la aplicación	
+ 
+ Examples: 
+   
+
+ See also: 
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="silopdemo.html">silopdemo</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function initsilop</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Antonio López</em>
+<em class="mcom">% History:  24.01.2008  creado</em>
+<em class="mcom">%           24.01.2008 Incorporado a la toolbox</em>
+<em class="mcom">%</em>
+
+
+function CONFIG = initsilop()
+
+<em class="mcom">%Tamaño de la ventana de datos</em>
+CONFIG.GLOBAL.LONGITUDVENTANA = 1000;
+
+<em class="mcom">%Números de serie de todos los posibles sensores que se pueden usar</em>
+CONFIG.SENHALES.COG.Serie = -1;
+CONFIG.SENHALES.PIE_IZDO.Serie = -1;
+CONFIG.SENHALES.PIE_DCHO.Serie = -1;
+CONFIG.SENHALES.MUSLO_IZDO.Serie = -1;
+CONFIG.SENHALES.MUSLO_DCHO.Serie = -1;
+CONFIG.SENHALES.TIBIA_IZDA.Serie = -1;
+CONFIG.SENHALES.TIBIA_DCHA.Serie = -1;
+
+
+<em class="mcom">%Posición de cada señal en la matriz de datos</em>
+
+CONFIG.SENHALES.COG.Acc_Z = -1;
+CONFIG.SENHALES.COG.Acc_Y = -1;
+CONFIG.SENHALES.COG.Acc_X = -1;
+CONFIG.SENHALES.COG.G_Z = -1;
+CONFIG.SENHALES.COG.G_Y = -1;
+CONFIG.SENHALES.COG.G_X = -1;
+CONFIG.SENHALES.COG.MG_Z = -1;
+CONFIG.SENHALES.COG.MG_Y = -1;
+CONFIG.SENHALES.COG.MG_X = -1;
+
+CONFIG.SENHALES.MUSLO_DCHO.Acc_Z = -1;
+CONFIG.SENHALES.MUSLO_DCHO.Acc_Y = -1;
+CONFIG.SENHALES.MUSLO_DCHO.Acc_X = -1;
+CONFIG.SENHALES.MUSLO_DCHO.G_Z = -1;
+CONFIG.SENHALES.MUSLO_DCHO.G_Y = -1;
+CONFIG.SENHALES.MUSLO_DCHO.G_X = -1;
+CONFIG.SENHALES.MUSLO_DCHO.MG_Z = -1;
+CONFIG.SENHALES.MUSLO_DCHO.MG_Y = -1;
+CONFIG.SENHALES.MUSLO_DCHO.MG_X = -1;
+
+CONFIG.SENHALES.MUSLO_IZDO.Acc_Z = -1;
+CONFIG.SENHALES.MUSLO_IZDO.Acc_Y = -1;
+CONFIG.SENHALES.MUSLO_IZDO.Acc_X = -1;
+CONFIG.SENHALES.MUSLO_IZDO.G_Z = -1;
+CONFIG.SENHALES.MUSLO_IZDO.G_Y = -1;
+CONFIG.SENHALES.MUSLO_IZDO.G_X = -1;
+CONFIG.SENHALES.MUSLO_IZDO.MG_Z = -1;
+CONFIG.SENHALES.MUSLO_IZDO.MG_Y = -1;
+CONFIG.SENHALES.MUSLO_IZDO.MG_X = -1;
+
+CONFIG.SENHALES.TIBIA_DCHA.Acc_Z = -1;
+CONFIG.SENHALES.TIBIA_DCHA.Acc_Y = -1;
+CONFIG.SENHALES.TIBIA_DCHA.Acc_X = -1;
+CONFIG.SENHALES.TIBIA_DCHA.G_Z = -1;
+CONFIG.SENHALES.TIBIA_DCHA.G_Y = -1;
+CONFIG.SENHALES.TIBIA_DCHA.G_X = -1;
+CONFIG.SENHALES.TIBIA_DCHA.MG_Z = -1;
+CONFIG.SENHALES.TIBIA_DCHA.MG_Y = -1;
+CONFIG.SENHALES.TIBIA_DCHA.MG_X = -1;
+
+CONFIG.SENHALES.TIBIA_IZDA.Acc_Z = -1;
+CONFIG.SENHALES.TIBIA_IZDA.Acc_Y = -1;
+CONFIG.SENHALES.TIBIA_IZDA.Acc_X = -1;
+CONFIG.SENHALES.TIBIA_IZDA.G_Z = -1;
+CONFIG.SENHALES.TIBIA_IZDA.G_Y = -1;
+CONFIG.SENHALES.TIBIA_IZDA.G_X = -1;
+CONFIG.SENHALES.TIBIA_IZDA.MG_Z = -1;
+CONFIG.SENHALES.TIBIA_IZDA.MG_Y = -1;
+CONFIG.SENHALES.TIBIA_IZDA.MG_X = -1;
+
+CONFIG.SENHALES.PIE_DCHO.Acc_Z = -1;
+CONFIG.SENHALES.PIE_DCHO.Acc_Y = -1;
+CONFIG.SENHALES.PIE_DCHO.Acc_X = -1;
+CONFIG.SENHALES.PIE_DCHO.G_Z = -1;
+CONFIG.SENHALES.PIE_DCHO.G_Y = -1;
+CONFIG.SENHALES.PIE_DCHO.G_X = -1;
+CONFIG.SENHALES.PIE_DCHO.MG_Z = -1;
+CONFIG.SENHALES.PIE_DCHO.MG_Y = -1;
+CONFIG.SENHALES.PIE_DCHO.MG_X = -1;
+
+CONFIG.SENHALES.PIE_IZDO.Acc_Z = -1;
+CONFIG.SENHALES.PIE_IZDO.Acc_Y = -1;
+CONFIG.SENHALES.PIE_IZDO.Acc_X = -1;
+CONFIG.SENHALES.PIE_IZDO.G_Z = -1;
+CONFIG.SENHALES.PIE_IZDO.G_Y = -1;
+CONFIG.SENHALES.PIE_IZDO.G_X = -1;
+CONFIG.SENHALES.PIE_IZDO.MG_Z = -1;
+CONFIG.SENHALES.PIE_IZDO.MG_Y = -1;
+CONFIG.SENHALES.PIE_IZDO.MG_X = -1;
+
+CONFIG.SENHALES.NUMEROSENHALES = 0;
+
+
+<em class="mcom">%Datos generales del bus</em>
+CONFIG.BUS.Xbus = -1;
+CONFIG.BUS.Temporizador = -1;
+CONFIG.BUS.File = -1;
+
+<em class="mcom">%Datos de los algoritmos usados</em>
+CONFIG.ALGORITMOS = [];
+CONFIG.GLOBAL.COLUMNADISPONIBLE = -1;
+
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

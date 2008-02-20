@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" Envia el mensaje ResetOrientation a todos los dispositivos conectados " />
+<meta name="keywords" content="   " />
+<title>Documentation of  FirmwareRev</title>
+</head>
+<body >
+<h1 >Documentation of  FirmwareRev</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsarchive.html">Local contents</a>
+ | Local Index (<a href = "indexslfarchive.html">short</a> | <a href = "indexllfarchive.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>error=FirmwareRev(XBusMaster)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ Envia el mensaje <a class="mfun" href="../archive/resetorientation.html">ResetOrientation</a> a todos los dispositivos conectados
+ error vale 1 si no se recibe el mensaje de ack
+ El proceso se queda bloqueado hasta recibir el ack
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function FirmwareRev</h2>
+<pre>
+function error=FirmwareRev(XBusMaster)
+
+for k=1:XBusMaster.Conf.DevNum
+    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+    msg=[250,k,18,0];
+    <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    <em class="mcom">% Se envia por el puerto serie </em>
+    XBusMaster.puerto.RequestToSend='off';
+    while (XBusMaster.puerto.BytesAvailable&gt;0)
+        <em class="mcom">% Vaciar el puerto </em>
+        <em class="mcom">% OJO!!! Los datos se perderan</em>
+        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+    <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+    tout=XBusMaster.puerto.TimeOut;
+    XBusMaster.puerto.TimeOut=1;
+    fwrite(XBusMaster.puerto,msg,'uint8');  
+    <em class="mcom">% Se espera a recibir la contestacion</em>
+    <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
+    msg=[];
+    [ack,cnt,msg]=fread(XBusMaster.puerto,8,'uint8');
+    error=0;
+    if (~isempty(msg))
+        disp(msg);
+        error=1;
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+        disp('Error de checksum');
+        error=1;
+        else
+            if (ack(3)~=19)
+                disp('Error en la secuencia de mensajes');
+                error=1;
+            end
+        end
+    end
+    disp(num2str([k,ack(5),ack(6),ack(7)]));
+end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" DATACROP Elimina manualmente un rango de datos de un archivo de xsens. " />
+<meta name="keywords" content="   " />
+<title>Documentation of  datacrop</title>
+</head>
+<body >
+<h1 >Documentation of  datacrop</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ DATACROP Elimina manualmente un rango de datos de un archivo de xsens.
+
+ DATACROP Elimina manualmente un rango de datos de un archivo de xsens. 
+ Primero pregunta por el nombre del archivo de datos. Luego los
+ dibuja para ayudar a definir las muestras inicial y final de
+ datos a eliminar. Luego los elimina, los dibuja de nuevo, y 
+ guarda los resultados en nombrearchivo.log.clean
+ 
+ Syntax: 
+   datacrop
+ 
+ Examples: 
+   datacrop
+
+ See also: load, <a class="mfun" href="limpia_estatico.html">limpia_estatico</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of script datacrop</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Juan C. Alvarez</em>
+<em class="mcom">% History:  18.05.2006 creado</em>
+<em class="mcom">%           01.12.2006 formateado para la silopTB</em>
+<em class="mcom">%</em>
+
+%<em class="mcom">% Seleccion del archivo a limpiar</em>
+clear data_file;
+data_file=input('Nombre del archivo de datos a limpiar: ','s');
+jc=load(data_file);
+display('Archivo le’do OK, numero total de muestras:' );tam=size(jc)
+p1=1;   <em class="mcom">% muestra inicial de estudio</em>
+p2=tam(1,1); <em class="mcom">% Muestra final de estudio, normalmente todo</em>
+figure, subplot(211), plot(jc), grid, xlabel('Datos iniciales');
+
+display('Seleccione el intervalo de muestras a eliminar.');
+el1=input('Muestra inicial: ');
+el2=input('Muestra final: ');
+jc=[jc(p1:el1,:);  jc(el2:p2,:)];
+subplot(212),plot(jc),grid, xlabel('Datos limpiados');
+
+s=[data_file, '.clean'];
+save(s,'jc','-ASCII');
+
+<em class="mcom">% Fin del script</em></pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" EVENTOSCOGRECTO Detecta 5 eventos a partir de las acelerariones verticales y horizontales del COG. Funci�n Off-line " />
+<meta name="keywords" content=" buscamaximos buscamaximosth filtro0  " />
+<title>Documentation of  eventosCOGrecto</title>
+</head>
+<body >
+<h1 >Documentation of  eventosCOGrecto</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>tiempos=eventosCOGrecto(AccHor,AccVert,frecuencia)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ EVENTOSCOGRECTO Detecta 5 eventos a partir de las acelerariones verticales y horizontales del COG. Funci�n Off-line
+
+ EVENTOSCOGRECTO Tomando como base las aceleraciones horizontales y verticales del COG realiza un proceso de
+ filtrado que le permite diferenciar cada paso. Una vez detectado un paso, realiza un proceso de detecci�n de
+ m�nimos y m�ximos que permite identificar los eventos IC, FF, HS, MS y PO. El algoritmo se basa en la descripci�n
+ proporcionada por Auvinet. La principal diferencia, es que se ha comprobado que el punto identificado por Auvinet
+ como PO se corresponde realmente con el MS. El punto identificado por Auvinet como MS es probablemente el PO, 
+ pero esta sin confirmar.
+
+ Sintax: tiempos=eventosCOGrecto(AccHor,AccVert,frecuencia)
+
+ Par�metros de entrada:
+    AccHor        - vector con la aceleraci�n antero-posterior
+    AccVert       - vector con la aceleraci�n vertical
+    frecuencia    - entero indicando la frecuencia de muestreo. Por
+                    defecto 100Hz
+
+ Par�metros de salida:
+    tiempos: vector del mismo tama�o que los datos, con unos en las posiciones 
+             de los eventos y ceros el resto:
+             tiempos(:,1)=AccVert;
+             tiempos(:,2)=AccHor;
+             tiempos(:,3)=deteccion de foot flat, FF;
+             tiempos(:,4)=deteccion de heel strike, HS;
+             tiempos(:,5)=deteccion de toe off, TO;
+             tiempos(:,6)=deteccion de mid stance, MS; (PO de acuerdo con Auvinet)
+             tiempos(:,7)=deteccion evento NoIdentificado, NI; (era el &quot;midstance en
+                          Auvinet-2002).
+             tiempos(:,8)=vacio con ceros, reservado para futuros eventos;
+
+ Examples:
+
+ See also:
+
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%"></th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="buscamaximos.html">buscamaximos</a></li>
+<li><a class="mfun" href="buscamaximosth.html">buscamaximosth</a></li>
+<li><a class="mfun" href="filtro0.html">filtro0</a></li>
+</ul>
+</td><td></td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function eventosCOGrecto</h2>
+<pre>
+
+
+
+<em class="mcom">% Historial de Modificaciones: </em>
+<em class="mcom">% v0.1 Diego: Versi�n original para el IMU-Pro</em>
+<em class="mcom">% v0.2 Diego: Version generica para IMU-Pro y XSens</em>
+<em class="mcom">% v0.3 Antonio: A�adidos eventos PO y MS</em>
+<em class="mcom">% v0.4 JC: Comentarios</em>
+% v0.5 Diego: Corregida detecci�n de eventos FF al principio y al final del tramo %%%<em class="mcom">%            de se�al. Afinados tiempos para deteccion FF y TO.</em>
+<em class="mcom">% v0.6 Diego: A�adido metodo de Antonio para detectar el Push-off.</em>
+<em class="mcom">%           A�adidos warnings para se�alar detecciones incorrectas(secuencias rotas)</em>
+<em class="mcom">% v1.0 Diego:Nuevo algoritmo de deteccion de hs y ff. Mucho m�s robusto.</em>
+<em class="mcom">%		Eliminadas todas las odiosas dependencias del factorf</em>
+<em class="mcom">% v1.1 Rafa y Diego: Corregidos dos bugs: </em>
+<em class="mcom">%		1)Se puede trabajar a frecuencias no m�ltiplos de 50</em>
+<em class="mcom">%		2)Se eliminan los eventos HS extremadamente pr�ximos que corresponden</em>
+<em class="mcom">%			se corresponden a un �nico HS y desparejan los resultados.</em>
+<em class="mcom">% v1.2 JC,13/7/06: Redenominaci�n de los eventos detectados:</em>
+<em class="mcom">%      1)La columna 6 que llamabamos PO pasa a ser el MS</em>
+<em class="mcom">%      2)La columna 7 que llamabamos MS pasa a ser eventoNoIdentificado NI</em>
+<em class="mcom">%      La caracter�stica del evento y su detecci�n no cambia, solo los</em>
+<em class="mcom">%      nombres.</em>
+<em class="mcom">% v1.2.1 Diego. Corregido un bug. Al ajustar para multiples frecuencias la frecuencia del</em>
+<em class="mcom">%      filtro hab�a quedado en 1.25Hz en lugar de en 2.5Hz. </em>
+
+function tiempos=eventosCOGrecto(AccHor,AccVert,frecuencia)
+
+if (nargin&lt;3)
+    frecuencia=100;
+end
+%<em class="mcom">%Estan reescaladas para comparar mas f�cil con los eventos</em>
+tiempos(:,1)=AccVert;
+tiempos(:,2)=AccHor;
+tiempos(:,3)=0*AccVert;
+tiempos(:,4)=0*AccVert;
+tiempos(:,5)=0*AccVert;
+tiempos(:,6)=0*AccVert;
+tiempos(:,7)=0*AccVert;
+tiempos(:,8)=0*AccVert;
+
+
+<em class="mcom">%Deteccion de puntos de footflat.</em>
+<em class="mcom">%Primera aproximaci�n. m�ximos 1� arm�nico</em>
+Datos_filt=<a class="mfun" href="filtro0.html">filtro0</a>(AccVert,60,5/frecuencia);
+ff=[<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(Datos_filt,10.5)];
+ff=find(ff==1);
+
+
+
+<em class="mcom">%Deteccion de HS en la horizontal</em>
+m_inferior=-0.10;
+m_superior=-0.00;
+<em class="mcom">%Deteccion del primer HS. No es necesario y no tiene porque aparecer.</em>
+resto=1; <em class="mcom">%Desde que HS empiezo a buscar</em>
+if (ff(1)&lt;=-1*m_inferior*frecuencia) 
+	hs(1)=1;
+	resto=2;
+end
+<em class="mcom">%Busqueda del resto de HS</em>
+for i=resto:length(ff)
+    [maximo,punto]=max(AccHor(ff(i)+ceil(m_inferior*frecuencia):ff(i)+floor(m_superior*frecuencia)));
+    hs(i)=ff(i)+ceil(m_inferior*frecuencia)+punto-1;
+end
+
+<em class="mcom">%Postprocesamiento de los HS, para eliminar posibles espurios m�ltiples</em>
+for i=(length(hs)-1):-1:1
+	if (  abs(hs(i)-hs(i+1))&lt;0.2*frecuencia)
+		[maximo,indice]=max([AccHor(hs(i)),AccHor(hs(i+1))]);
+		hs(i)=hs(i+indice-1);
+		hs=hs([1:i,i+2:end]);
+	end
+end
+
+for i=1:length(hs)
+    tiempos(hs(i),4)=1;
+end
+
+<em class="mcom">%Inicializacion de todas una vez conocido el n�mero correcto de pasos</em>
+ff=0*hs;
+to=0*ff;
+ms=0*to;
+po=0*ms;
+
+
+<em class="mcom">%Detecci�n del FF. M�ximo desplazamiento respecto al HS</em>
+m_inferior=0.01;
+m_superior=0.06;
+<em class="mcom">%Deteccion del ultimo FF. No es necesario y no tiene porque aparecer.</em>
+eliminado=0;
+if (hs(end)+m_superior*frecuencia&gt;length(AccVert))
+	ff(end)=length(AccVert)-3;<em class="mcom">%Quedan otros tres eventos</em>
+	eliminado=1;
+end
+
+for i=1:length(hs)-eliminado
+    [maximo,punto]=max(AccVert(max(hs(i)+ceil(m_inferior*frecuencia),1):min(hs(i)+floor(m_superior*frecuencia),end)));
+    ff(i)=hs(i)+ceil(m_inferior*frecuencia)+punto-1;
+end
+
+
+for i=1:length(ff)
+       	tiempos(ff(i),3)=1;
+end
+
+
+
+
+
+<em class="mcom">%Deteccion de TO en la vertical</em>
+<em class="mcom">%Busqueda del resto de TO</em>
+m_inferior_m=0.10;
+m_superior_m=0.20;
+m_inferior_t=0.02;
+m_superior_t=-0.02;
+<em class="mcom">%Deteccion del ultimo TO. No es necesario y no tiene porque aparecer.</em>
+eliminado=0;
+if (ff(end)+m_superior_m*frecuencia&gt;length(AccVert))
+	to(end)=length(AccVert)-2;<em class="mcom">%quedan otros dos eventos</em>
+	eliminado=1;
+end
+for i=1:length(ff)-eliminado
+    <em class="mcom">%Maximo siguiente al ff. No necesito que sea exacto.</em>
+    [maximo,punto]=max(AccVert(ff(i)+ceil(m_inferior_m*frecuencia):ff(i)+floor(m_superior_m*frecuencia)));
+    to(i)=ff(i)+ceil(m_inferior_m*frecuencia)+punto-1;
+    [minimo,punto]=min(AccVert(ff(i)+ceil(m_inferior_t*frecuencia):to(i)+floor(m_superior_t*frecuencia)));
+    to(i)=ff(i)+ceil(m_inferior_t*frecuencia)+punto-1;
+end
+
+for i=1:length(to)
+    tiempos(to(i),5)=1;
+end
+
+
+
+
+<em class="mcom">%Iniciamos b�squeda de MS.</em>
+<em class="mcom">%Para el MS busco los minimos absolutos en [TO, HS]</em>
+ipo=[<a class="mfun" href="buscamaximos.html">buscamaximos</a>(-Datos_filt)];
+ipo=find(ipo==1);
+
+<em class="mcom">%eliminamos un posible MS antes del 1� TO para mantener secuencia estandar</em>
+if ipo(1)&lt;to(1)
+	ipo=ipo(2:end);
+end
+<em class="mcom">%Si falta un MS para igualar a los demas, se pone en la �ltima muestra</em>
+if length(ipo)&lt;length(to)
+	ipo=[ipo;length(AccVert)];
+end
+
+
+<em class="mcom">%Tiempos</em>
+for i=1:length(ipo)
+    tiempos(ipo(i),6)=1;
+end
+
+<em class="mcom">%Puede que a pesar de todo el n�mero de MSs no coincida con el </em>
+<em class="mcom">%n�mero de TOs</em>
+if length(ipo)~=length(ff)
+	warning('los eventos detectados son incongruentes.�todos los datos son caminando??');	
+end
+minimo_de_puntos=min(length(ipo),length(ff));
+
+
+%<em class="mcom">%Detecci�n del evento NoIdentificado NI: M�ximo entre TO y MS</em>
+for k=1:minimo_de_puntos
+ 	if(to(k)&lt;ipo(k))
+            [maxim, pos_maxim] = max(AccVert(to(k):ipo(k)));
+            ms(k) = pos_maxim+to(k)-1;
+        else 
+	    warning('toe off &lt; initial push off. Muestras %d <em class="mcom">%d',to(k),ipo(k));</em>
+	    to(k) = ipo(k)-2;
+	    ms(k) = ipo(k)-1;
+        end;
+end;
+
+for i=1:minimo_de_puntos
+    tiempos(ms(i),7)=1;
+end
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" DISTANCIA_RAIZCUARTA Calcula la distancia recorrida en un paso mediante el modelo emp�rico de la raiz cuarta " />
+<meta name="keywords" content="  alg_est_dist_r4 " />
+<title>Documentation of  distancia_raizcuarta</title>
+</head>
+<body >
+<h1 >Documentation of  distancia_raizcuarta</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>distancia=distancia_raizcuarta(AccVert)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ DISTANCIA_RAIZCUARTA Calcula la distancia recorrida en un paso mediante el modelo emp�rico de la raiz cuarta
+
+ DISTANCIA_RAIZCUARTA Aplica el modelo emp�rico que relaciona la distancia recorrida en un paso con la 
+ raiz cuarta de la amplitud de la aceleraci�n vertical. 
+ 
+ Esta funci�n es incompatible con la funci�n del mismo nombre disponible en SilopToolbox v0.2 o anterior
+ 
+ Syntax: 
+   function distancia=distancia_raizcuarta(AccVert)
+
+   Par�metros de entrada:
+                 AccVert    - vector con la aceleraci�n vertical del paso a estudiar. Esta aceleraci�n debe estar 
+                              filtrada mediante un filtro paso bajo a 3Hz. (Por ejemplo mediante 
+                              <a class="mfun" href="filtro0.html">filtro0</a>(AccVert,26,0.06) si estamos trabajando offline)
+ 
+ Examples: 
+   
+
+ See also: distancia_recto, distancia_raizcuarta_offline, <a class="mfun" href="distancia_arco.html">distancia_arco</a>, <a class="mfun" href="distancia_pendulo.html">distancia_pendulo</a>, <a class="mfun" href="distancia_penduloparcial.html">distancia_penduloparcial</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="private/alg_est_dist_r4.html">alg_est_dist_r4</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function distancia_raizcuarta</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Diego �lvarez</em>
+<em class="mcom">% History:  ??.??.200? creado</em>
+<em class="mcom">%           12.12.2007 adaptado para trabajar con los datos de un �nico paso y </em>
+<em class="mcom">%                      funcionar on-line. Incompatible con versiones anteriores</em>
+<em class="mcom">%</em>
+
+
+function distancia=distancia_raizcuarta(AccVert)
+
+  <em class="mcom">%Paso a paso. Doble integral</em>
+   vertical=max(AccVert)-min(AccVert);
+	distancia=vertical.^0.25;
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

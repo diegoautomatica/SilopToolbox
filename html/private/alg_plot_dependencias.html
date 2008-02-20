@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros algoritmos " />
+<meta name="keywords" content="   " />
+<title>Documentation of  alg_plot_dependencias</title>
+</head>
+<body >
+<h1 >Documentation of  alg_plot_dependencias</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>alg_plot_dependencias(valores_actuales, senhales, params, dependencias)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros algoritmos
+
+ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros algoritmos
+Se puede configurar mediante:
+    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_plot_dependencias', 0, [], [], {'dependencia'});
+
+Parámetros: como todos los alg_*. resultados anteriores, señales a usar, parametros(vacio en este caso)
+ y dependencias{un algoritmo}.
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function alg_plot_dependencias</h2>
+<pre>
+
+
+<em class="mcom">%Creado: 01-02-2008 por Diego</em>
+
+function alg_plot_dependencias(valores_actuales, senhales, params, dependencias)
+
+
+	persistent mifigura
+	if (isempty(mifigura))
+    		mifigura=figure;
+	end
+
+
+    figure(mifigura);    
+    plot(dependencias(:,:));
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

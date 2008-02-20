@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" INICIACAPTURA Comienza la captura de datos " />
+<meta name="keywords" content=" gotomeasurement playsilop " />
+<title>Documentation of  iniciacaptura</title>
+</head>
+<body >
+<h1 >Documentation of  iniciacaptura</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[XBusMaster,error]=iniciacaptura(XBusMaster)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ INICIACAPTURA Comienza la captura de datos
+
+ INICIACAPTURA Envía al dispositivo Xbus Master un mensaje que le obliga
+ a comenzar la captura (pasar al modo measurement)
+ 
+ Syntax: [XBusMaster,error]=iniciacaptura(XBusMaster)
+ 
+ Input parameters:
+   XBusMaster-&gt; Objeto con la información del dispositivo, tal y como se proporciona
+                por <a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>
+
+ Output parameters:
+   XBusMaster- Es el mismo objeto de entrada que puede haber sido
+               modificado durante la llamada.
+   error     - 0 si no se produjo ningún error y 1 en caso contrario.
+
+ Examples:
+ &gt;&gt; xb=<a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
+ &gt;&gt; [xb,error]=<a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a>(xb);
+
+ See also: <a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="pararcaptura.html">pararcaptura</a>, <a class="mfun" href="continuarcaptura.html">continuarcaptura</a>,
+           <a class="mfun" href="destruyexbusmaster.html">destruyexbusmaster</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a></li>
+</ul>
+</td><td>
+<ul>
+<li><a class="mfun" href="playsilop.html">playsilop</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function iniciacaptura</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Diego Álvarez</em>
+<em class="mcom">% History:  18.12.07    creacion del archivo</em>
+
+function [XBusMaster,error]=iniciacaptura(XBusMaster)
+
+[XBusMaster,error]=<a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a>(XBusMaster)
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

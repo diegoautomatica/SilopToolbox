@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" EVALUASALTO Estima la duración de cada salto individual en función de los datos devueltos " />
+<meta name="keywords" content="   " />
+<title>Documentation of  evaluasalto</title>
+</head>
+<body >
+<h1 >Documentation of  evaluasalto</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[duracion,altura,energia]=evaluasalto(tiempos,frecuencia,peso)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ EVALUASALTO Estima la duración de cada salto individual en función de los datos devueltos
+ por <a class="mfun" href="eventossalto.html">eventossalto</a>
+
+ EVALUASALTO Tomando como base los resultados obtenidos por <a class="mfun" href="eventossalto.html">eventossalto</a>, permite estimar
+ las duraciones de cada salto individual, así como la altura del salto, y la energía asociada al mismo.
+
+ Sintax: [duracion,altura,energia]=evaluasalto(tiempos, frecuencia, peso)
+
+ Parámetros de entrada:
+    tiempos       - vector de eventos proporcionado por <a class="mfun" href="eventossalto.html">eventossalto</a>
+    frecuencia    - entero indicando la frecuencia de muestreo. Por
+                    defecto vale 100Hz.
+    peso          - entero con la suma del peso del atleta y la masa levantada
+                    por defecto vale 75Kg
+
+ Parámetros de salida:
+    duracion      - vector con la duración de cada salto (en segundos)
+    altura        - vector con la altura de cada salto (en metros)
+    energía       - vector con la energía aplicada en cada salto (en Julios)
+
+ Examples:
+
+ See also:
+
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function evaluasalto</h2>
+<pre>
+
+
+
+<em class="mcom">% Historial de Modificaciones: </em>
+<em class="mcom">%  Desarrollado por Alberto Castañon.</em>
+<em class="mcom">%  Modificado por: Diego, 24-ene-07 -&gt; adaptacion del codigo a siloptoolbox</em>
+<em class="mcom">%  Modificad por : Diego, 18-dic-07 -&gt; adaptacion a v0.3 </em>
+<em class="mcom">%                  ampliado para indicar altura y energía.</em>
+
+
+
+function [duracion,altura,energia]=evaluasalto(tiempos,frecuencia,peso)
+
+if (nargin&lt;3)
+    peso=75;
+    if (nargin&lt;2)
+        frecuencia=100;
+    end
+end
+
+inicios=find(tiempos(:,2)==1);
+finales=find(tiempos(:,4)==1);
+
+duracion=finales-inicios; <em class="mcom">%Duraciones medidas en n�mero de muestras</em>
+duracion=duracion/frecuencia; <em class="mcom">%Medidas en tiempos</em>
+
+if (nargout&gt;1)
+    altura=9.81*duracion.*duracion/8;
+end
+if (nargout&gt;2)
+    energia=peso*9.81*altura;
+end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

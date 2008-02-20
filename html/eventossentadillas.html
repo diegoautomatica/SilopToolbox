@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" EVENTOSSENTADILLAS Detecta 3 eventos a partir de las acelerariones verticales " />
+<meta name="keywords" content=" buscamaximosth filtro0  " />
+<title>Documentation of  eventossentadillas</title>
+</head>
+<body >
+<h1 >Documentation of  eventossentadillas</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>tiempos=eventossentadillas(AccVert,frecuencia)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ EVENTOSSENTADILLAS Detecta 3 eventos a partir de las acelerariones verticales
+ del COG durante las sentadillas
+
+ EVENTOSSENTADILLAS Tomando como base las aceleraciones verticales del COG durante las sentadillas
+ realiza un proceso de filtrado que le permite identificar cada una. Una vez detectada una
+ sentadilla, realiza un proceso de detección para identificar los eventos de inicio, fin y punto medio
+
+ Sintax: tiempos=eventossentadillas(AccVert,frecuencia)
+
+ Parámetros de entrada:
+    AccVert       - vector con la aceleración vertical. Puede ser de una
+                    sentadilla o de varias. No puede tener medias sentadillas. Puede
+                    contener instantes de tiempo en los que se está
+                    estático, pero no los correspondientes a movimientos
+                    distintos de la sentadilla
+    frecuencia    - entero indicando la frecuencia de muestreo. Por
+                    defecto vale 100Hz.
+
+ Parámetros de salida:
+    tiempos: vector del mismo tamaño que los datos, con unos en las posiciones 
+             de los eventos y ceros el resto:
+             tiempos(:,1)=AccVert;
+             tiempos(:,2)=deteccion de inicio de sentadilla
+             tiempos(:,3)=deteccion de punto medio
+             tiempos(:,4)=deteccion de fin de sentadilla
+
+ Examples:
+
+ See also:
+
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%"></th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="buscamaximosth.html">buscamaximosth</a></li>
+<li><a class="mfun" href="filtro0.html">filtro0</a></li>
+</ul>
+</td><td></td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function eventossentadillas</h2>
+<pre>
+
+
+
+<em class="mcom">% Historial de Modificaciones: </em>
+<em class="mcom">%  Desarrollado por Alberto Castañon.</em>
+<em class="mcom">%  Modificado por: Diego, 24-ene-07 -&gt; adaptacion del codigo a siloptoolbox</em>
+<em class="mcom">%  Modificad por : Diego, 18-dic-07 -&gt; adaptacion a v0.3 </em>
+
+
+
+function tiempos=eventossentadillas(AccVert,frecuencia)
+
+if (nargin&lt;2)
+	frecuencia=100;
+end
+
+<em class="mcom">%filtro esos datos de aceleracion para evitar excesivos pico y facilitar el</em>
+<em class="mcom">%cálculo del número de sentadillas</em>
+acel_filt=<a class="mfun" href="filtro0.html">filtro0</a>(AccVert,60,2*2.5/frecuencia);
+
+<em class="mcom">% Busca el número de máximos que se producen durante las  mediciones y que</em>
+<em class="mcom">% sean superiores a 11</em>
+maximos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(acel_filt,11);
+ind_max=find(maximos==1)+1;
+<em class="mcom">% Obtiene el número definitivo de saltos</em>
+num_sentadillas=length(ind_max);
+
+<em class="mcom">%Obtengo el minimo donde se logra la maxima velocidad durante el descenso</em>
+<em class="mcom">%de la sentadilla, eliminando los menores si hay mas de uno</em>
+for i=1:num_sentadillas
+    datos_exc=-acel_filt(ind_max(i)-100:ind_max(i));
+    min_ini=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(datos_exc,-9.5);
+    ind_min_ini=find(min_ini==1)+ind_max(i)-100;
+    if length(ind_min_ini)&gt;1
+        ind_minimo=ind_min_ini(1);
+        for j=2:length(ind_min_ini)
+            if acel_filt(ind_minimo)&gt;acel_filt(ind_min_ini(j))
+                ind_minimo=ind_min_ini(j);
+            end
+        end
+        ind_min_ini=ind_minimo;
+    end
+    ind_inicio(i)=2*ind_min_ini - ind_max(i);
+end
+ind_inicio=ind_inicio
+            
+
+
+<em class="mcom">%Obtiene los puntos correspondientes a fin de santadilla atrasando un</em>
+<em class="mcom">%tiempo determinado desde el maximo identificador de sentadilla</em>
+ind_fin=ind_max +40;
+
+<em class="mcom">% Ahora creo una matriz de eventos colocando las aceleraciones en la primera columna,</em>
+<em class="mcom">% los minimos hallados al principio en una columna, los pasos por g en otra,</em>
+<em class="mcom">% los maximos finales en la cuarta y los minimos cercanos a ellos en la quinta.</em>
+tiempos(:,1)=AccVert;
+tiempos(:,2)=0*AccVert;
+tiempos(:,3)=0*AccVert;
+tiempos(:,4)=0*AccVert;
+for n=ind_inicio
+	tiempos(n,2)=1;
+end
+for n=ind_max
+	tiempos(n,3)=1;
+end
+for n=ind_fin
+	tiempos(n,4)=1;
+end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

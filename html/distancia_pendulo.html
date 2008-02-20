@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" DISTANCIA_PENDULO Calcula la distancia recorrida en un paso mediante el modelo del pendulo invertido desde el COG " />
+<meta name="keywords" content="  alg_est_dist_pendulo alg_est_dist_simur " />
+<title>Documentation of  distancia_pendulo</title>
+</head>
+<body >
+<h1 >Documentation of  distancia_pendulo</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>distancia=distancia_pendulo(AccVert,freq,pierna,correccion)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ DISTANCIA_PENDULO Calcula la distancia recorrida en un paso mediante el modelo del pendulo invertido desde el COG
+
+ DISTANCIA_PENDULO Aplica el modelo del pendulo invertido para calcular el desplazamiento horizontal
+ en funci�n del desplazamiento vertical. Puede aplicar o no una correcci�n para eliminar la media de las 
+ aceleraciones verticales, lo que es necesario para los casos en los que el drift de la integral es importante.
+ 
+ Esta funci�n es incompatible con la funci�n del mismo nombre disponible en SilopToolbox v0.2 o anterior
+ 
+ Syntax: 
+   function distancia=distancia_pendulo(AccVert, freq, pierna, correccion)
+
+   Par�metros de entrada:
+                 AccVert    - vector con la aceleraci�n vertical del paso a estudiar
+                 freq       - frecuencia de muestreo. Es opcional, por
+                              defecto vale 100Hz. Se conserva entre llamadas
+                 pierna     - longitud de la pierna (longitud del arco recorrido por el COG). Es opcional
+                              y por defecto vale 0.8m. Se conserva entre
+                              llamadas.
+                 correccion - bandera que indica si se debe eliminar la media de las se�ales para 
+                              reducir el drift. Es opcional, por defecto
+                              se aplica la correcci�n (correccion=1); Se
+                              conserva entre llamadas
+ 
+ Examples: 
+   
+
+ See also: <a class="mfun" href="distancia_penduloparcial.html">distancia_penduloparcial</a>, <a class="mfun" href="distancia_arco.html">distancia_arco</a>, <a class="mfun" href="distancia_raizcuarta.html">distancia_raizcuarta</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a></li>
+<li><a class="mfun" href="private/alg_est_dist_simur.html">alg_est_dist_simur</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function distancia_pendulo</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Diego �lvarez</em>
+<em class="mcom">% History:  ??.??.200? creado</em>
+<em class="mcom">%           12.12.2007 adaptado para trabajar con los datos de un �nico paso y </em>
+<em class="mcom">%                      funcionar on-line. Incompatible con versiones anteriores</em>
+<em class="mcom">%           03.01.2007 corregida la frecuencia por defecto a 100Hz</em>
+
+
+function distancia=distancia_pendulo(AccVert,freq,pierna,correccion)
+
+persistent SILOP_distanciapendulo
+if (isempty(SILOP_distanciapendulo))
+    SILOP_distanciapendulo.freq=100;
+    SILOP_distanciapendulo.pierna=0.8;
+    SILOP_distanciapendulo.correccion=1;
+end
+
+<em class="mcom">%Longitud de la pierna por defecto si no se proporciona el par�metro </em>
+if (nargin&gt;1)
+    SILOP_distanciapendulo.freq=freq;
+    if (nargin&gt;2)
+        SILOP_distanciapendulo.pierna=pierna;
+        if (nargin&gt;3)
+            SILOP_distanciapendulo.correccion=correccion;
+        end
+    end
+end
+
+
+<em class="mcom">%Se calcula el desplazamienot vertical</em>
+vertical=[];
+<em class="mcom">%Paso a paso. Doble integral</em>
+aceleracion=AccVert;
+aceleracion=aceleracion-SILOP_distanciapendulo.correccion*mean(aceleracion);<em class="mcom">%Correcci�n</em>
+velocidad=cumsum(aceleracion)/SILOP_distanciapendulo.freq;
+velocidad=velocidad-SILOP_distanciapendulo.correccion*mean(velocidad);
+verticaltiempo=cumsum(velocidad)/SILOP_distanciapendulo.freq;
+vertical=max(verticaltiempo)-min(verticaltiempo);
+
+<em class="mcom">%El maximo es como protecci�n para los casos en los que sale un desplazamiento negativo</em>
+<em class="mcom">%algo que no deber�a ocurrir nunca.</em>
+distancia=2*sqrt(max(0,2*SILOP_distanciapendulo.pierna*vertical-vertical^2));
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" BUSCAMAXIMOS Detecta todos los máximos de una señal " />
+<meta name="keywords" content="  eventoscogrecto eventossalto " />
+<title>Documentation of  buscamaximos</title>
+</head>
+<body >
+<h1 >Documentation of  buscamaximos</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>maximos=buscamaximos(Datos)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ BUSCAMAXIMOS Detecta todos los máximos de una señal
+
+ BUSCAMAXIMOS Detecta todos los máximos de una señal
+ 
+ Syntax: maximos=buscamaximos(datos)
+ 
+ Input parameters:
+   datos-&gt; señal en la que se buscarán los máximos
+
+ Output parameters:
+   maximos&lt;- señal del mismo tamaño que datos, en la que aparece un 1 en la posición de cada
+  		máximo y un 0 en el resto de instantes.
+
+ Examples:
+
+ See also: <a class="mfun" href="buscamaximosth.html">buscamaximosth</a>, <a class="mfun" href="private/localmaxima.html">localmaxima</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="eventosCOGrecto.html">eventosCOGrecto</a></li>
+<li><a class="mfun" href="eventossalto.html">eventossalto</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function buscamaximos</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Diego</em>
+<em class="mcom">% History:  xx.yy.zz    Diego  creacion del archivo</em>
+<em class="mcom">%           	        JC, añade comentarios</em>
+<em class="mcom">%           19.12.07    incorporada a la toolbox</em>
+<em class="mcom">%           21.01.08    documentada</em>
+
+
+function maximos=buscamaximos(Datos)
+
+%<em class="mcom">% Algoritmo: primero se convierte la se–al en una rectangular, con unos en las</em>
+%<em class="mcom">% pendientes positivas y ceros en las negativas.</em>
+%<em class="mcom">% Luego se repite la operaci—n para la se–al rectangular, con lo que</em>
+%<em class="mcom">% queda una con pulsos de valores +1 (en las transiciones de 0 a 1) y </em>
+%<em class="mcom">% -1 (en las transiciones de 1 a 0). Los pulsos +1 son los m‡ximos.</em>
+
+tam=size(Datos);
+tam=tam(1);
+
+%<em class="mcom">% Obtenci—n de la se–al rectangular:</em>
+Datos=Datos(2:tam)-Datos(1:tam-1);
+Datos=Datos&gt;=0;
+
+%<em class="mcom">% Obtenci—n de las se–al de pulsos:</em>
+Datos=Datos(1:tam-2)-Datos(2:tam-1);
+
+%<em class="mcom">% los m‡ximos son los pulsos positivos:</em>
+maximos=Datos&gt;0;
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

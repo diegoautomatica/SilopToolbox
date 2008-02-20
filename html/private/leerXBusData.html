@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" LEERXBUSDATA Lee datos desde el dispositivo Xbus Master " />
+<meta name="keywords" content="  gotomeasurement " />
+<title>Documentation of  leerXBusData</title>
+</head>
+<body >
+<h1 >Documentation of  leerXBusData</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>leerXBusData(obj,event,XBusMaster)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ LEERXBUSDATA Lee datos desde el dispositivo Xbus Master
+
+ LEERXBUSDATA Lee datos desde el dispositivo Xbus Master. Esta función
+ está pensada para ser usada desde una callback, y no directamente desde
+ una función/script
+ 
+ Syntax: leerXBusData(obj,event,XBusMaster)
+ 
+ Input parameters:
+     obj 	-&gt; Parámetro 1 de la callback
+     event     -&gt; Parámetro 2 de la callback
+     XBusMaster-&gt; Objeto con la información del dispositivo.
+
+ Output parameters:
+   Ninguno, los datos obtenidos quedan en la variable global SILOP_DATA_BUFFER
+
+ Examples:
+
+ See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function leerXBusData</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
+<em class="mcom">% History:  04.12.07    creacion del archivo</em>
+<em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
+<em class="mcom">%           21-01.08    comentada la variable global iter que no se usa</em>
+
+
+
+
+
+<em class="mcom">%Lee datos del buffer. Llamada por una callback</em>
+function leerXBusData(obj,event,XBusMaster)
+
+global SILOP_DATA_BUFFER;
+<em class="mcom">%global iter;</em>
+
+<em class="mcom">%iter=iter+1;</em>
+
+<em class="mcom">% if (mod(iter,500)==0)</em>
+<em class="mcom">%     obj.RequestToSend='off';</em>
+<em class="mcom">% end</em>
+data=fread(obj,[XBusMaster.DataLength XBusMaster.nm],'uint8');
+
+<em class="mcom">%obj</em>
+<em class="mcom">%disp(event.Type)</em>
+<em class="mcom">%disp(event.Data.AbsTime)</em>
+
+<em class="mcom">% Procesar los datos de 1 mensaje</em>
+
+<em class="mcom">%checksum</em>
+if (any(mod(sum(data(2:end,:)),256)) )
+    disp('&gt;&gt;&gt;&gt; ERROR de checksum');
+end
+<em class="mcom">% tipo de mensaje</em>
+if (any(data(3,:)-50))
+    disp('&gt;&gt;&gt;&gt; ERROR de tipo de mensaje');
+end
+<em class="mcom">% procesar la informacion</em>
+muestra=([256 1]*data(5:6,:))';
+q=quantizer('Mode','single');
+SILOP_DATA_BUFFER=[];
+for k=1:XBusMaster.ns
+    ax=hex2num(q,reshape(sprintf('%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(7:10)));</em>
+    ay=hex2num(q,reshape(sprintf('%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(11:14)));</em>
+    az=hex2num(q,reshape(sprintf('%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(15:18)));</em>
+    rx=hex2num(q,reshape(sprintf('%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(19:22)));</em>
+    ry=hex2num(q,reshape(sprintf('%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(23:26)));</em>
+    rz=hex2num(q,reshape(sprintf('%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(27:30)));</em>
+    mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(31:34)));</em>
+    my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(35:38)));</em>
+    mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(39:42)));</em>
+    if (XBusMaster.modo==2)
+        <em class="mcom">% corregir la orientacion</em>
+        R=reshape(hex2num(q,reshape(sprintf('%02X',data((43:78)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 9*XBusMaster.nm])'),[9 XBusMaster.nm]); %hex2num(q,sprintf('<em class="mcom">%02X',data(7:10)));</em>
+    end
+    <em class="mcom">%SILOP_DATA_BUFFER=[flipud([muestra ax ay az rx ry rz mx my mz]); SILOP_DATA_BUFFER(1:(end-XBusMaster.nm),:)];</em>
+    SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz];
+end
+SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
+
+disp(['leidos ' num2str([muestra(1) muestra(end)])])
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

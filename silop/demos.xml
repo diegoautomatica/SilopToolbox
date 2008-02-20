@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<demos>
+
+<name>Silop</name>
+<type>toolbox</type>
+<icon>$toolbox/matlab/icons/matlabicon.gif</icon>
+<description>
+Silop, toolbox para análsisi del movimiento humano
+</description>
+
+<demosection>
+   <label>Demos</label>
+   <demoitem>
+      <label>Demostación de una aplicación silop</label>
+      <callback>echodemo silopdemo</callback>
+   </demoitem>
+</demosection>
+
+</demos>

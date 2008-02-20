@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" ALG_EST_DIST_R4 Algoritmo para la estimación de la longitud de los pasos mediante el método de la raiz cuarta " />
+<meta name="keywords" content=" distancia_raizcuarta  " />
+<title>Documentation of  alg_est_dist_r4</title>
+</head>
+<body >
+<h1 >Documentation of  alg_est_dist_r4</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>resultado = alg_est_dist_r4(previos, senhales, params, dependencias)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ALG_EST_DIST_R4 Algoritmo para la estimación de la longitud de los pasos mediante el método de la raiz cuarta
+
+ALG_EST_DIST_R4 Algoritmo para la estimación de la longitud de los pasos.Este algoritmo actua como 
+wrapper de la función <a class="mfun" href="../distancia_raizcuarta.html">distancia_raizcuarta</a>
+Se puede configurar mediante:
+    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_est_dist_r4', 1, [COG.Acc_Z], [], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
+
+Parámetros: como todos los alg_*. resultados anteriores, señales a usar, parametros(vacio en este caso)
+ y dependencias.
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%"></th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="../distancia_raizcuarta.html">distancia_raizcuarta</a></li>
+</ul>
+</td><td></td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function alg_est_dist_r4</h2>
+<pre>
+
+
+<em class="mcom">%Creado: 01-02-2008 por Diego</em>
+
+function resultado = alg_est_dist_r4(previos, senhales, params, dependencias)
+
+        acel_z = senhales;
+	resultado = previos;
+        
+        eventos_hs=find(dependencias(1:end,1));
+	eventos_hs=eventos_hs';
+	if (~isempty(eventos_hs))
+		viejoevento=eventos_hs(1);
+		if (length(eventos_hs)&gt;1)
+        	   for k=[eventos_hs(2:end)]
+			if (isnan(resultado(k)))
+				if ((k-viejoevento)&lt;200) <em class="mcom">%Menos de dos segundos un paso</em>
+					resultado(k)=<a class="mfun" href="../distancia_raizcuarta.html">distancia_raizcuarta</a>(acel_z(viejoevento:k));
+				end
+			end
+			viejoevento=k;
+		   end
+		end
+	end
+
+        
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

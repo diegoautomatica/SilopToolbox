@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados " />
+<meta name="keywords" content=" creacomandos getkey iniciacaptura stopsilop silopdemo " />
+<title>Documentation of  playsilop</title>
+</head>
+<body >
+<h1 >Documentation of  playsilop</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
+ | <a href="Contentssilop.html">Local contents</a>
+ | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>CONFIG = playsilop(CONFIG,salvar,fichero)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados
+
+ PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados. Debe ser llamado después de todos los
+ comandos de configuración. Opcionalmente guarda los datos en un fichero con extensión .slp
+ 
+ Syntax: 
+   CONFIG=playsilop(CONFIG,salvar,fichero);
+
+   Parámetros de entrada y de salida: 
+	CONFIG  Estructura de configuración de los sensores y algoritmos de la aplicación	
+       salvar  Indica si se deben guardar los datos a un archivo, 0=no, 1=las señales, 2=todos.
+               Por defecto no se guardan.
+       fichero Si se salvan los datos, este parámetro permite especificar el fichero en el que se
+		guardarán los datos. Por defecto se guardan en datos.sl
+ 
+ Examples: 
+   
+
+ See also: <a class="mfun" href="initsilop.html">initsilop</a>, <a class="mfun" href="connectsilop.html">connectsilop</a>, <a class="mfun" href="addimu.html">addimu</a>, <a class="mfun" href="addalgoritmo.html">addalgoritmo</a>, <a class="mfun" href="stopsilop.html">stopsilop</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="private/creacomandos.html">creacomandos</a></li>
+<li><a class="mfun" href="private/getkey.html">getkey</a></li>
+<li><a class="mfun" href="iniciacaptura.html">iniciacaptura</a></li>
+<li><a class="mfun" href="stopsilop.html">stopsilop</a></li>
+</ul>
+</td><td>
+<ul>
+<li><a class="mfun" href="silopdemo.html">silopdemo</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function playsilop</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Diego Álvarez</em>
+<em class="mcom">% History:  29.01.2008  creado e Incorporado a la toolbox</em>
+<em class="mcom">%           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante <a class="mfun" href="iniciacaptura.html">iniciacaptura</a>().</em>
+
+
+function CONFIG = playsilop(CONFIG,salvar,fichero)
+
+VENTANA=zeros(1, CONFIG.GLOBAL.COLUMNADISPONIBLE-1);
+
+if (nargin&lt;2)
+	salvar=0;
+end
+
+if (salvar&gt;0)
+	CONFIG.BUS.File=struct('Salvar',salvar);
+	if (nargin&lt;3)
+		CONFIG.BUS.File.Name='datos.sl';
+	else
+		CONFIG.BUS.File.Name=fichero;			
+	end
+	save('config.mat','CONFIG');
+end
+
+Comandos = <a class="mfun" href="private/creacomandos.html">creacomandos</a>(CONFIG);
+<em class="mcom">%Se encarga de crear los comandos para la llamada a las funciones a partir de la información de algoritmos a procesar</em>
+
+if (CONFIG.BUS.Temporizador~=-1)
+    start(CONFIG.BUS.Temporizador);
+elseif (CONFIG.BUS.Xbus~=-1)
+    [CONFIG.BUS.Xbus,error]=<a class="mfun" href="iniciacaptura.html">iniciacaptura</a>(CONFIG.BUS.Xbus)
+end
+
+while(<a class="mfun" href="private/getkey.html">getkey</a>()~=27) <em class="mcom">%tecla ESC</em>
+	global SILOP_DATA_BUFFER;
+	hay_datos = ~isempty(SILOP_DATA_BUFFER);
+	if(hay_datos)
+       		if(isnan(SILOP_DATA_BUFFER)) 
+			<em class="mcom">%En caso de emulaciÃ³n, el proceso simulado de muestro hace NaN la variable</em>
+			<em class="mcom">%cuando se acaban los datos</em>
+       			break;
+       		end;
+   
+        	disp('procesando datos ...');
+  
+       		%<em class="mcom">%Lo primero que se hace es almacenar la captura en una variable</em>
+       		%<em class="mcom">%auxiliar y vaciar el buffer para dejar espacio a nuevas capturas.</em>
+       		datos_nuevos = SILOP_DATA_BUFFER;
+        	SILOP_DATA_BUFFER = [];
+         
+       		%<em class="mcom">%Se actualiza la ventana de datos, y se mete la informaciÃ³n muestreada </em>
+		%<em class="mcom">%en las primeras columnas. </em>
+        	[fdn, cdn] = size(datos_nuevos);
+       		VENTANA = desplaza(VENTANA, fdn, CONFIG.GLOBAL.LONGITUDVENTANA);
+       		[fv, cv] = size(VENTANA);
+       		VENTANA(fv-fdn+1:end, 1:cdn) = datos_nuevos;
+
+       		<em class="mcom">%Se procesan los comandos</em>
+       		ncomandos = length(Comandos);
+       		for k=1:ncomandos
+       	    		comando = Comandos{k};
+       	    		eval(comando)
+       		end;
+		if (salvar&gt;0)
+			save('datos.log','datos_nuevos','-ASCII','-APPEND');
+		end
+		if (salvar&gt;1)
+			newalgo=VENTANA(fv-fdn+1:end, cdn+1:end);
+			save('datos_alg.log','newalgo','-ASCII','-APPEND');		
+		end        
+
+	end
+end;
+stopsilop(CONFIG);
+
+
+
+
+function comandos = <a class="mfun" href="private/creacomandos.html">creacomandos</a>(C)
+    nalgoritmos = length(C.ALGORITMOS);
+    comandos = cell(1, nalgoritmos);
+
+    for k=1:nalgoritmos
+         alg = C.ALGORITMOS(k);
+         posiciones = alg.posiciones;
+         nretornos = length(posiciones);
+
+         subcad = [];
+
+         if(nretornos&gt;0)
+             retornos = sprintf('[VENTANA(:, <em class="mcom">%d)', posiciones(1));</em>
+             for t = 2:nretornos
+                 retornos = [retornos sprintf(', VENTANA(:, <em class="mcom">%d)', posiciones(t))];</em>
+             end;
+             retornos = [retornos ']'];
+             subcad = [retornos '='];
+         end;
+
+         subcad = [subcad sprintf('<em class="mcom">%s(', alg.nombre)];</em>
+
+         if(nretornos&gt;0)
+             vsen = sprintf('<em class="mcom">%d, ', alg.posiciones);</em>
+             retornos = sprintf('VENTANA(:,[<em class="mcom">%s])', vsen(1:end-2));</em>
+         else
+             retornos = '[]';
+         end;
+
+         subcad = [subcad retornos ];
+         <em class="mcom">%OJO, que falta el igual</em>
+
+         vsen = sprintf('<em class="mcom">%d, ', alg.senhales);</em>
+         subcad = [subcad sprintf(', VENTANA(:, [<em class="mcom">%s])', vsen(1:end-2))];</em>
+
+          if(~isempty(alg.parametros))
+              cad_params = sprintf(', CONFIG.ALGORITMOS(<em class="mcom">%d).parametros', k);</em>
+          else
+              cad_params=[', []'];
+          end;
+
+          subcad = [subcad cad_params]
+
+          if(~isempty(alg.dependencias))
+              l = length(alg.dependencias);
+
+               for t=1:l
+                   deps = alg.dependencias{t};
+                   vsen = sprintf('<em class="mcom">%d, ', deps); </em>
+                   subcad = [subcad sprintf(', VENTANA(:,[ <em class="mcom">%s])', vsen(1:end-2))];</em>
+               end;
+
+          end;
+
+          subcad = [subcad ');']
+
+          comandos{k} = subcad
+    end;
+
+
+
+
+
+
+function res = desplaza(mat, cuantos, long_maxima)
+
+[f, c] = size(mat);
+unos = ones(cuantos, c)*NaN;
+
+if(f+cuantos&lt;=long_maxima)
+    res = [mat; unos];
+else
+    res = [mat(f-(long_maxima-cuantos)+1:end,:); unos];
+end;
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

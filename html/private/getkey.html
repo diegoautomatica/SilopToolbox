@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" GETKEY - get a single keypress " />
+<meta name="keywords" content="  playsilop " />
+<title>Documentation of  getkey</title>
+</head>
+<body >
+<h1 >Documentation of  getkey</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>ch = getkey(m) </pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ GETKEY - get a single keypress
+   CH = GETKEY waits for a keypress and returns the ASCII code. Accepts
+   all ascii characters, including backspace (8), space (32), enter (13),
+   etc, that can be typed on the keyboard. Non-ascii keys (ctrl, alt, ..)
+   return a NaN. CH is a double. 
+
+   CH = GETKEY('non-ascii') uses non-documented matlab 6.5 features to
+   return a string describing the key pressed. In this way keys like ctrl, alt, tab
+   etc. can also distinguished. CH is a string.
+
+   This function is kind of a workaround for getch in C. It uses a modal, but
+   non-visible window, which does show up in the taskbar.
+   C-language keywords: KBHIT, KEYPRESS, GETKEY, GETCH
+
+   Examples:
+
+    fprintf('\nPress any key: ') ;
+    ch = getkey ;
+    fprintf('%c\n',ch) ;
+
+    fprintf('\nPress the Ctrl-key: ') ;
+    if strcmp(getkey('non-ascii'),'control'),
+      fprintf('OK\n') ;
+    else
+      fprintf(' ... wrong key ...\n') ;
+    end
+
+  See also INPUT, CHAR
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="../playsilop.html">playsilop</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function getkey</h2>
+<pre>
+function ch = getkey(m) 
+
+<em class="mcom">% for Matlab 6.5</em>
+<em class="mcom">% version 1.1 (dec 2006)</em>
+<em class="mcom">% author : Jos van der Geest</em>
+<em class="mcom">% email  : jos@jasen.nl</em>
+<em class="mcom">%</em>
+<em class="mcom">% History</em>
+<em class="mcom">% 2005 - creation</em>
+<em class="mcom">% dec 2006 - modified lay-out and help</em>
+<em class="mcom">% 13-02-2008- modificada para esperar un tiempo máximo y no bloquear el proceso.    </em>
+
+<em class="mcom">% Determine the callback string to use</em>
+if nargin == 1,
+    if strcmp(lower(m),'non-ascii'),
+        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ;
+    else       
+        error('Argument should be the string ''non-ascii''') ;
+    end
+else
+    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ;
+end
+
+<em class="mcom">% Set up the figure</em>
+<em class="mcom">% May be the position property  should be individually tweaked to avoid visibility</em>
+fh = figure('keypressfcn',callstr, ...
+    'windowstyle','modal',...    
+    'position',[0 0 1 1],...
+    'Name','GETKEY', ...
+    'userdata','timeout') ; 
+try
+    <em class="mcom">% Wait for something to happen</em>
+    uiwait(fh,0.1);
+    ch = get(fh,'Userdata') ;
+    if isempty(ch),
+        ch = NaN ; 
+    end
+catch
+    <em class="mcom">% Something went wrong, return and empty matrix.</em>
+    ch = [] ;
+end
+
+delete(fh) ;
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>
