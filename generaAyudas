@@ -1,4 +1,7 @@
-rm -rf html
+rm html/*.html
+rm html/archive/*.html
+rm html/private/*.html
+
 rm silop/Contents.m
 rm silop/private/Contents.m
 rm silop/archive/Contents.m
