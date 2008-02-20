@@ -7,7 +7,6 @@ Para el 0.8:
 	Pasar las funciones del COG a depender de las señales calibradas
 	Modificar la demo para que calibre
 	Configurar automáticamente la orientacion de los imus
-	Revisar paso de parámetros a connectsilop()	
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
@@ -18,7 +17,8 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    Modificada addimu, para tener los parámetros en el mismo orden que las demás
+v0.8    Revisado el paso de parámetros a connectsilop()	 y su documentacion
+	Modificada addimu, para tener los parámetros en el mismo orden que las demás
 	Modificada addimu para que se pueda indicar la orientación del sensor.
 	Documentar el parámetro RMS en energiawavelet
 	Eliminada 1º linea extra de ejes_anatomicos
