@@ -12,7 +12,7 @@
 %		wavelet obtenidas de la descomposición de la señal aceleracion.
 %   desvstdwavelet->Vector que tiene las desviaciones estándar de cada una de
 %              las componentes wavelet.
-%   valorRMS->Vector que contiene los valores RMS de cada wavelet
+%   valorRMS->Vector que contiene los valores RMS de energía para cada wavelet
 %   
 %
 % Examples:
