@@ -4,39 +4,47 @@
 % en modo simulaci贸n con el fichero en el que est茅 guardado un log capturado por los XSens
 % 
 % Syntax: 
-%   CONFIG = connectsilop(CONFIG, simulacion,log);
+%   CONFIG = connectsilop(CONFIG, modo_simulacion, source, bps, freq, modo, buffer)
 %
-%   Par谩metros de entrada:
-%		CONFIG     Estructura de configuraci贸n de los sensores y algoritmos
-%		simulacion Par谩metro que indica si se realiza la simulaci贸n o no. Por defecto vale 0 (no se simula)
-%               log        Fichero del que leer los datos
-%   Par谩metros de salida: 
-%	CONFIG  Estructura de configuraci贸n de los sensores y algoritmos de la aplicaci贸n	
+%   Parametros de entrada:
+%		CONFIG     Estructura de configuracion de los sensores y algoritmos
+%		modo_simulacion  Parametro que indica si se realiza la simulacion o no. 
+%			   Por defecto vale 0 (no se simula)
+%               source     Fichero del que leer los datos(en simulacion) o puerto serie al que conectar(en RT)
+%			   'test.log' o 'COM24' por defecto(respectivamente)
+%               bps        Velocidad a la que conectarse 460800bps por defecto
+%		freq       Frecuencia de muestreo. 100Hz por defecto
+%               modo	   Conjunto de datos a capturar (por defecto callibrated) 
+%               buffer     Tama駉 (en segundos) del buffer de datos
+%
+%   Parametros de salida: 
+%	CONFIG  Estructura de configuracion de los sensores y algoritmos de la aplicacion	
 % 
 % Examples: 
 %   
 %
-% See also: 
+% See also: creaxbusmaster
 
 % Author:   Antonio L贸pez
 % History:  24.01.2008  creado
 %           24.01.2008 Incorporado a la toolbox
-%
+%           20.02.2008 modificaciones de Rafa para la conexion al xbusmaster
 
-function CONFIG = connectsilop(conf, modo_simulacion, log, bps, freq, modo, buffer)
+function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, buffer)
     
     if (nargin<2)
-	modo_simulacion=1; %Cambiar en el futuro. Cuando tengamos el modo real funcionando.
-	log='test.log';
+	modo_simulacion=0; %Cambiar en el futuro. Cuando tengamos el modo real funcionando.
     end	
     
-    CONFIG=conf;
     global SILOP_DATA_BUFFER;
     SILOP_DATA_BUFFER = [];
 
     if(modo_simulacion)
+	if (nargin<3)
+		log='test.log';
+	end
         %Dejamos una simulaci贸n s贸lo de datos del COG para esta versi贸n. 
-        %En v0.7 tendr谩 que haber un formato de guardado y cargado de datos
+        %En el futuro tendra que haber un formato de guardado y cargado de datos
         CONFIG.SENHALES.COG.Acc_Z = 2;
         CONFIG.SENHALES.COG.Acc_Y = 3;
         CONFIG.SENHALES.COG.Acc_X = 4;
@@ -119,10 +127,10 @@ function CONFIG = connectsilop(conf, modo_simulacion, log, bps, freq, modo, buff
             id_disp(k)=eval(xbus.sensores.Cadena(:,k));
         end
         if (CONFIG.SENHALES.COG.Serie~=-1)
-            % Hay un dispositivo en el Muslo izquierdo
+            % Hay un dispositivo en el COG
             p=find(id_disp==CONFIG.SENHALES.COG.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El n鷐ero de serie del sensor asignado al MUSLO IZDO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El n鷐ero de serie del sensor asignado al COG no ha sido encontrado');
             else
                CONFIG.SENHALES.COG.Acc_Z = factor*(p-1)+4;
                CONFIG.SENHALES.COG.Acc_Y = factor*(p-1)+3;
@@ -143,7 +151,7 @@ function CONFIG = connectsilop(conf, modo_simulacion, log, bps, freq, modo, buff
             % Hay un dispositivo en el Muslo izquierdo
             p=find(id_disp==CONFIG.SENHALES.MUSLO_DCHO.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El n鷐ero de serie del sensor asignado al MUSLO IZDO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El n鷐ero de serie del sensor asignado al MUSLO DCHO no ha sido encontrado');
             else
                CONFIG.SENHALES.MUSLO_DCHO.Acc_Z = factor*(p-1)+4;
                CONFIG.SENHALES.MUSLO_DCHO.Acc_Y = factor*(p-1)+3;
