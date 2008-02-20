@@ -67,7 +67,7 @@ function alg_plot_pos2d(valores_actuales, senhales, params, dependencias)
     
     indices=find(~isnan(dependencias(:,1)));
     plot(dependencias(indices,1), dependencias(indices,2));
-    
+    drawnow;
 
     <em class="mcom">%subplot(212);</em>
     <em class="mcom">%bar(dependencias)</em>

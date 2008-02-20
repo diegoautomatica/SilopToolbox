@@ -97,7 +97,7 @@ Comandos = <a class="mfun" href="private/creacomandos.html">creacomandos</a>(CON
 
 if (CONFIG.BUS.Temporizador~=-1)
     start(CONFIG.BUS.Temporizador);
-elseif (CONFIG.BUS.Xbus~=-1)
+elseif (isstruct(CONFIG.BUS.Xbus))
     [CONFIG.BUS.Xbus,error]=<a class="mfun" href="iniciacaptura.html">iniciacaptura</a>(CONFIG.BUS.Xbus)
 end
 

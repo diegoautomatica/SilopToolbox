@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados " />
-<meta name="keywords" content=" simula_muestreo silopdemo " />
+<meta name="keywords" content=" creaxbusmaster simula_muestreo silopdemo " />
 <title>Documentation of  connectsilop</title>
 </head>
 <body >
@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>CONFIG = connectsilop(conf, modo_simulacion, log)</pre>
+<pre>CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, buffer)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -29,19 +29,26 @@
  en modo simulaciÃ³n con el fichero en el que estÃ© guardado un log capturado por los XSens
  
  Syntax: 
-   CONFIG = connectsilop(CONFIG, simulacion,log);
+   CONFIG = connectsilop(CONFIG, modo_simulacion, source, bps, freq, modo, buffer)
 
-   ParÃ¡metros de entrada:
-		CONFIG     Estructura de configuraciÃ³n de los sensores y algoritmos
-		simulacion ParÃ¡metro que indica si se realiza la simulaciÃ³n o no. Por defecto vale 0 (no se simula)
-               log        Fichero del que leer los datos
-   ParÃ¡metros de salida: 
-	CONFIG  Estructura de configuraciÃ³n de los sensores y algoritmos de la aplicaciÃ³n	
+   Parametros de entrada:
+		CONFIG     Estructura de configuracion de los sensores y algoritmos
+		modo_simulacion  Parametro que indica si se realiza la simulacion o no. 
+			   Por defecto vale 0 (no se simula)
+               source     Fichero del que leer los datos(en simulacion) o puerto serie al que conectar(en RT)
+			   'test.log' o 'COM24' por defecto(respectivamente)
+               bps        Velocidad a la que conectarse 460800bps por defecto
+		freq       Frecuencia de muestreo. 100Hz por defecto
+               modo	   Conjunto de datos a capturar (por defecto callibrated) 
+               buffer     Tamaño (en segundos) del buffer de datos
+
+   Parametros de salida: 
+	CONFIG  Estructura de configuracion de los sensores y algoritmos de la aplicacion	
  
  Examples: 
    
 
- See also: 
+ See also: <a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -52,6 +59,7 @@
 </tr>
 <tr valign="top"><td>
 <ul>
+<li><a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a></li>
 <li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
 </ul>
 </td><td>
@@ -69,22 +77,23 @@
 <em class="mcom">% Author:   Antonio LÃ³pez</em>
 <em class="mcom">% History:  24.01.2008  creado</em>
 <em class="mcom">%           24.01.2008 Incorporado a la toolbox</em>
-<em class="mcom">%</em>
+<em class="mcom">%           20.02.2008 modificaciones de Rafa para la conexion al xbusmaster</em>
 
-function CONFIG = connectsilop(conf, modo_simulacion, log)
+function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, buffer)
     
     if (nargin&lt;2)
-	modo_simulacion=1; <em class="mcom">%Cambiar en el futuro. Cuando tengamos el modo real funcionando.</em>
-	log='test.log';
+	modo_simulacion=0; <em class="mcom">%Cambiar en el futuro. Cuando tengamos el modo real funcionando.</em>
     end	
     
-    CONFIG=conf;
     global SILOP_DATA_BUFFER;
     SILOP_DATA_BUFFER = [];
 
     if(modo_simulacion)
+	if (nargin&lt;3)
+		log='test.log';
+	end
         <em class="mcom">%Dejamos una simulaciÃ³n sÃ³lo de datos del COG para esta versiÃ³n. </em>
-	<em class="mcom">%En v0.7 tendrÃ¡ que haber un formato de guardado y cargado de datos</em>
+        <em class="mcom">%En el futuro tendra que haber un formato de guardado y cargado de datos</em>
         CONFIG.SENHALES.COG.Acc_Z = 2;
         CONFIG.SENHALES.COG.Acc_Y = 3;
         CONFIG.SENHALES.COG.Acc_X = 4;
@@ -97,20 +106,224 @@ function CONFIG = connectsilop(conf, modo_simulacion, log)
             
         CONFIG.SENHALES.NUMEROSENHALES = 10;
         
-	global t
-	t = timer('TimerFcn', {@<a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
+    global t
+        t = timer('TimerFcn', {@<a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
         CONFIG.BUS.Temporizador = t;
-
+        CONFIG.BUS.Xbus=-1;
          
     else
-        <em class="mcom">%Crear el bus para muestreo de verdad en tiempo real</em>
-	<em class="mcom">% A aÃ±adir por RAFA</em>
-        <em class="mcom">% llamar a Crearxbusmaster.</em>
-	<em class="mcom">% Comprobar en que orden llegarÃ¡n las seÃ±ales y rellenar con ello las </em>
-	<em class="mcom">% estructuras CONFIG.SENHALES</em>
+        if (nargin&lt;3)
+            puerto='COM24';
+        else
+            puerto=log;
+        end
+        if (nargin&lt;4)
+            bps=460800;
+        end
+        if (nargin&lt;5)
+            freq=100;
+        end
+        if (nargin&lt;6)
+            modo=0;
+        end
+        if (nargin&lt;7)
+            buffer=1;
+        end
+        
+        <em class="mcom">% Calcular el numero de dispositivos por defecto</em>
+        ns=0;
+        if (CONFIG.SENHALES.COG.Serie ~= -1)
+            ns=ns+1;
+        end
+        if (CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1)
+            ns=ns+1;
+        end
+        if (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1)
+            ns=ns+1;
+        end
+        if (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1)
+            ns=ns+1;
+        end
+        if (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1)
+            ns=ns+1;
+        end
+        if (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1)
+            ns=ns+1;
+        end
+        if (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1)
+            ns=ns+1;
+        end
 
-    end
+        <em class="mcom">% Crear el objeto xbusmaster</em>
+        xbus=<a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>(puerto,bps,freq,modo,buffer,ns);
+        CONFIG.BUS.Xbus=xbus;
+        CONFIG.BUS.Temporizador=-1;
+        
+        <em class="mcom">% Actualizar los valores de las señales</em>
+        switch (xbus.modo)
+            case 0,
+                factor=9;
+            case 1,
+                factor=9+4;
+            case 2,
+                factor=9+9;
+        end;
+        
+        <em class="mcom">% Identificar sensores y asignar los valores de las columnas</em>
+        <em class="mcom">% correspondientes</em>
+        id_disp=zeros(1,xbus.ndisp);
+        for k=1:xbus.ndisp
+            id_disp(k)=eval(xbus.sensores.Cadena(:,k));
+        end
+        if (CONFIG.SENHALES.COG.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el COG</em>
+            p=find(id_disp==CONFIG.SENHALES.COG.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al COG no ha sido encontrado');
+            else
+               CONFIG.SENHALES.COG.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.COG.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.COG.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.COG.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.COG.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.COG.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.COG.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.COG.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.COG.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.MUSLO_DCHO.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_DCHO.MG_X;
+               end
+            end
+        end
 
+        if (CONFIG.SENHALES.MUSLO_DCHO.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el Muslo izquierdo</em>
+            p=find(id_disp==CONFIG.SENHALES.MUSLO_DCHO.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al MUSLO DCHO no ha sido encontrado');
+            else
+               CONFIG.SENHALES.MUSLO_DCHO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.MUSLO_DCHO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.MUSLO_DCHO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.MUSLO_DCHO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.MUSLO_DCHO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.MUSLO_DCHO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.MUSLO_DCHO.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.MUSLO_DCHO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.MUSLO_DCHO.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.MUSLO_DCHO.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_DCHO.MG_X;
+               end
+            end
+        end
+
+        if (CONFIG.SENHALES.MUSLO_IZDO.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el Muslo izquierdo</em>
+            p=find(id_disp==CONFIG.SENHALES.MUSLO_IZDO.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al MUSLO IZDO no ha sido encontrado');
+            else
+               CONFIG.SENHALES.MUSLO_IZDO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.MUSLO_IZDO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.MUSLO_IZDO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.MUSLO_IZDO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.MUSLO_IZDO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.MUSLO_IZDO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.MUSLO_IZDO.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.MUSLO_IZDO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.MUSLO_IZDO.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.MUSLO_IZDO.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_IZDO.MG_X;
+               end
+            end
+        end
+       
+        if (CONFIG.SENHALES.TIBIA_DCHA.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el Muslo derecho</em>
+            p=find(id_disp==CONFIG.SENHALES.TIBIA_DCHA.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al TIBIA DCHA no ha sido encontrado');
+            else
+               CONFIG.SENHALES.TIBIA_DCHA.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.TIBIA_DCHA.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.TIBIA_DCHA.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.TIBIA_DCHA.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.TIBIA_DCHA.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.TIBIA_DCHA.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.TIBIA_DCHA.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.TIBIA_DCHA.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.TIBIA_DCHA.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.TIBIA_DCHA.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.TIBIA_DCHA.MG_X;
+               end
+            end
+        end
+
+        if (CONFIG.SENHALES.TIBIA_IZDA.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el Muslo derecho</em>
+            p=find(id_disp==CONFIG.SENHALES.TIBIA_IZDA.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al TIBIA IZDA no ha sido encontrado');
+            else
+               CONFIG.SENHALES.TIBIA_IZDA.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.TIBIA_IZDA.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.TIBIA_IZDA.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.TIBIA_IZDA.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.TIBIA_IZDA.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.TIBIA_IZDA.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.TIBIA_IZDA.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.TIBIA_IZDA.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.TIBIA_IZDA.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.TIBIA_IZDA.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.TIBIA_IZDA.MG_X;
+               end
+            end
+        end
+       
+        if (CONFIG.SENHALES.PIE_DCHO.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el Muslo derecho</em>
+            p=find(id_disp==CONFIG.SENHALES.PIE_DCHO.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al PIE DCHO no ha sido encontrado');
+            else
+               CONFIG.SENHALES.PIE_DCHO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.PIE_DCHO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.PIE_DCHO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.PIE_DCHO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.PIE_DCHO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.PIE_DCHO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.PIE_DCHO.MG_Z = factor*(p-1)+8;
+               CONFIG.SENHALES.PIE_DCHO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.PIE_DCHO.MG_X = factor*(p-1)+10;
+               if (CONFIG.SENHALES.PIE_DCHO.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.PIE_DCHO.MG_X;
+               end
+            end
+        end
+
+        if (CONFIG.SENHALES.PIE_IZDO.Serie~=-1)
+            <em class="mcom">% Hay un dispositivo en el Muslo izquierdo</em>
+            p=find(id_disp==CONFIG.SENHALES.PIE_IZDO.Serie);
+            if (isempty(p))
+                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al PIE IZDO no ha sido encontrado');
+            else
+               CONFIG.SENHALES.PIE_IZDO.Acc_Z = factor*(p-1)+2;
+               CONFIG.SENHALES.PIE_IZDO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.PIE_IZDO.Acc_X = factor*(p-1)+4;
+               CONFIG.SENHALES.PIE_IZDO.G_Z = factor*(p-1)+5;
+               CONFIG.SENHALES.PIE_IZDO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.PIE_IZDO.G_X = factor*(p-1)+7;
+               CONFIG.SENHALES.PIE_IZDO.MG_Z = factor*(p-1)+8;
+               CONFIG.SENHALES.PIE_IZDO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.PIE_IZDO.MG_X = factor*(p-1)+10;
+               if (CONFIG.SENHALES.PIE_IZDO.MG_X&gt;CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.PIE_IZDO.MG_X;
+               end
+            end
+        end
+
+
+    end <em class="mcom">% fin de modo xbusmaster</em>
 
 </pre>
 <hr size="3" noshade="noshade" />
