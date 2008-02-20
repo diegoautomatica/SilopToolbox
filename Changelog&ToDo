@@ -2,7 +2,6 @@ ToDo:
 Para el 0.8:	
 	Documentar la función eventosPiernaG
 	Documentar correctamente el valor devuelto por identact.
-	Documentar el parámetro RMS en energiawavelet
 	Incluir las funciones de JC para el pie
 	Simular desde ficheros .sl
 	Pasar las funciones del COG a depender de las señales calibradas
@@ -19,7 +18,10 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    Eliminada 1º linea extra de ejes_anatomicos
+v0.8    Modificada addimu, para tener los parámetros en el mismo orden que las demás
+	Modificada addimu para que se pueda indicar la orientación del sensor.
+	Documentar el parámetro RMS en energiawavelet
+	Eliminada 1º linea extra de ejes_anatomicos
 	Documentar cual es la diferencia entre InitBus y ReqConfiguration
 	implementada alg_ejes_anatomicos
 	reestructurados los directorios. by request de Rafa y JC.
