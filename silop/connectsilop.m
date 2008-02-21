@@ -61,8 +61,8 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
         	CONFIG.SENHALES.COG.MG_Y = CONFIG.SENHALES.COG.R(2)+7;
         	CONFIG.SENHALES.COG.MG_X = CONFIG.SENHALES.COG.R(1)+7;
             	CONFIG.SENHALES.NUMEROSENHALES = 10;
-		global SILOP_DATOS_LOG %Variable para leer el fichero
-		SILOP_DATOS_LOG=load(log); 
+		global SILOP_DATA_LOG; %Variable para leer el fichero
+		SILOP_DATA_LOG=load(log); 
 	%Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
 	elseif (log(end-2:end)=='.sl')
 		unzip(log);
@@ -97,8 +97,8 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
 		if (~isempty(existe))
 		    delete ('datos_alg.log');
 		end
-		global SILOP_DATOS_LOG %Variable para leer el fichero
-		SILOP_DATOS_LOG=load('datos.log'); 
+		global SILOP_DATA_LOG %Variable para leer el fichero
+		SILOP_DATA_LOG=load('datos.log'); 
 		delete ('datos.log');
 	else error('formato de archivo desconocido. Solo se soportan ficheros .log y .sl');
 	end
