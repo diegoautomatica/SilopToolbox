@@ -29,15 +29,15 @@ if (isempty(puntero_datos))
 end
 
 global SILOP_DATA_BUFFER;
-datos = load(log);
-longitud = length(datos);
+global SILOP_DATA_LOG;
+longitud = length(SILOP_DATA_LOG);
 MuestrasCaptura = 100;
 
 %Realiza capturas mientras haya datos, almaceno en el buffer y llamo a funcion SILOP().
 %Esta ultima necesita conocer el numero de muestras que se han capturado
 
 if (puntero_datos+MuestrasCaptura < longitud)
-     SILOP_DATA_BUFFER = datos(puntero_datos:puntero_datos+MuestrasCaptura-1, :);
+     SILOP_DATA_BUFFER = SILOP_DATA_LOG(puntero_datos:puntero_datos+MuestrasCaptura-1, :);
      puntero_datos = puntero_datos + MuestrasCaptura;
 else
     disp('Se acabaron los datos');
