@@ -26,6 +26,8 @@ function CONFIG=stopsilop(CONFIG)
 if (CONFIG.BUS.Temporizador ~= -1)
     stop(CONFIG.BUS.Temporizador);
     clear simula_muestreo;
+    global SILOP_DATA_LOG;
+    clear SILOP_DATA_LOG; %Liberamos la memoria del enorme fichero de log.
 end;
 if (isstruct(CONFIG.BUS.Xbus))
     CONFIG.BUS.Xbus=pararcaptura(CONFIG.BUS.Xbus);
