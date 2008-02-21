@@ -29,21 +29,23 @@ if (nargin<1)
 end
 
 existe=dir(fichero);
-if (~isempty(existe))
-    unzip(fichero);
-    tmp=load('config.mat');
-    Config=tmp.CONFIG;
-    delete ('config.mat');
-    load('datos.log'); 
-    delete ('datos.log');
-    existe=dir('datos_alg.log');
-    datos_alg=[];
-    if (~isempty(existe))
-	load('datos_alg.log');
-        delete ('datos_alg.log');
-    end
-    captura=[datos,datos_alg];
+if (isempty(existe))
+	error('no se encuentra el fichero');
 end
+
+unzip(fichero);
+tmp=load('config.mat');
+Config=tmp.CONFIG;
+delete ('config.mat');
+load('datos.log'); 
+delete ('datos.log');
+existe=dir('datos_alg.log');
+datos_alg=[];
+if (~isempty(existe))
+    load('datos_alg.log');
+    delete ('datos_alg.log');
+end
+captura=[datos,datos_alg];
 
 
 
