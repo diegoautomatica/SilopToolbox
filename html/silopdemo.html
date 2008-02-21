@@ -61,13 +61,13 @@ CONFIG = <a class="mfun" href="initsilop.html">initsilop</a>(); <em class="mcom"
 
 %<em class="mcom">% Se añaden los IMUS con los que se trabajará</em>
 <em class="mcom">% En este caso un IMU en el COG</em>
-CONFIG = <a class="mfun" href="addimu.html">addimu</a>('COG', 204, CONFIG);
+CONFIG = <a class="mfun" href="addimu.html">addimu</a>(CONFIG, 'COG', 204);
 
 
 %<em class="mcom">% Nos conectamos al sistema de adquisición de datos.</em>
 <em class="mcom">% En este caso escogemos hacerlo trabajando en simulación y con un fichero</em>
 <em class="mcom">% de log</em>
-CONFIG = <a class="mfun" href="connectsilop.html">connectsilop</a>(CONFIG,1,'test.log'); <em class="mcom">%Conectamos al sistema de muestreo</em>
+CONFIG = <a class="mfun" href="connectsilop.html">connectsilop</a>(CONFIG,1); <em class="mcom">%Conectamos al sistema de muestreo</em>
 
 
 %<em class="mcom">% Creamos abreviaturas de los nombres de las señales</em>

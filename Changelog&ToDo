@@ -3,10 +3,9 @@ Para el 0.8:
 	Documentar la función eventosPiernaG
 	Documentar correctamente el valor devuelto por identact.
 	Incluir las funciones de JC para el pie
-	Simular desde ficheros .sl
 	Pasar las funciones del COG a depender de las señales calibradas
 	Modificar la demo para que calibre
-	Configurar automáticamente la orientacion de los imus
+	Implementar el esquema de calibracion definitivo. alg_ejes_anatomicos es uptodate una chapuza.
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
@@ -17,7 +16,10 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    Revisado el paso de parámetros a connectsilop()	 y su documentacion
+v0.8    Configurar automáticamente la orientacion de los imus. mediante R en addimu y connectsilop
+	Simulamos desde ficheros .sl
+	Comprobamos que desde los .log sólo se use el COG
+	Revisado el paso de parámetros a connectsilop()	 y su documentacion
 	Modificada addimu, para tener los parámetros en el mismo orden que las demás
 	Modificada addimu para que se pueda indicar la orientación del sensor.
 	Documentar el parámetro RMS en energiawavelet

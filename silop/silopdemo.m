@@ -11,13 +11,13 @@ CONFIG = initsilop(); %Crea un conjunto de variables necesarias al principio.
 
 %% Se añaden los IMUS con los que se trabajará
 % En este caso un IMU en el COG
-CONFIG = addimu('COG', 204, CONFIG);
+CONFIG = addimu(CONFIG, 'COG', 204);
 
 
 %% Nos conectamos al sistema de adquisición de datos.
 % En este caso escogemos hacerlo trabajando en simulación y con un fichero
 % de log
-CONFIG = connectsilop(CONFIG,1,'test.log'); %Conectamos al sistema de muestreo
+CONFIG = connectsilop(CONFIG,1); %Conectamos al sistema de muestreo
 
 
 %% Creamos abreviaturas de los nombres de las señales

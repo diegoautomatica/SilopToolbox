@@ -76,6 +76,8 @@ function CONFIG=stopsilop(CONFIG)
 if (CONFIG.BUS.Temporizador ~= -1)
     stop(CONFIG.BUS.Temporizador);
     clear <a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>;
+    global SILOP_DATA_LOG;
+    clear SILOP_DATA_LOG; <em class="mcom">%Liberamos la memoria del enorme fichero de log.</em>
 end;
 if (isstruct(CONFIG.BUS.Xbus))
     CONFIG.BUS.Xbus=<a class="mfun" href="pararcaptura.html">pararcaptura</a>(CONFIG.BUS.Xbus);

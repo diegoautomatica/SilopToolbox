@@ -19,7 +19,6 @@ function resultado = alg_est_dist_pendulo(previos, senhales, params, dependencia
 		pierna=1;
 		if (length(params)<1)
 			freq=100;
-		end
 		else freq=params(1);
 		end
 	else pierna=params(2);

@@ -68,25 +68,25 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
 		unzip(log);
 		tmp=load('config.mat');
 		%Comprobamos que el log tenga los sensores solicitados
-        	if ((CONFIG.SENHALES.COG.Serie~=-1) and (tmp.CONFIG.SENHALES.COG.Serie==-1))
+        	if ((CONFIG.SENHALES.COG.Serie~=-1) & (tmp.CONFIG.SENHALES.COG.Serie==-1))
 			error('no se encuentra el sensor del COG');
 		end
-	        if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) and (tmp.CONFIG.SENHALES.MUSLO_DCHO.Serie == -1))
+	        if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) & (tmp.CONFIG.SENHALES.MUSLO_DCHO.Serie == -1))
 			error('no se encuentra el sensor del Muslo Derecho');
         	end
-        	if ((CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) and (tmp.CONFIG.SENHALES.MUSLO_IZDO.Serie == -1))
+        	if ((CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) & (tmp.CONFIG.SENHALES.MUSLO_IZDO.Serie == -1))
 			error('no se encuentra el sensor del Muslo Izquierdo');
 	        end
-	        if ((CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) and (tmp.CONFIG.SENHALES.TIBIA_DCHA.Serie == -1))
+	        if ((CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) & (tmp.CONFIG.SENHALES.TIBIA_DCHA.Serie == -1))
 			error('no se encuentra el sensor de la tibia derecha');
 	        end
-	        if ((CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) and (tmp.CONFIG.SENHALES.TIBIA_IZDA.Serie == -1))
+	        if ((CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) & (tmp.CONFIG.SENHALES.TIBIA_IZDA.Serie == -1))
 		        error('no se encuentra el sensor de la tibia izquierda');
         	end
-        	if ((CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) and (tmp.CONFIG.SENHALES.PIE_DCHO.Serie == -1))
+        	if ((CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) & (tmp.CONFIG.SENHALES.PIE_DCHO.Serie == -1))
 			error('no se encuentra el sensor del pie derecho');
 	        end
-        	if ((CONFIG.SENHALES.PIE_IZDO.Serie ~= -1) and (tmp.CONFIG.SENHALES.PIE_IZDO.Serie == -1))
+        	if ((CONFIG.SENHALES.PIE_IZDO.Serie ~= -1) & (tmp.CONFIG.SENHALES.PIE_IZDO.Serie == -1))
 			error('no se encuentra el sensor del pie izquierdo');
 	        end
 		%Incluimos toda la información de las señales. Puede haber de más, pero no molesta.
