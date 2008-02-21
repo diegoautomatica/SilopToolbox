@@ -42,21 +42,66 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
     if(modo_simulacion)
 	if (nargin<3)
 		log='test.log';
+	else 
+		existe=dir(log);
+		if (isempty(existe))
+			error('no se encuentra el fichero');
+		end	
 	end
-        %Dejamos una simulaciÃ³n sÃ³lo de datos del COG para esta versiÃ³n. 
-        %En el futuro tendra que haber un formato de guardado y cargado de datos
-	%Se permite especificar la orientación en el log
-        CONFIG.SENHALES.COG.Acc_Z = CONFIG.SENHALES.COG.R(3)+1;
-        CONFIG.SENHALES.COG.Acc_Y = CONFIG.SENHALES.COG.R(2)+1;
-        CONFIG.SENHALES.COG.Acc_X = CONFIG.SENHALES.COG.R(1)+1;
-        CONFIG.SENHALES.COG.G_Z = CONFIG.SENHALES.COG.R(3)+4;
-        CONFIG.SENHALES.COG.G_Y = CONFIG.SENHALES.COG.R(2)+4;
-        CONFIG.SENHALES.COG.G_X = CONFIG.SENHALES.COG.R(1)+4;
-        CONFIG.SENHALES.COG.MG_Z = CONFIG.SENHALES.COG.R(3)+7;
-        CONFIG.SENHALES.COG.MG_Y = CONFIG.SENHALES.COG.R(2)+7;
-        CONFIG.SENHALES.COG.MG_X = CONFIG.SENHALES.COG.R(1)+7;
-            
-        CONFIG.SENHALES.NUMEROSENHALES = 10;
+        
+	%Si se toman datos de un .log se asume que sólo contiene el COG
+	if (log(end-3:end)=='.log')
+        	CONFIG.SENHALES.COG.Acc_Z = CONFIG.SENHALES.COG.R(3)+1;
+        	CONFIG.SENHALES.COG.Acc_Y = CONFIG.SENHALES.COG.R(2)+1;
+        	CONFIG.SENHALES.COG.Acc_X = CONFIG.SENHALES.COG.R(1)+1;
+        	CONFIG.SENHALES.COG.G_Z = CONFIG.SENHALES.COG.R(3)+4;
+        	CONFIG.SENHALES.COG.G_Y = CONFIG.SENHALES.COG.R(2)+4;
+        	CONFIG.SENHALES.COG.G_X = CONFIG.SENHALES.COG.R(1)+4;
+        	CONFIG.SENHALES.COG.MG_Z = CONFIG.SENHALES.COG.R(3)+7;
+        	CONFIG.SENHALES.COG.MG_Y = CONFIG.SENHALES.COG.R(2)+7;
+        	CONFIG.SENHALES.COG.MG_X = CONFIG.SENHALES.COG.R(1)+7;
+            	CONFIG.SENHALES.NUMEROSENHALES = 10;
+		global SILOP_DATOS_LOG %Variable para leer el fichero
+		SILOP_DATOS_LOG=load(log); 
+	%Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
+	elseif (log(end-2:end)=='.sl')
+		unzip(log);
+		tmp=load('config.mat');
+		%Comprobamos que el log tenga los sensores solicitados
+        	if ((CONFIG.SENHALES.COG.Serie~=-1) and (tmp.CONFIG.SENHALES.COG.Serie==-1))
+			error('no se encuentra el sensor del COG');
+		end
+	        if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) and (tmp.CONFIG.SENHALES.MUSLO_DCHO.Serie == -1))
+			error('no se encuentra el sensor del Muslo Derecho');
+        	end
+        	if ((CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) and (tmp.CONFIG.SENHALES.MUSLO_IZDO.Serie == -1))
+			error('no se encuentra el sensor del Muslo Izquierdo');
+	        end
+	        if ((CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) and (tmp.CONFIG.SENHALES.TIBIA_DCHA.Serie == -1))
+			error('no se encuentra el sensor de la tibia derecha');
+	        end
+	        if ((CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) and (tmp.CONFIG.SENHALES.TIBIA_IZDA.Serie == -1))
+		        error('no se encuentra el sensor de la tibia izquierda');
+        	end
+        	if ((CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) and (tmp.CONFIG.SENHALES.PIE_DCHO.Serie == -1))
+			error('no se encuentra el sensor del pie derecho');
+	        end
+        	if ((CONFIG.SENHALES.PIE_IZDO.Serie ~= -1) and (tmp.CONFIG.SENHALES.PIE_IZDO.Serie == -1))
+			error('no se encuentra el sensor del pie izquierdo');
+	        end
+		%Incluimos toda la información de las señales. Puede haber de más, pero no molesta.
+		CONFIG.SENHALES=tmp.CONFIG.SENHALES;
+		%Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.
+		delete ('config.mat');
+		existe=dir('datos_alg.log');
+		if (~isempty(existe))
+		    delete ('datos_alg.log');
+		end
+		global SILOP_DATOS_LOG %Variable para leer el fichero
+		SILOP_DATOS_LOG=load('datos.log'); 
+		delete ('datos.log');
+	else error('formato de archivo desconocido. Solo se soportan ficheros .log y .sl');
+	end
         
     global t
         t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
