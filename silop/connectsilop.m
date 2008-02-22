@@ -11,7 +11,8 @@
 %		modo_simulacion  Parametro que indica si se realiza la simulacion o no. 
 %			   Por defecto vale 0 (no se simula)
 %               source     Fichero del que leer los datos(en simulacion) o puerto serie al que conectar(en RT)
-%			   'test.log' o 'COM24' por defecto(respectivamente)
+%			   'test.log' o 'COM24' por defecto(respectivamente). El fichero para la simulación 
+%			   puede se un .log de Xsens, un .tana de Xsens calibrado, o un .sl de la propia toolbox
 %               bps        Velocidad a la que conectarse 460800bps por defecto
 %		freq       Frecuencia de muestreo. 100Hz por defecto
 %               modo	   Conjunto de datos a capturar (por defecto callibrated) 
@@ -29,6 +30,8 @@
 % History:  24.01.2008  creado
 %           24.01.2008 Incorporado a la toolbox
 %           20.02.2008 modificaciones de Rafa para la conexion al xbusmaster
+%           21.02.2008 Modificaciones de diego para simular desde .sl y .tana+comprobar que solo se use el cog en .log
+%           21.02.2008 Pruebas iniciales de reorientacion de los datos. sólo para R positiva
 
 function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, buffer)
     
@@ -51,6 +54,10 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
         
 	%Si se toman datos de un .log se asume que sólo contiene el COG
 	if (log(end-3:end)=='.log')
+		if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) | (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) | (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) | (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1))
+			error('sólo se puede simular el COG desde un fichero .log');
+	        end
+
         	CONFIG.SENHALES.COG.Acc_Z = CONFIG.SENHALES.COG.R(3)+1;
         	CONFIG.SENHALES.COG.Acc_Y = CONFIG.SENHALES.COG.R(2)+1;
         	CONFIG.SENHALES.COG.Acc_X = CONFIG.SENHALES.COG.R(1)+1;
@@ -61,6 +68,24 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
         	CONFIG.SENHALES.COG.MG_Y = CONFIG.SENHALES.COG.R(2)+7;
         	CONFIG.SENHALES.COG.MG_X = CONFIG.SENHALES.COG.R(1)+7;
             	CONFIG.SENHALES.NUMEROSENHALES = 10;
+		global SILOP_DATA_LOG; %Variable para leer el fichero
+		SILOP_DATA_LOG=load(log); 
+	%Si se toman datos de un .tana se asume que sólo contiene aceleraciones del COG
+	if (log(end-4:end)=='.tana')
+		if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) | (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) | (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) | (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1))
+			error('sólo se puede simular el COG desde un fichero .tana');
+	        end
+
+        	CONFIG.SENHALES.COG.Acc_Z = 3;
+        	CONFIG.SENHALES.COG.Acc_Y = 2;
+        	CONFIG.SENHALES.COG.Acc_X = 1;
+        	CONFIG.SENHALES.COG.G_Z = -1;
+        	CONFIG.SENHALES.COG.G_Y = -1;
+        	CONFIG.SENHALES.COG.G_X = -1;
+        	CONFIG.SENHALES.COG.MG_Z = -1;
+        	CONFIG.SENHALES.COG.MG_Y = -1;
+        	CONFIG.SENHALES.COG.MG_X = -1;
+            	CONFIG.SENHALES.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
 		global SILOP_DATA_LOG; %Variable para leer el fichero
 		SILOP_DATA_LOG=load(log); 
 	%Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero

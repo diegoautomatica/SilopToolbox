@@ -1,11 +1,11 @@
 ToDo:
 Para el 0.8:	
-	Documentar la función eventosPiernaG
-	Documentar correctamente el valor devuelto por identact.
-	Incluir las funciones de JC para el pie
-	Pasar las funciones del COG a depender de las señales calibradas
-	Modificar la demo para que calibre
+	connectsilop deberia soportar que los ejes sean negativos y/o desplaza debería cambiar las medidas
 	Implementar el esquema de calibracion definitivo. alg_ejes_anatomicos es uptodate una chapuza.
+	Pasar las funciones del COG a depender de las señales calibradas. Si es necesario.
+	Modificar la demo para que calibre. Si es necesario.
+	Documentar la función eventosPiernaG
+	Incluir las funciones de JC para el pie
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
@@ -16,20 +16,22 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    Configurar automáticamente la orientacion de los imus. mediante R en addimu y connectsilop
-	Simulamos desde ficheros .sl
+v0.8    Implementada la simulación desde ficheros .tana (ap,ml,v,t,t)
+	Configurar automáticamente la orientacion de los imus. mediante R en connectsilop (sólo para valores
+		positivos, no se aceptan por ahora valores negativos)
+	Implementada la simulación desde ficheros .sl
 	Comprobamos que desde los .log sólo se use el COG
 	Revisado el paso de parámetros a connectsilop()	 y su documentacion
 	Modificada addimu, para tener los parámetros en el mismo orden que las demás
 	Modificada addimu para que se pueda indicar la orientación del sensor.
 	Documentar el parámetro RMS en energiawavelet
-	Eliminada 1º linea extra de ejes_anatomicos
+	bug Eliminada 1º linea extra de ejes_anatomicos
 	Documentar cual es la diferencia entre InitBus y ReqConfiguration
-	implementada alg_ejes_anatomicos
+	implementada alg_ejes_anatomicos preliminar
 	reestructurados los directorios. by request de Rafa y JC.
-	Añadidos los comandos drawnow a todas las funciones alg_bar* y alg_plot*  de dibujado
+	bug Añadidos los comandos drawnow a todas las funciones alg_bar* y alg_plot*  de dibujado
 
-v0.7.2  Se recupera el connectsilop de Rafa
+v0.7.2  Se recupera el connectsilop de Rafa. No se habia incluido en versiones 0.7 y 0.7.1 correctamente.
 
 v0.7.1  Se usa echodemo silopdemo desde las demo.xml
         Se corrige el paso de parámetros en alg_est_dist_*, que era incorrecto.
