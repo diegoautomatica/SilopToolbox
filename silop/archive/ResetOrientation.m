@@ -6,7 +6,7 @@ function error=ResetOrientation(XBusMaster,modo)
 
 for k=1:XBusMaster.Conf.DevNum
     % Cuerpo del mensaje (excepto el byte de checksum)
-    msg=[250,k,164,2,0,modo];
+    msg=[250,k,164,2,modo,0];
     % Se calcula el cheksum y se coloca al final
     msg=[msg 256-mod(sum(msg(2:end)),256)];
     % Se envia por el puerto serie 
@@ -24,20 +24,23 @@ for k=1:XBusMaster.Conf.DevNum
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
     msg=[];
-    [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-    error=0;
-    if (~isempty(msg))
-        disp(msg);
-        error=1;
-    else
-        if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
-        else
-            if (ack(3)~=165)
-                disp('Error en la secuencia de mensajes');
-                error=1;
-            end
-        end
-    end
+%     [ack,cnt,msg]=fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable+5,'uint8');
+%     if (length(ack)>5)
+%         ack=ack(end-5:end);
+%     end
+%     error=0;
+%     if (~isempty(msg))
+%         disp(msg);
+%         error=1;
+%     else
+%         if (mod(sum(ack(2:end)),256)~=0)
+%         disp('Error de checksum');
+%         error=1;
+%         else
+%             if (ack(3)~=165)
+%                 disp('Error en la secuencia de mensajes');
+%                 error=1;
+%             end
+%         end
+%     end
 end
