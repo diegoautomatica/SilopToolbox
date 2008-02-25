@@ -16,7 +16,8 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    Implementada la simulación desde ficheros .tana (ap,ml,v,t,t)
+v0.8    Implementados los mensajes RegObjectAlignment y SetObjectAlignement necesarios para la reorientación
+	Implementada la simulación desde ficheros .tana (ap,ml,v,t,t)
 	Configurar automáticamente la orientacion de los imus. mediante R en connectsilop (sólo para valores
 		positivos, no se aceptan por ahora valores negativos)
 	Implementada la simulación desde ficheros .sl
