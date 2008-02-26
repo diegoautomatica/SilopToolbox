@@ -16,11 +16,13 @@ function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias
 	resultado = previos;
         
         mov_sin_calcular = find(isnan(resultado)); %Filas aún no procesadas
+	if (~isempty(mov_sin_calcular))
         
 	if (isempty(params))
 		resultado(mov_sin_calcular)=orientaciongiroscopo(giro(mov_sin_calcular));        
 	else 
 		resultado(mov_sin_calcular)=orientaciongiroscopo(giro(mov_sin_calcular),params); 
 	end       
+	end
         
 

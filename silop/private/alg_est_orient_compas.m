@@ -18,11 +18,12 @@ function resultado = alg_est_orient_compas(previos, senhales, params, dependenci
 	resultado = previos;
         
         mov_sin_calcular = find(isnan(resultado)); %Filas aún no procesadas
+	if (~isempty(mov_sin_calcular))
         
 	if (isempty(params))
 		resultado(mov_sin_calcular)=orientacioncompas(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular));        
 	else 
 		resultado(mov_sin_calcular)=orientacioncompas(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular),params); 
 	end       
-        
+        end
 

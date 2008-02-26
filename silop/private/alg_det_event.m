@@ -18,6 +18,7 @@ function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, d
 	resultadoto = previos(:,2);
         
         mov_sin_calcular = find(isnan(resultadohs)); %Filas aún no procesadas
+	is (~isempty(mov_sin_calcular))
         
         for k=mov_sin_calcular(1):mov_sin_calcular(end)
                 [hs,to]=eventos_RT(acel_x(k),acel_z(k));
@@ -31,4 +32,4 @@ function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, d
 		end					
         end;
         
-
+	end;
