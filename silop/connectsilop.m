@@ -82,9 +82,8 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
                 SILOP_DATA_LOG(2:4)=SILOP_DATA_LOG(2:4)*Rot';
                 SILOP_DATA_LOG(5:7)=SILOP_DATA_LOG(5:7)*Rot';
                 SILOP_DATA_LOG(8:10)=SILOP_DATA_LOG(8:10)*Rot';
-
 	%Si se toman datos de un .tana se asume que sólo contiene aceleraciones del COG
-	if (log(end-4:end)=='.tana')
+	elseif (log(end-4:end)=='.tana')
 		if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) | (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) | (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) | (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1))
 			error('sólo se puede simular el COG desde un fichero .tana');
 	        end
@@ -190,7 +189,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
         end
 
         % Crear el objeto xbusmaster
-        xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
+	xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
         CONFIG.BUS.Xbus=xbus;
         CONFIG.BUS.Temporizador=-1;
         
