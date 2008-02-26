@@ -1,6 +1,7 @@
 % CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados
 %
-% CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados, o en el caso de trabajar
+% CONNECTSILOP Conecta el sistema de procesamiento con los sensores
+% previamente especificados, o en el caso de trabajar
 % en modo simulacion con el fichero en el que esta guardado un log capturado por los XSens
 % 
 % Syntax: 
@@ -10,9 +11,12 @@
 %		CONFIG     Estructura de configuracion de los sensores y algoritmos
 %		modo_simulacion  Parametro que indica si se realiza la simulacion o no. 
 %			   Por defecto vale 0 (no se simula)
-%               source     Fichero del que leer los datos(en simulacion) o puerto serie al que conectar(en RT)
-%			   'test.log' o 'COM24' por defecto(respectivamente). El fichero para la simulación 
-%			   puede se un .log de Xsens, un .tana de Xsens calibrado, o un .sl de la propia toolbox
+%               source     Fichero del que leer los datos(en simulacion)
+%                          o puerto serie al que conectar(en RT)
+%			   'test.log' o 'COM24' por defecto(respectivamente). 
+%                          El fichero para la simulación 
+%			   puede se un .log de Xsens, un .tana de Xsens
+%			   calibrado, o un .sl de la propia toolbox
 %               bps        Velocidad a la que conectarse 460800bps por defecto
 %		freq       Frecuencia de muestreo. 100Hz por defecto
 %               modo	   Conjunto de datos a capturar (por defecto callibrated) 
@@ -58,18 +62,27 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
 			error('sólo se puede simular el COG desde un fichero .log');
 	        end
 
-        	CONFIG.SENHALES.COG.Acc_Z = CONFIG.SENHALES.COG.R(3)+1;
-        	CONFIG.SENHALES.COG.Acc_Y = CONFIG.SENHALES.COG.R(2)+1;
-        	CONFIG.SENHALES.COG.Acc_X = CONFIG.SENHALES.COG.R(1)+1;
-        	CONFIG.SENHALES.COG.G_Z = CONFIG.SENHALES.COG.R(3)+4;
-        	CONFIG.SENHALES.COG.G_Y = CONFIG.SENHALES.COG.R(2)+4;
-        	CONFIG.SENHALES.COG.G_X = CONFIG.SENHALES.COG.R(1)+4;
-        	CONFIG.SENHALES.COG.MG_Z = CONFIG.SENHALES.COG.R(3)+7;
-        	CONFIG.SENHALES.COG.MG_Y = CONFIG.SENHALES.COG.R(2)+7;
-        	CONFIG.SENHALES.COG.MG_X = CONFIG.SENHALES.COG.R(1)+7;
+        	CONFIG.SENHALES.COG.Acc_Z = 4;
+        	CONFIG.SENHALES.COG.Acc_Y = 3;
+        	CONFIG.SENHALES.COG.Acc_X = 2;
+        	CONFIG.SENHALES.COG.G_Z = 7;
+        	CONFIG.SENHALES.COG.G_Y = 6;
+        	CONFIG.SENHALES.COG.G_X = 5;
+        	CONFIG.SENHALES.COG.MG_Z = 10;
+        	CONFIG.SENHALES.COG.MG_Y = 9;
+        	CONFIG.SENHALES.COG.MG_X = 8;
             	CONFIG.SENHALES.NUMEROSENHALES = 10;
 		global SILOP_DATA_LOG; %Variable para leer el fichero
-		SILOP_DATA_LOG=load(log); 
+		SILOP_DATA_LOG=load(log);
+                orden=CONFIG.SENHALES.COG.R;
+                Rot=zeros(3,3);
+                for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+                end;
+                SILOP_DATA_LOG(2:4)=SILOP_DATA_LOG(2:4)*Rot';
+                SILOP_DATA_LOG(5:7)=SILOP_DATA_LOG(5:7)*Rot';
+                SILOP_DATA_LOG(8:10)=SILOP_DATA_LOG(8:10)*Rot';
+
 	%Si se toman datos de un .tana se asume que sólo contiene aceleraciones del COG
 	if (log(end-4:end)=='.tana')
 		if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) | (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) | (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) | (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1))
