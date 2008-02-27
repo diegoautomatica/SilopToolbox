@@ -6,20 +6,21 @@ function error=ResetOrientation(XBusMaster,modo)
 
 for k=1:XBusMaster.Conf.DevNum
     % Cuerpo del mensaje (excepto el byte de checksum)
-    msg=[250,k,164,2,modo,0];
+%     msg=[250,k,164,2,0,modo];
+    msg=[250,k,164,2,0,modo];
     % Se calcula el cheksum y se coloca al final
     msg=[msg 256-mod(sum(msg(2:end)),256)];
     % Se envia por el puerto serie 
-    XBusMaster.puerto.RequestToSend='off';
-    while (XBusMaster.puerto.BytesAvailable>0)
-        % Vaciar el puerto 
-        % OJO!!! Los datos se perderan
-        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
-        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
-    end
+    % XBusMaster.puerto.RequestToSend='off';
+%     while (XBusMaster.puerto.BytesAvailable>0)
+%         % Vaciar el puerto 
+%         % OJO!!! Los datos se perderan
+%         disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+%         fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+%     end
     % El valor del TimeOut se fija a 1 segundo
     tout=XBusMaster.puerto.TimeOut;
-    XBusMaster.puerto.TimeOut=1;
+    XBusMaster.puerto.TimeOut=10;
     fwrite(XBusMaster.puerto,msg,'uint8');  
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
