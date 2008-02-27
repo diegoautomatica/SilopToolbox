@@ -3,11 +3,12 @@ function [XBusMaster,error]=SetObjectAlignment(XBusMaster,matriz)
 % Envia el mensaje ResetOrientation a todos los dispositivos conectados
 % error vale 1 si no se recibe el mensaje de ack
 % El proceso se queda bloqueado hasta recibir el ack
-uno=[63   128     0     0];
-cero=[0 0 0 0];
+matriz=cast(matriz,'single');
+matriz=matriz';
+
 for k=1:XBusMaster.Conf.DevNum
     % Cuerpo del mensaje (excepto el byte de checksum)
-    msg=[250,k,224,9*4, cero, uno, cero, cero, cero, uno, uno, cero, cero];
+    msg=[250,k,224,9*4, (typecast(swapbytes(matriz(:)),'uint8'))'];
     % Se calcula el cheksum y se coloca al final
     msg=[msg 256-mod(sum(msg(2:end)),256)];
     % Se envia por el puerto serie 
