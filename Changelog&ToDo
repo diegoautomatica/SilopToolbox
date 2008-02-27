@@ -1,6 +1,6 @@
 ToDo:
 Para el 0.8:	
-	connectsilop deberia soportar que los ejes sean negativos y/o desplaza debería cambiar las medidas
+	connectsilop deberia soportar que los ejes sean negativos en tiempo real
 	Implementar el esquema de calibracion definitivo. alg_ejes_anatomicos es uptodate una chapuza.
 	Pasar las funciones del COG a depender de las señales calibradas. Si es necesario.
 	Modificar la demo para que calibre. Si es necesario.
@@ -16,7 +16,10 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    Implementados los mensajes RegObjectAlignment y SetObjectAlignement necesarios para la reorientación
+v0.8    corregidos errores diversos. connectsilop no actualizaba bien el numero de señales y otros
+	corregidos errores en algoritmos alg_det_event y alg_est_orientacion* cuando no se tienen datos.
+	connectsilop ya permite reorientar totalmente en simulación. Se rotan los datos originales.
+	Implementados los mensajes RegObjectAlignment y SetObjectAlignement necesarios para la reorientación
 	Implementada la simulación desde ficheros .tana (ap,ml,v,t,t)
 	Configurar automáticamente la orientacion de los imus. mediante R en connectsilop (sólo para valores
 		positivos, no se aceptan por ahora valores negativos)
