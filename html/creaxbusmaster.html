@@ -1,202 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-<html>
-<head>
-<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<meta name="description" content=" CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de " />
-<meta name="keywords" content=" gotoconfig initbus reqconfiguration setmtoutputmode setperiod connectsilop " />
-<title>Documentation of  creaxbusmaster</title>
-</head>
-<body >
-<h1 >Documentation of  creaxbusmaster</h1>
-<hr size="3" noshade="noshade" />
-
-<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
- | <a href="Contentssilop.html">Local contents</a>
- | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
-</p>
-
-<hr size="3" noshade="noshade" />
-<h2 >Function Synopsis</h2>
-<pre>XBusMaster=creaxbusmaster(puerto,bps,freq,modo,buffer,ns)</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Help text</h2>
-<pre>
- CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
- datos desde el dispositivo Xbus Master
-
- CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
- datos desde el dispositivo Xbus Master. El objeto XBusMaster es una
- estructura que contiene información sobre el puerto serie utilizado para
- la comunicación con el dispositivo, así como de la configuración del
- propio dispositivo.
- 
- Syntax: XBusMaster=creaxbusmaster(puerto,bps,freq,modo,buffer,ns)
- 
- Input parameters:
-   puerto-&gt;  Cadena con el nombre del puerto al que está conectado el
-             XBusMaster (por defecto 'COM24')
-   bps-&gt;     Velocidad de transferencia (por defecto 115200 bps)
-   freq-&gt;    Frecuencia de muestreo (por defecto 100Hz)
-   modo-&gt;    Conjunto de datos que va a capturar (por defecto 0)
-             0-&gt; Calibrated Data
-             1-&gt; Calibrated Data+Quaternion
-             2-&gt; Calibrated Data+RotationMatrix
-   buffer-&gt;  Tamanio del bloque de catpura de datos en segundos (por defecto 1 seg)
-   ns-&gt;      Numero de sensores conectados (por defecto 1)
-
- Output parameters:
-   XBusMaster  - Estructura que almacena toda la información relacionada con la
-                 captura de datos desde el dispositivo Xbus Master.
-
- Examples:
- &gt;&gt; xb=creaxbusmaster('COM24',115200,50,0,1,2)
-
- See also: <a class="mfun" href="iniciacaptura.html">iniciacaptura</a>, <a class="mfun" href="pararcaptura.html">pararcaptura</a>, <a class="mfun" href="continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="destruyexbusmaster.html">destruyexbusmaster</a>
-</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Cross-Reference Information</H2>
-<table border="0" width="100%">
-<tr align="left">
-<th width="50%">This function calls</th>
-<th width="50%">This function is called by</th>
-</tr>
-<tr valign="top"><td>
-<ul>
-<li><a class="mfun" href="private/gotoconfig.html">gotoconfig</a></li>
-<li><a class="mfun" href="private/InitBus.html">InitBus</a></li>
-<li><a class="mfun" href="private/ReqConfiguration.html">ReqConfiguration</a></li>
-<li><a class="mfun" href="private/SetMTOutputMode.html">SetMTOutputMode</a></li>
-<li><a class="mfun" href="private/SetPeriod.html">SetPeriod</a></li>
-</ul>
-</td><td>
-<ul>
-<li><a class="mfun" href="connectsilop.html">connectsilop</a></li>
-</ul>
-</td>
-</tr>
-</table>
-<hr size="3" noshade="noshade" />
-<h2 >Listing of function creaxbusmaster</h2>
-<pre>
-
-
-<em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
-<em class="mcom">% History:  04.12.07    creacion del archivo</em>
-<em class="mcom">%           18.12.07    incorporada a la toolbox por Diego. Renombrado variable global</em>
-<em class="mcom">%           18.01.08    reset de la variable global al salir</em>
-<em class="mcom">%           12.02.08    modificaciones para las aplicaciones silop</em>
-
-function XBusMaster=creaxbusmaster(puerto,bps,freq,modo,buffer,ns)
-
-global SILOP_DATA_BUFFER;
-
-<em class="mcom">% asignamos los valores por defecto de las variables</em>
-if (nargin&lt;1)
-    puerto='COM24';
-end
-if (nargin&lt;2)
-    bps=115200; <em class="mcom">%460800</em>
-end
-if (nargin&lt;3)
-    freq=100;
-end
-if (nargin&lt;4)
-    modo=0;
-end
-if (nargin&lt;5)
-    buffer=1;
-end
-if (nargin&lt;6)
-    ns=1;
-end
-
-<em class="mcom">% XBusMaster.nm=nm;</em>
-XBusMaster.ns=ns;
-
-<em class="mcom">%Creamos el objeto serial asociado al puerto de comunicaciones</em>
-XBusMaster.puerto=serial(puerto);
-
-<em class="mcom">% Calculamos el numero de muestras almacenadas en el buffer</em>
-XBusMaster.freq=freq;
-XBusMaster.buffer=buffer*freq;
-XBusMaster.nm=XBusMaster.buffer; <em class="mcom">% Inicialmente estaba previsto que el</em>
-                                 <em class="mcom">% hubiese un buffer con un historico de</em>
-                                 <em class="mcom">% los ultimos datos capturados. En la</em>
-                                 <em class="mcom">% practica ha resultado mas conveniente no</em>
-                                 <em class="mcom">% mantener dicho historico por lo que el</em>
-                                 <em class="mcom">% parametro .nm coincide con .buffer</em>
-
-XBusMaster.modo=modo;
-switch (XBusMaster.modo)
-    case 0,
-        XBusMaster.DataLength=ns*36+2;
-        XBusMaster.Data=1+9*ns;
-    case 1,
-        XBusMaster.DataLength=ns*(36+16)+2;
-        XBusMaster.Data=1+(9+4)*ns;
-    case 2,
-        XBusMaster.DataLength=ns*(36+36)+2;
-        XBusMaster.Data=1+(9+9)*ns;
-end;
-
-SILOP_DATA_BUFFER=zeros(XBusMaster.buffer,XBusMaster.Data);
-
-if (XBusMaster.DataLength&gt;254)
-    XBusMaster.DataLength=XBusMaster.DataLength+7; <em class="mcom">% se incluye la cabecera y el checksum</em>
-else
-    XBusMaster.DataLength=XBusMaster.DataLength+5; <em class="mcom">% Se incluye la cabecera y el checksum</em>
-end
-
-XBusMaster.bps=bps;
-
-<em class="mcom">% Configurar el objeto serie</em>
-XBusMaster.puerto.BaudRate=bps;
-XBusMaster.puerto.DataBits=8;
-XBusMaster.puerto.FlowControl='none';
-XBusMaster.puerto.Parity='none';
-XBusMaster.puerto.StopBits=1;
-XBusMaster.puerto.ReadAsyncMode = 'continuous';
-
-XBusMaster.puerto.DataTerminalReady = 'on';
-XBusMaster.puerto.RequestToSend = 'off';
-    
-XBusMaster.puerto.ByteOrder = 'littleEndian';
-XBusMaster.puerto.BytesAvailableFcnCount = XBusMaster.DataLength*XBusMaster.nm;
-SILOP_DATA_BUFFER=zeros(XBusMaster.puerto.BytesAvailableFcnCount,XBusMaster.buffer);
-XBusMaster.puerto.BytesAvailableFcnMode = 'byte';
-XBusMaster.puerto.InputBufferSize = XBusMaster.DataLength*100;
-XBusMaster.puerto.OutputBufferSize = 512;
-XBusMaster.puerto.RecordDetail = 'verbose';
-XBusMaster.puerto.RecordMode = 'overwrite';
-XBusMaster.puerto.RecordName = 'record.txt';
-XBusMaster.puerto.Tag = 'XBus_Master';
-XBusMaster.puerto.Timeout = 1;
-<em class="mcom">% Abrir el puerto de comunicaciones</em>
-fopen(XBusMaster.puerto);
-
-<em class="mcom">% Ir a modo configuracion</em>
-gotoconfig(XBusMaster);
-[XBusMaster,error]=<a class="mfun" href="private/initbus.html">InitBus</a>(XBusMaster);
-if (XBusMaster.ndisp~=ns)
-    error('SilopToolbox:creaxbusmaster','El número de sensores conectados es distinto del numero de sensores declarados');
-end
-[XBusMaster,error]=<a class="mfun" href="private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
-[XBusMaster,error]=<a class="mfun" href="private/setperiod.html">SetPeriod</a>(XBusMaster,XBusMaster.freq);
-switch (modo)
-    case 0,
-        [XBusMaster,error]=<a class="mfun" href="private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,0);
-    case 1,
-        [XBusMaster,error]=<a class="mfun" href="private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,1);
-    case 2,
-        [XBusMaster,error]=<a class="mfun" href="private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,3);
-end
-SILOP_DATA_BUFFER=[];
-</pre>
-<hr size="3" noshade="noshade" />
-<!--navigate-->
-<!--copyright-->
-</body>
-</html>

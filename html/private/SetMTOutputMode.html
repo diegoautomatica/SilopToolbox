@@ -1,191 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-<html>
-<head>
-<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<meta name="description" content=" SETMTOUTPUTMODE Envía el mensaje SetOutputMode a todos los dispositivos " />
-<meta name="keywords" content=" reqconfiguration creaxbusmaster " />
-<title>Documentation of  SetMTOutputMode</title>
-</head>
-<body >
-<h1 >Documentation of  SetMTOutputMode</h1>
-<hr size="3" noshade="noshade" />
-
-<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
- | <a href="Contentsprivate.html">Local contents</a>
- | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
-</p>
-
-<hr size="3" noshade="noshade" />
-<h2 >Function Synopsis</h2>
-<pre>[XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Help text</h2>
-<pre>
- SETMTOUTPUTMODE Envía el mensaje SetOutputMode a todos los dispositivos
-
- SETMTOUTPUTMODE Envia el mensaje SetOutputMode a todos los dispositivos
- conectados al XBusMaster. El proceso se queda bloqueado hasta recibir la informacion
-</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Cross-Reference Information</H2>
-<table border="0" width="100%">
-<tr align="left">
-<th width="50%">This function calls</th>
-<th width="50%">This function is called by</th>
-</tr>
-<tr valign="top"><td>
-<ul>
-<li><a class="mfun" href="../private/ReqConfiguration.html">ReqConfiguration</a></li>
-</ul>
-</td><td>
-<ul>
-<li><a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a></li>
-</ul>
-</td>
-</tr>
-</table>
-<hr size="3" noshade="noshade" />
-<h2 >Listing of function SetMTOutputMode</h2>
-<pre>
-
-
-<em class="mcom">% </em>
-<em class="mcom">% Syntax: [XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)</em>
-<em class="mcom">% </em>
-<em class="mcom">% Input parameters:</em>
-<em class="mcom">%   XBusMaster-&gt; Objeto con la información del dispositivo.</em>
-<em class="mcom">%   orientformat -&gt; formato para recibir los datos de orientacion.</em>
-<em class="mcom">%   		0 -&gt; No se reciben</em>
-<em class="mcom">%   		1 -&gt; Quaternion</em>
-<em class="mcom">%   		2 -&gt; Angulos de Euler</em>
-<em class="mcom">%   		3 -&gt; Matriz de rotacion</em>
-<em class="mcom">%</em>
-<em class="mcom">% Output parameters:</em>
-<em class="mcom">%   XBusMaster- Es el mismo objeto de entrada que puede haber sido</em>
-<em class="mcom">%               modificado durante la llamada.</em>
-<em class="mcom">%   error     - 0 si no se produjo ningún error y 1 si no se recibe el mensaje de ACK</em>
-<em class="mcom">%</em>
-<em class="mcom">% Examples:</em>
-<em class="mcom">%</em>
-<em class="mcom">% See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../continuarcaptura.html">continuarcaptura</a>,</em>
-<em class="mcom">%           <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a></em>
-
-<em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
-<em class="mcom">% History:  04.12.07    creacion del archivo</em>
-<em class="mcom">%           18.12.07    pasada a private por Diego.</em>
-
-
-function [XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)
-
-
-if (nargin&lt;2)
-    orientformat=0;
-end
-
-switch (orientformat)
-    case 0
-        outmode=[0 2];
-        outsett=[0 0 0 0];
-    case 1
-        outmode=[0 6];
-        outsett=[0 0 0 0];
-    case 2
-        outmode=[0 6];
-        outsett=[0 0 0 4];
-    case 3
-        outmode=[0 6];
-        outsett=[0 0 0 8];
-end
-
-for k=1:XBusMaster.Conf.DevNum
-    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
-    msg=[250,k,208,2,outmode];
-    <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
-    msg=[msg 256-mod(sum(msg(2:end)),256)];
-    <em class="mcom">% Se envia por el puerto serie </em>
-    if (XBusMaster.puerto.BytesAvailable&gt;0)
-        <em class="mcom">% Vaciar el puerto </em>
-        <em class="mcom">% OJO!!! Los datos se perderan</em>
-        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
-        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
-    end
-    <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
-    tout=XBusMaster.puerto.TimeOut;
-    XBusMaster.puerto.TimeOut=1;
-    fwrite(XBusMaster.puerto,msg,'uint8');
-    <em class="mcom">% Se espera a recibir la contestacion</em>
-    <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-    <em class="mcom">% Se espera a recibir la contestacion</em>
-    <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-    msg=[];
-    [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-    error=0;
-    if (~isempty(msg))
-        disp(msg);
-        error=1;
-        return;
-    else
-        if (mod(sum(ack(2:end)),256)~=0)
-            disp('&gt;&gt;&gt; ERROR -&gt; Error de checksum');
-            error=1;
-            return;
-        else
-            if (ack(3)~=209)
-                disp('&gt;&gt;&gt; ERROR -&gt; Error en la secuencia de mensajes');
-                error=1;
-                return;
-            end
-        end
-    end
-    <em class="mcom">% Enviar el mensaje SetOutputSettings</em>
-    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
-    msg=[250,k,210,4,outsett];
-    <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
-    msg=[msg 256-mod(sum(msg(2:end)),256)];
-    <em class="mcom">% Se envia por el puerto serie </em>
-    if (XBusMaster.puerto.BytesAvailable&gt;0)
-        <em class="mcom">% Vaciar el puerto </em>
-        <em class="mcom">% OJO!!! Los datos se perderan</em>
-        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
-        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
-    end
-    <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
-    tout=XBusMaster.puerto.TimeOut;
-    XBusMaster.puerto.TimeOut=1;
-    fwrite(XBusMaster.puerto,msg,'uint8');
-    <em class="mcom">% Se espera a recibir la contestacion</em>
-    <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-    <em class="mcom">% Se espera a recibir la contestacion</em>
-    <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-    msg=[];
-    [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-    error=0;
-    if (~isempty(msg))
-        disp(msg);
-        error=1;
-        return;
-    else
-        if (mod(sum(ack(2:end)),256)~=0)
-            disp('&gt;&gt;&gt; ERROR -&gt; Error de checksum');
-            error=1;
-            return;
-        else
-            if (ack(3)~=211)
-                disp('&gt;&gt;&gt; ERROR -&gt; Error en la secuencia de mensajes');
-                error=1;
-                return;
-            end
-        end
-    end
-end
-
-<em class="mcom">% Se actualiza la configuracion</em>
-[XBusMaster,error]=<a class="mfun" href="../private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
-</pre>
-<hr size="3" noshade="noshade" />
-<!--navigate-->
-<!--copyright-->
-</body>
-</html>

@@ -1,184 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-<html>
-<head>
-<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<meta name="description" content=" EJES_ANATOMICOS Reorienta los datos obtenidos para que coincidan con los ejes anatómicos. " />
-<meta name="keywords" content="  alg_ejes_anatomicos entrena_ident_act ident_act " />
-<title>Documentation of  ejes_anatomicos</title>
-</head>
-<body >
-<h1 >Documentation of  ejes_anatomicos</h1>
-<hr size="3" noshade="noshade" />
-
-<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
- | <a href="Contentssilop.html">Local contents</a>
- | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
-</p>
-
-<hr size="3" noshade="noshade" />
-<h2 >Function Synopsis</h2>
-<pre>[datos_c,RR]=ejes_anatomicos(datos1,datos2,R)</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Help text</h2>
-<pre>
- EJES_ANATOMICOS Reorienta los datos obtenidos para que coincidan con los ejes anatómicos.
-
- EJES_ANATOMICOS Tomando como base una señal, en la que los instantes iniciales la única aceleración es la de la gravedad realinea los ejes de referencia para que las aceleraciones se correspondan con los ejes antero-posterior, medio-lateral y vertical.
-
- Sintax: [acc_c,RR]=ejes_anatomicos(acc,acc_parcial,R)
-
- Parámetros de entrada:
-    acc           - matriz con todos los datos de las tres aceleraciones del sensor
-    acc_parcial   - matriz con las aceleraciones correspondientes al intervalo a 
-                    estudiar
-    R             - Matriz de rotacion opcional que transforma los datos de los ejes del
-		     acelerometro a la referencia anatómica teorica. Soporta tres formatos
-                     1) si no se incluye el parámetro se supone que esta en la posición estandar
-                     2) si se incluye un vector con tres números se debe indicar cual de los ejes
-                        de los acelerómetros se corresponde con la aceleración antero-posterior,
-                        medio-lateral y vertical respectivamente
-                     3) si se proporciona una matriz 3x3 debe ser la matriz de rotación que convierte
-                        los ejes de forma directa
-
- Parámetros de salida:
-    acc_c          - una matriz que contine las tres aceleraciones referidas a los ejes anatómicos.
-                     En la primera columna esta la aceleración en la dirección anteroposterior (positivo en 
-                     sentido anterior). En la segunda columna la aceleración en la direccion medio-lateral 
-                     (positivo en sentido medial desde la derecha) y en la tercera columna la aceleración 
-                     vertical (positivo hacia arriba)
-    RR             - Opcionalmente se devuelve la matriz de rotacion total, que transforma los datos iniciales 
-                     a los ejes anatomicos. Si los datos estan en forma de vectores fila (n x 3) la forma de 
-                     obtener los datos referidos a los ejes anatómicos sería hacer la multiplicacion 
-                     dat_anat=(datos_sensor*RR')% Examples:
-
- See also:
-
-</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Cross-Reference Information</H2>
-<table border="0" width="100%">
-<tr align="left">
-<th width="50%"></th>
-<th width="50%">This function is called by</th>
-</tr>
-<tr valign="top"><td></td><td>
-<ul>
-<li><a class="mfun" href="private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a></li>
-<li><a class="mfun" href="entrena_ident_act.html">entrena_ident_act</a></li>
-<li><a class="mfun" href="ident_act.html">ident_act</a></li>
-</ul>
-</td>
-</tr>
-</table>
-<hr size="3" noshade="noshade" />
-<h2 >Listing of function ejes_anatomicos</h2>
-<pre>
-
-
-<em class="mcom">% Author:   Rafael C. </em>
-<em class="mcom">% History:  12.11.2000  file created</em>
-<em class="mcom">%                       full description at the top</em>
-<em class="mcom">%           19.11.2000  suggestions for in-code comments added</em>
-<em class="mcom">%           12.12.2007  Adaptada correctamente a la toolbox.</em>
-
-
-
-function [datos_c,RR]=ejes_anatomicos(datos1,datos2,R)
-
-if (nargin==2)
-	R=[3,-2,1]; <em class="mcom">%Orden estandar</em>
-end
-[tam1,tam2]=size(R);
-if (tam1*tam2==3)
-	orden=R;
-	R=zeros(3,3);
-	for k=1:3
-		R(k,abs(orden(k)))=sign(orden(k)); 
-	end;
-else if (tam1*tam2==9)
-	R=R;
-else
-	error('Matriz R de formato incorrecto');
-    end
-
-end
-
-<em class="mcom">% Ordenar los ejes de los datos</em>
-datos1=datos1*R';
-datos2=datos2*R';
-
-<em class="mcom">% Calculamos la direccion de la gravedad como la suma vectorial del valor </em>
-<em class="mcom">% medio de las aceleraciones dividido por el modulo</em>
-ug=mean(datos2,1)/norm(mean(datos2,1));
-
-<em class="mcom">% Hacemos una rotacion en torno al eje Z (direccion vertical) para que en</em>
-<em class="mcom">% el nuevo sistema de coordenadas las aceleracion de la gravedad quede</em>
-<em class="mcom">% comprendida en el plano sagital (X,Z)</em>
-
-proy_ug=[ug(1) ug(2)]; <em class="mcom">% Proyeccion de la gravedad sobre el plano XY</em>
-proy_ug=proy_ug/norm(proy_ug); <em class="mcom">% Vector unitario en la direccion de la proyeccion</em>
-c1=proy_ug(1);
-c2=proy_ug(2);
-
-<em class="mcom">% Se gira para anular la componente mas cercana a cero</em>
-if (abs(c1)&gt;abs(c2))
-    <em class="mcom">% Se gira para hacer la componente Y=0;</em>
-    if (c1&gt;0)
-	Rz=[c1 c2 0;-(c2) c1 0;0 0 1];
-    else
-	Rz=[-c1 -(c2) 0;  c2 -c1 0; 0 0 1];
-    end
-    datos_c=datos1*Rz';datos2=datos2*Rz';
-    
-    <em class="mcom">% Hacer una rotacion respecto del eje mediolateral (Y) para anular la</em>
-    <em class="mcom">% componente anteroposterior de la gravedad</em>
-    ug=mean(datos2,1)/norm(mean(datos2,1));
-    g=norm(mean(datos2));
-
-    <em class="mcom">% Tomar la proyeccion de ug sobre el plano sagital</em>
-    proy_ug=[ug(1) ug(3)];
-    proy_ug=proy_ug/norm(proy_ug);
-    c1=ug(1);
-    c3=ug(3);
-
-    Ry=[c3 0 -(c1); 0 1 0; c1 0 c3];
-
-    datos_c=datos_c*Ry';
-    RR=Ry*Rz*R;
-else
-    <em class="mcom">% se gira para anular la componente en x</em>
-    
-    <em class="mcom">% Se gira para hacer la componente Y=0;</em>
-    if (c2&gt;0)
-        Rz=[c2 -(c1) 0;  c1 c2 0; 0 0 1];
-    else
-        Rz=[-c2 c1 0; -(c1) -c2 0; 0 0 1];
-    end
-    datos_c=datos1*Rz';
-    datos2=datos2*Rz';
-    
-    <em class="mcom">% Hacer una rotacion respecto del eje mediolateral (Y) para anular la</em>
-    <em class="mcom">% componente anteroposterior de la gravedad</em>
-
-    ug=mean(datos2,1)/norm(mean(datos2,1));
-    g=norm(mean(datos2));
-
-    <em class="mcom">% Tomar la proyeccion de ug sobre el plano sagital</em>
-    proy_ug=[ug(2) ug(3)];
-    proy_ug=proy_ug/norm(proy_ug);
-    c2=ug(2);
-    c3=ug(3);
-
-    Rx=[1 0 0; 0  c3 -(c2);0  c2 c3];
-
-    datos_c=datos_c*Rx';
-    RR=Rx*Rz*R;
-end
-</pre>
-<hr size="3" noshade="noshade" />
-<!--navigate-->
-<!--copyright-->
-</body>
-</html>
