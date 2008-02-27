@@ -14,13 +14,13 @@
 %               source     Fichero del que leer los datos(en simulacion)
 %                          o puerto serie al que conectar(en RT)
 %			   'test.log' o 'COM24' por defecto(respectivamente). 
-%                          El fichero para la simulación 
+%                          El fichero para la simulaciï¿½n 
 %			   puede se un .log de Xsens, un .tana de Xsens
 %			   calibrado, o un .sl de la propia toolbox
 %               bps        Velocidad a la que conectarse 460800bps por defecto
 %		freq       Frecuencia de muestreo. 100Hz por defecto
 %               modo	   Conjunto de datos a capturar (por defecto callibrated) 
-%               buffer     Tamaño (en segundos) del buffer de datos
+%               buffer     Tamaï¿½o (en segundos) del buffer de datos
 %
 %   Parametros de salida: 
 %	CONFIG  Estructura de configuracion de los sensores y algoritmos de la aplicacion	
@@ -35,7 +35,7 @@
 %           24.01.2008 Incorporado a la toolbox
 %           20.02.2008 modificaciones de Rafa para la conexion al xbusmaster
 %           21.02.2008 Modificaciones de diego para simular desde .sl y .tana+comprobar que solo se use el cog en .log
-%           21.02.2008 Pruebas iniciales de reorientacion de los datos. sólo para R positiva
+%           21.02.2008 Pruebas iniciales de reorientacion de los datos. sï¿½lo para R positiva
 
 function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, buffer)
     
@@ -56,10 +56,10 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
 		end	
 	end
         
-	%Si se toman datos de un .log se asume que sólo contiene el COG
+	%Si se toman datos de un .log se asume que sï¿½lo contiene el COG
 	if (log(end-3:end)=='.log')
 		if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) | (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) | (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) | (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1))
-			error('sólo se puede simular el COG desde un fichero .log');
+			error('sï¿½lo se puede simular el COG desde un fichero .log');
 	        end
 
         	CONFIG.SENHALES.COG.Acc_Z = 4;
@@ -79,13 +79,13 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
                 for k=1:3
                     Rot(k,abs(orden(k)))=sign(orden(k));
                 end;
-                SILOP_DATA_LOG(2:4)=SILOP_DATA_LOG(2:4)*Rot';
-                SILOP_DATA_LOG(5:7)=SILOP_DATA_LOG(5:7)*Rot';
-                SILOP_DATA_LOG(8:10)=SILOP_DATA_LOG(8:10)*Rot';
-	%Si se toman datos de un .tana se asume que sólo contiene aceleraciones del COG
+                SILOP_DATA_LOG(:,2:4)=SILOP_DATA_LOG(:,2:4)*Rot';
+                SILOP_DATA_LOG(:,5:7)=SILOP_DATA_LOG(:,5:7)*Rot';
+                SILOP_DATA_LOG(:,8:10)=SILOP_DATA_LOG(:,8:10)*Rot';
+	%Si se toman datos de un .tana se asume que sï¿½lo contiene aceleraciones del COG
 	elseif (log(end-4:end)=='.tana')
 		if ((CONFIG.SENHALES.MUSLO_DCHO.Serie ~= -1) | (CONFIG.SENHALES.MUSLO_IZDO.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_DCHA.Serie ~= -1) | (CONFIG.SENHALES.TIBIA_IZDA.Serie ~= -1) | (CONFIG.SENHALES.PIE_DCHO.Serie ~= -1) | (CONFIG.SENHALES.PIE_IZDO.Serie ~= -1))
-			error('sólo se puede simular el COG desde un fichero .tana');
+			error('sï¿½lo se puede simular el COG desde un fichero .tana');
 	        end
 
         	CONFIG.SENHALES.COG.Acc_Z = 3;
@@ -126,7 +126,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
         	if ((CONFIG.SENHALES.PIE_IZDO.Serie ~= -1) & (tmp.CONFIG.SENHALES.PIE_IZDO.Serie == -1))
 			error('no se encuentra el sensor del pie izquierdo');
 	        end
-		%Incluimos toda la información de las señales. Puede haber de más, pero no molesta.
+		%Incluimos toda la informaciï¿½n de las seï¿½ales. Puede haber de mï¿½s, pero no molesta.
 		CONFIG.SENHALES=tmp.CONFIG.SENHALES;
 		%Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.
 		delete ('config.mat');
@@ -193,7 +193,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
         CONFIG.BUS.Xbus=xbus;
         CONFIG.BUS.Temporizador=-1;
         
-        % Actualizar los valores de las señales
+        % Actualizar los valores de las seï¿½ales
         switch (xbus.modo)
             case 0,
                 factor=9;
@@ -213,7 +213,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el COG
             p=find(id_disp==CONFIG.SENHALES.COG.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al COG no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al COG no ha sido encontrado');
             else
                CONFIG.SENHALES.COG.Acc_Z = factor*(p-1)+CONFIG.SENHALES.COG.R(3)+1;
                CONFIG.SENHALES.COG.Acc_Y = factor*(p-1)+CONFIG.SENHALES.COG.R(2)+1;
@@ -224,8 +224,8 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
                CONFIG.SENHALES.COG.MG_Z = factor*(p-1)+CONFIG.SENHALES.COG.R(3)+7;
                CONFIG.SENHALES.COG.MG_Y = factor*(p-1)+CONFIG.SENHALES.COG.R(2)+7;
                CONFIG.SENHALES.COG.MG_X = factor*(p-1)+CONFIG.SENHALES.COG.R(1)+7;
-               if (CONFIG.SENHALES.MUSLO_DCHO.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_DCHO.MG_X;
+               if (CONFIG.SENHALES.COG.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.COG.MG_X;
                end
             end
         end
@@ -234,7 +234,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo izquierdo
             p=find(id_disp==CONFIG.SENHALES.MUSLO_DCHO.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al MUSLO DCHO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al MUSLO DCHO no ha sido encontrado');
             else
                CONFIG.SENHALES.MUSLO_DCHO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(3)+1;
                CONFIG.SENHALES.MUSLO_DCHO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(2)+1;
@@ -255,7 +255,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo izquierdo
             p=find(id_disp==CONFIG.SENHALES.MUSLO_IZDO.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al MUSLO IZDO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al MUSLO IZDO no ha sido encontrado');
             else
                CONFIG.SENHALES.MUSLO_IZDO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(3)+1;
                CONFIG.SENHALES.MUSLO_IZDO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(2)+1;
@@ -276,7 +276,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo derecho
             p=find(id_disp==CONFIG.SENHALES.TIBIA_DCHA.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al TIBIA DCHA no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al TIBIA DCHA no ha sido encontrado');
             else
                CONFIG.SENHALES.TIBIA_DCHA.Acc_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(3)+1;
                CONFIG.SENHALES.TIBIA_DCHA.Acc_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(2)+1;
@@ -297,7 +297,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo derecho
             p=find(id_disp==CONFIG.SENHALES.TIBIA_IZDA.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al TIBIA IZDA no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al TIBIA IZDA no ha sido encontrado');
             else
                CONFIG.SENHALES.TIBIA_IZDA.Acc_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(3)+1;
                CONFIG.SENHALES.TIBIA_IZDA.Acc_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(2)+1;
@@ -318,7 +318,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo derecho
             p=find(id_disp==CONFIG.SENHALES.PIE_DCHO.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al PIE DCHO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al PIE DCHO no ha sido encontrado');
             else
                CONFIG.SENHALES.PIE_DCHO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(3)+1;
                CONFIG.SENHALES.PIE_DCHO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(2)+1;
@@ -339,7 +339,7 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo izquierdo
             p=find(id_disp==CONFIG.SENHALES.PIE_IZDO.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El número de serie del sensor asignado al PIE IZDO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El nï¿½mero de serie del sensor asignado al PIE IZDO no ha sido encontrado');
             else
                CONFIG.SENHALES.PIE_IZDO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(3)+1;
                CONFIG.SENHALES.PIE_IZDO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(2)+1;

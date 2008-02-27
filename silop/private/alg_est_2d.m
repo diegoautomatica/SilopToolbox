@@ -24,7 +24,7 @@ function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, depend
 		for k=pasos(1:end)
 		        if (isnan(resultadox(k))) 
 				x=x+distancias(k)*cos(angulos(k));
-				y=y+distancias(k)*sin(angulos(k))
+				y=y+distancias(k)*sin(angulos(k));
 				resultadox(k)=x;
 				resultadoy(k)=y;
 			else  %ya estaba calculado
