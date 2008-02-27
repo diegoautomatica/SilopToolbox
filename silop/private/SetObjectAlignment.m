@@ -1,4 +1,31 @@
-function [XBusMaster,error]=SetObjectAlignment(XBusMaster,matriz)
+% SETOBJECTALIGNMENT Envía el mensaje SetObjectAlignment al objeto XBusMaster
+%
+% SETOBJECTALIGNMENT Envía el mensaje SetObjectAlignment al objeto XBusMaster. El proceso
+%         se queda bloqueado hasta recibir la respuesta
+% 
+% Syntax: [XBusMaster,error]=SetObjectAlignment(XBusMaster,k,matriz)
+% 
+% Input parameters:
+%   XBusMaster-> Objeto con la información del dispositivo.
+%   k        -> Número de dispositivo al que aplicar el cambio. 
+%   matriz -> Matriz de rotación a aplicar con respecto a los ejes originales del dispositivo
+%
+% Output parameters:
+%   XBusMaster- Es el mismo objeto de entrada que puede haber sido
+%               modificado durante la llamada.
+%   error     - 0 si no se produjo ningún error y 1 en caso contrario.
+%               si no se recibe el mensaje con la descripción de los dispositivos
+%               conectados
+%
+% Examples:
+%
+% See also: 
+
+% Author:   Rafael C. Gonzalez de los Reyes
+% History:  
+
+
+function [XBusMaster,error]=SetObjectAlignment(XBusMaster,k,matriz)
 
 % Envia el mensaje ResetOrientation a todos los dispositivos conectados
 % error vale 1 si no se recibe el mensaje de ack
@@ -6,7 +33,7 @@ function [XBusMaster,error]=SetObjectAlignment(XBusMaster,matriz)
 matriz=cast(matriz,'single');
 matriz=matriz';
 
-for k=1:XBusMaster.Conf.DevNum
+%for k=1:XBusMaster.Conf.DevNum   %Esto aplica el cambio a todos los dispositivos
     % Cuerpo del mensaje (excepto el byte de checksum)
     msg=[250,k,224,9*4, (typecast(swapbytes(matriz(:)),'uint8'))'];
     % Se calcula el cheksum y se coloca al final
@@ -42,4 +69,4 @@ for k=1:XBusMaster.Conf.DevNum
             end
         end
     end
-end
+%end
