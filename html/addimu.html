@@ -38,8 +38,9 @@
 	numserie -&gt; numero de serie
        orientacion -&gt; Vector de tres elementos que debe indicar cual es la dirección antero-posterior,
                    medio-lateral y vertical referida a los ejes del acelerómetro. X=1,Y=2,Z=3.
-                   Por defecto vale [3,2,1]=[antero-posterior=Z del acelerómetro, Medio-lateral=Y del acelerómetro,
-                   vertical=X del acelerómetro].
+                   Por defecto vale [3,-2,1] en el COG=[antero-posterior=Z del acelerómetro, Medio-lateral=-Y del
+                   acelerómetro, vertical=X del acelerómetro].
+                   En el resto de puntos es [1,2,3], o lo que es lo mismo, no se reorientan por defecto.
 		    Se aceptan valores negativos para indicar que el eje anatómico y el del acelerómetro son opuestos.
 	            
    Parámetros de salida: 
@@ -79,7 +80,10 @@ function CONFIG=addimu(CONFIG, donde, serie, R)
 	if (nargin&lt;3)
 		error('es necesario especificar los tres primeros parámetros');
 	elseif (nargin&lt;4)
-		R=[3,2,1];
+		if (donde=='COG')
+			R=[3,-2,1];
+		else R=[1,2,3];
+		end
 	end
 
     switch donde

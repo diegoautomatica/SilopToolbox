@@ -1,22 +1,28 @@
 ToDo:
-Para el 0.8:	
-	connectsilop deberia soportar que los ejes sean negativos en tiempo real
-	Implementar el esquema de calibracion definitivo. alg_ejes_anatomicos es uptodate una chapuza.
-	Pasar las funciones del COG a depender de las señales calibradas. Si es necesario.
-	Modificar la demo para que calibre. Si es necesario.
+Para el 0.9
 	Documentar la función eventosPiernaG
 	Incluir las funciones de JC para el pie
+	Pasar Config a SILOP_CONFIG global y hacer que desaparezca de la vista del usuario. Implica:
+	1) Modificar la demo 	
+	2) Modificar creacomandos
+	ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de CONFIG y SetObjectAlignment
+	Automáticamente todas las señales dependerán de las calibradas.	
+	Que la demo ordene la calibración
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
 	Implementar el resto de algoritmos posibles (v?): actividad, saltos, sentadillas, biceps, piraguas, 
 		paso desde pie/pierna... 
 	Ajustar las funciones de identificacion de actividades de Jesus para trabajar a 100Hz 
+	Reimplementar connectsilop para recorrer los sensores con un bucle, y no multiplicar el código por n
+	Que funcione en Linux
 
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.8    corregidos errores diversos. connectsilop no actualizaba bien el numero de señales y otros
+v0.8    orientacion por defecto para el COG R=[3,-2,1]
+	connectsilop deberia soportar que los ejes sean negativos en tiempo real
+	corregidos errores diversos. connectsilop no actualizaba bien el numero de señales y otros
 	corregidos errores en algoritmos alg_det_event y alg_est_orientacion* cuando no se tienen datos.
 	connectsilop ya permite reorientar totalmente en simulación. Se rotan los datos originales.
 	Implementados los mensajes RegObjectAlignment y SetObjectAlignement necesarios para la reorientación

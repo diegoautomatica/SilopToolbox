@@ -215,17 +215,23 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             if (isempty(p))
                 error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al COG no ha sido encontrado');
             else
-               CONFIG.SENHALES.COG.Acc_Z = factor*(p-1)+CONFIG.SENHALES.COG.R(3)+1;
-               CONFIG.SENHALES.COG.Acc_Y = factor*(p-1)+CONFIG.SENHALES.COG.R(2)+1;
-               CONFIG.SENHALES.COG.Acc_X = factor*(p-1)+CONFIG.SENHALES.COG.R(1)+1;
-               CONFIG.SENHALES.COG.G_Z = factor*(p-1)+CONFIG.SENHALES.COG.R(3)+4;
-               CONFIG.SENHALES.COG.G_Y = factor*(p-1)+CONFIG.SENHALES.COG.R(2)+4;
-               CONFIG.SENHALES.COG.G_X = factor*(p-1)+CONFIG.SENHALES.COG.R(1)+4;
-               CONFIG.SENHALES.COG.MG_Z = factor*(p-1)+CONFIG.SENHALES.COG.R(3)+7;
-               CONFIG.SENHALES.COG.MG_Y = factor*(p-1)+CONFIG.SENHALES.COG.R(2)+7;
-               CONFIG.SENHALES.COG.MG_X = factor*(p-1)+CONFIG.SENHALES.COG.R(1)+7;
-               if (CONFIG.SENHALES.COG.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.COG.MG_X;
+	       orden=CONFIG.SENHALES.COG.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.COG.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.COG.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.COG.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.COG.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.COG.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.COG.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.COG.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.COG.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.COG.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.COG.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.COG.MG_Z;
                end
             end
         end
@@ -236,17 +242,23 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             if (isempty(p))
                 error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al MUSLO DCHO no ha sido encontrado');
             else
-               CONFIG.SENHALES.MUSLO_DCHO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(3)+1;
-               CONFIG.SENHALES.MUSLO_DCHO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(2)+1;
-               CONFIG.SENHALES.MUSLO_DCHO.Acc_X = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(1)+1;
-               CONFIG.SENHALES.MUSLO_DCHO.G_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(3)+4;
-               CONFIG.SENHALES.MUSLO_DCHO.G_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(2)+4;
-               CONFIG.SENHALES.MUSLO_DCHO.G_X = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(1)+4;
-               CONFIG.SENHALES.MUSLO_DCHO.MG_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(3)+7;
-               CONFIG.SENHALES.MUSLO_DCHO.MG_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_DCHO.R(2)+7;
-               CONFIG.SENHALES.MUSLO_DCHO.MG_X = factor*(p-1)++CONFIG.SENHALES.MUSLO_DCHO.R(1)+7;
-               if (CONFIG.SENHALES.MUSLO_DCHO.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_DCHO.MG_X;
+	       orden=CONFIG.SENHALES.MUSLO_DCHO.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.MUSLO_DCHO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.MUSLO_DCHO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.MUSLO_DCHO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.MUSLO_DCHO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.MUSLO_DCHO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.MUSLO_DCHO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.MUSLO_DCHO.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.MUSLO_DCHO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.MUSLO_DCHO.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.MUSLO_DCHO.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_DCHO.MG_Z;
                end
             end
         end
@@ -257,17 +269,23 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             if (isempty(p))
                 error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al MUSLO IZDO no ha sido encontrado');
             else
-               CONFIG.SENHALES.MUSLO_IZDO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(3)+1;
-               CONFIG.SENHALES.MUSLO_IZDO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(2)+1;
-               CONFIG.SENHALES.MUSLO_IZDO.Acc_X = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(1)+1;
-               CONFIG.SENHALES.MUSLO_IZDO.G_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(3)+4;
-               CONFIG.SENHALES.MUSLO_IZDO.G_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(2)+4;
-               CONFIG.SENHALES.MUSLO_IZDO.G_X = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(1)+4;
-               CONFIG.SENHALES.MUSLO_IZDO.MG_Z = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(3)+7;
-               CONFIG.SENHALES.MUSLO_IZDO.MG_Y = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(2)+7;
-               CONFIG.SENHALES.MUSLO_IZDO.MG_X = factor*(p-1)+CONFIG.SENHALES.MUSLO_IZDO.R(1)+7;
-               if (CONFIG.SENHALES.MUSLO_IZDO.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_IZDO.MG_X;
+	       orden=CONFIG.SENHALES.MUSLO_IZDO.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.MUSLO_IZDO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.MUSLO_IZDO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.MUSLO_IZDO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.MUSLO_IZDO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.MUSLO_IZDO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.MUSLO_IZDO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.MUSLO_IZDO.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.MUSLO_IZDO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.MUSLO_IZDO.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.MUSLO_IZDO.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.MUSLO_IZDO.MG_Z;
                end
             end
         end
@@ -278,17 +296,23 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             if (isempty(p))
                 error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al TIBIA DCHA no ha sido encontrado');
             else
-               CONFIG.SENHALES.TIBIA_DCHA.Acc_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(3)+1;
-               CONFIG.SENHALES.TIBIA_DCHA.Acc_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(2)+1;
-               CONFIG.SENHALES.TIBIA_DCHA.Acc_X = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(1)+1;
-               CONFIG.SENHALES.TIBIA_DCHA.G_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(3)+4;
-               CONFIG.SENHALES.TIBIA_DCHA.G_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(2)+4;
-               CONFIG.SENHALES.TIBIA_DCHA.G_X = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(1)+4;
-               CONFIG.SENHALES.TIBIA_DCHA.MG_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(3)+7;
-               CONFIG.SENHALES.TIBIA_DCHA.MG_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(2)+7;
-               CONFIG.SENHALES.TIBIA_DCHA.MG_X = factor*(p-1)+CONFIG.SENHALES.TIBIA_DCHA.R(1)+7;
-               if (CONFIG.SENHALES.TIBIA_DCHA.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.TIBIA_DCHA.MG_X;
+	       orden=CONFIG.SENHALES.TIBIA_DCHA.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.TIBIA_DCHA.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.TIBIA_DCHA.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.TIBIA_DCHA.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.TIBIA_DCHA.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.TIBIA_DCHA.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.TIBIA_DCHA.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.TIBIA_DCHA.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.TIBIA_DCHA.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.TIBIA_DCHA.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.TIBIA_DCHA.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.TIBIA_DCHA.MG_Z;
                end
             end
         end
@@ -299,17 +323,23 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             if (isempty(p))
                 error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al TIBIA IZDA no ha sido encontrado');
             else
-               CONFIG.SENHALES.TIBIA_IZDA.Acc_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(3)+1;
-               CONFIG.SENHALES.TIBIA_IZDA.Acc_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(2)+1;
-               CONFIG.SENHALES.TIBIA_IZDA.Acc_X = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(1)+1;
-               CONFIG.SENHALES.TIBIA_IZDA.G_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(3)+4;
-               CONFIG.SENHALES.TIBIA_IZDA.G_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(2)+4;
-               CONFIG.SENHALES.TIBIA_IZDA.G_X = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(1)+4;
-               CONFIG.SENHALES.TIBIA_IZDA.MG_Z = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(3)+7;
-               CONFIG.SENHALES.TIBIA_IZDA.MG_Y = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(2)+4;
-               CONFIG.SENHALES.TIBIA_IZDA.MG_X = factor*(p-1)+CONFIG.SENHALES.TIBIA_IZDA.R(1)+4;
-               if (CONFIG.SENHALES.TIBIA_IZDA.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.TIBIA_IZDA.MG_X;
+	       orden=CONFIG.SENHALES.TIBIA_IZDA.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.TIBIA_IZDA.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.TIBIA_IZDA.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.TIBIA_IZDA.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.TIBIA_IZDA.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.TIBIA_IZDA.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.TIBIA_IZDA.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.TIBIA_IZDA.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.TIBIA_IZDA.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.TIBIA_IZDA.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.TIBIA_IZDA.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.TIBIA_IZDA.MG_Z;
                end
             end
         end
@@ -320,17 +350,23 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             if (isempty(p))
                 error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al PIE DCHO no ha sido encontrado');
             else
-               CONFIG.SENHALES.PIE_DCHO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(3)+1;
-               CONFIG.SENHALES.PIE_DCHO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(2)+1;
-               CONFIG.SENHALES.PIE_DCHO.Acc_X = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(1)+1;
-               CONFIG.SENHALES.PIE_DCHO.G_Z = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(3)+4;
-               CONFIG.SENHALES.PIE_DCHO.G_Y = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(2)+4;
-               CONFIG.SENHALES.PIE_DCHO.G_X = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(1)+4;
-               CONFIG.SENHALES.PIE_DCHO.MG_Z = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(3)+7;
-               CONFIG.SENHALES.PIE_DCHO.MG_Y = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(2)+7;
-               CONFIG.SENHALES.PIE_DCHO.MG_X = factor*(p-1)+CONFIG.SENHALES.PIE_DCHO.R(1)+7;
-               if (CONFIG.SENHALES.PIE_DCHO.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.PIE_DCHO.MG_X;
+	       orden=CONFIG.SENHALES.PIE_DCHO.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.PIE_DCHO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.PIE_DCHO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.PIE_DCHO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.PIE_DCHO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.PIE_DCHO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.PIE_DCHO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.PIE_DCHO.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.PIE_DCHO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.PIE_DCHO.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.PIE_DCHO.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.PIE_DCHO.MG_Z;
                end
             end
         end
@@ -339,19 +375,25 @@ function CONFIG = connectsilop(CONFIG, modo_simulacion, log, bps, freq, modo, bu
             % Hay un dispositivo en el Muslo izquierdo
             p=find(id_disp==CONFIG.SENHALES.PIE_IZDO.Serie);
             if (isempty(p))
-                error('SilopToolbox:connectsilop','El n�mero de serie del sensor asignado al PIE IZDO no ha sido encontrado');
+                error('SilopToolbox:connectsilop','El numero de serie del sensor asignado al PIE IZDO no ha sido encontrado');
             else
-               CONFIG.SENHALES.PIE_IZDO.Acc_Z = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(3)+1;
-               CONFIG.SENHALES.PIE_IZDO.Acc_Y = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(2)+1;
-               CONFIG.SENHALES.PIE_IZDO.Acc_X = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(1)+1;
-               CONFIG.SENHALES.PIE_IZDO.G_Z = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(3)+4;
-               CONFIG.SENHALES.PIE_IZDO.G_Y = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(2)+4;
-               CONFIG.SENHALES.PIE_IZDO.G_X = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(1)+4;
-               CONFIG.SENHALES.PIE_IZDO.MG_Z = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(3)+7;
-               CONFIG.SENHALES.PIE_IZDO.MG_Y = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(2)+7;
-               CONFIG.SENHALES.PIE_IZDO.MG_X = factor*(p-1)+CONFIG.SENHALES.PIE_IZDO.R(1)+7;
-               if (CONFIG.SENHALES.PIE_IZDO.MG_X>CONFIG.SENHALES.NUMEROSENHALES)
-                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.PIE_IZDO.MG_X;
+	       orden=CONFIG.SENHALES.PIE_IZDO.R;
+               Rot=zeros(3,3);
+               for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+               end;
+	       SetObjectAlignment(CONFIG.BUS.Xbus,p,Rot);
+               CONFIG.SENHALES.PIE_IZDO.Acc_Z = factor*(p-1)+4;
+               CONFIG.SENHALES.PIE_IZDO.Acc_Y = factor*(p-1)+3;
+               CONFIG.SENHALES.PIE_IZDO.Acc_X = factor*(p-1)+2;
+               CONFIG.SENHALES.PIE_IZDO.G_Z = factor*(p-1)+7;
+               CONFIG.SENHALES.PIE_IZDO.G_Y = factor*(p-1)+6;
+               CONFIG.SENHALES.PIE_IZDO.G_X = factor*(p-1)+5;
+               CONFIG.SENHALES.PIE_IZDO.MG_Z = factor*(p-1)+10;
+               CONFIG.SENHALES.PIE_IZDO.MG_Y = factor*(p-1)+9;
+               CONFIG.SENHALES.PIE_IZDO.MG_X = factor*(p-1)+8;
+               if (CONFIG.SENHALES.PIE_IZDO.MG_Z>CONFIG.SENHALES.NUMEROSENHALES)
+                   CONFIG.SENHALES.NUMEROSENHALES=CONFIG.SENHALES.PIE_IZDO.MG_Z;
                end
             end
         end

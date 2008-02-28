@@ -62,13 +62,14 @@ function resultado = alg_est_orient_compas(previos, senhales, params, dependenci
 	resultado = previos;
         
         mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aún no procesadas</em>
+	if (~isempty(mov_sin_calcular))
         
 	if (isempty(params))
 		resultado(mov_sin_calcular)=<a class="mfun" href="../orientacioncompas.html">orientacioncompas</a>(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular));        
 	else 
 		resultado(mov_sin_calcular)=<a class="mfun" href="../orientacioncompas.html">orientacioncompas</a>(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular),params); 
 	end       
-        
+        end
 
 </pre>
 <hr size="3" noshade="noshade" />

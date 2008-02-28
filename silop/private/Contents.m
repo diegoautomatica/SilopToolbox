@@ -3,7 +3,7 @@
 %
 % AutoAdd
 % alg_bar_dependencias - ALG_BAR_DEPENDENCIAS Algoritmo para la representacion de resultados de otros mediante diagramas de barras.
-% alg_det_event - ALG_DET_EVENT Algoritmo para la detección de los eventos HS y TO
+% alg_det_event - ALG_DET_EVENT Algoritmo para la detecciï¿½n de los eventos HS y TO
 % alg_det_mov   - ALG_DET_MOV Algoritmo para la detección del movimiento
 % alg_ejes_anatomicos - ALG_EJES_ANATOMICOS Algoritmo para la reorientación de las matrices de datos
 % alg_est_2d    - ALG_EST_2D Algoritmo para la estimaciï¿½n de la posicion en 2d
@@ -26,7 +26,9 @@
 % leerXBusData  - LEERXBUSDATA Lee datos desde el dispositivo Xbus Master
 % localmaxima   - LOCALMAXIMA Determina los puntos que son máximos locales de una función en un entorno 
 % ReqConfiguration - REQCONFIGURATION EnvÃ­a el mensaje RequestConfiguration al objeto XBusMaster
+% ReqObjectAlignment - REQOBJECTALIGNMENT EnvÃ­a el mensaje ReqObjectAlignment al objeto XBusMaster
 % SetMTOutputMode - SETMTOUTPUTMODE EnvÃ­a el mensaje SetOutputMode a todos los dispositivos
+% SetObjectAlignment - SETOBJECTALIGNMENT EnvÃ­a el mensaje SetObjectAlignment al objeto XBusMaster
 % SetPeriod     - SETPERIOD EnvÃ­a el mensaje SetPeriod al objeto XBusMaster
 % simula_muestreo - SIMULA_MUESTREO Callback que simula la realización de un muestreo desde los Xsens
 

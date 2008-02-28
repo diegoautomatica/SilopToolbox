@@ -64,12 +64,14 @@ function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias
 	resultado = previos;
         
         mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aún no procesadas</em>
+	if (~isempty(mov_sin_calcular))
         
 	if (isempty(params))
 		resultado(mov_sin_calcular)=<a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>(giro(mov_sin_calcular));        
 	else 
 		resultado(mov_sin_calcular)=<a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>(giro(mov_sin_calcular),params); 
 	end       
+	end
         
 
 </pre>

@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_DET_EVENT Algoritmo para la detección de los eventos HS y TO " />
+<meta name="description" content=" ALG_DET_EVENT Algoritmo para la detecciï¿½n de los eventos HS y TO " />
 <meta name="keywords" content=" eventos_rt silopdemo " />
 <title>Documentation of  alg_det_event</title>
 </head>
@@ -23,14 +23,14 @@
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_DET_EVENT Algoritmo para la detección de los eventos HS y TO
+ALG_DET_EVENT Algoritmo para la detecciï¿½n de los eventos HS y TO
 
-ALG_DET_EVENT Algoritmo para la detección de los eventos HS y TO. Este algoritmo actua como 
-wrapper de la función <a class="mfun" href="../eventos_rt.html">eventos_RT</a>.
+ALG_DET_EVENT Algoritmo para la detecciï¿½n de los eventos HS y TO. Este algoritmo actua como 
+wrapper de la funciï¿½n <a class="mfun" href="../eventos_rt.html">eventos_RT</a>.
 Se puede configurar mediante:
     Config = <a class="mfun" href="../addalgoritmo.html">AddAlgoritmo</a>(Config, 'alg_det_event', 2, [COG.Acc_Z, COG.Acc.X], [], {});
 
-Parámetros: como todos los alg_ resultados anteriores, señales a usar, parametros(vacio en este caso)
+Parï¿½metros: como todos los alg_ resultados anteriores, seï¿½ales a usar, parametros(vacio en este caso)
  y dependencias(vacia en este caso)DEBERIA DEPENDER DE <a class="mfun" href="../private/alg_det_mov.html">ALG_DET_MOV</a> EN EL FUTURO
 </pre>
 <hr size="3" noshade="noshade" />
@@ -60,12 +60,13 @@ Parámetros: como todos los alg_ resultados anteriores, señales a usar, parametro
 
 function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, dependencias)
 
-        acel_z = senhales(:,1); <em class="mcom">%Hay dos señales </em>
+        acel_z = senhales(:,1); <em class="mcom">%Hay dos seï¿½ales </em>
 	acel_x = senhales(:,2);
         resultadohs = previos(:,1);
 	resultadoto = previos(:,2);
         
-        mov_sin_calcular = find(isnan(resultadohs)); <em class="mcom">%Filas aún no procesadas</em>
+        mov_sin_calcular = find(isnan(resultadohs)); <em class="mcom">%Filas aï¿½n no procesadas</em>
+	if (~isempty(mov_sin_calcular))
         
         for k=mov_sin_calcular(1):mov_sin_calcular(end)
                 [hs,to]=<a class="mfun" href="../eventos_rt.html">eventos_RT</a>(acel_x(k),acel_z(k));
@@ -79,7 +80,7 @@ function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, d
 		end					
         end;
         
-
+	end;
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->
