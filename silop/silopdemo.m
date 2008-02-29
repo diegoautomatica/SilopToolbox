@@ -6,16 +6,18 @@
 
 %% Se crea la configuración inicial para la ejecución de la aplicación
 % llamando a initsilop()
-initsilop(); %Crea un conjunto de variables necesarias al principio.
+initsilop(); 
+
+
+%% Se añaden los IMUS con los que se trabajará
+% En este caso un IMU en el COG
+addimu('COG', 204);
+
 
 %Temporalmente trabajaremos con una global en silopdemo para que siga funcionando todo
 global SILOP_CONFIG
 CONFIG=SILOP_CONFIG;
 
-
-%% Se añaden los IMUS con los que se trabajará
-% En este caso un IMU en el COG
-CONFIG = addimu(CONFIG, 'COG', 204);
 
 
 %% Nos conectamos al sistema de adquisición de datos.
