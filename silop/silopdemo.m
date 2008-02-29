@@ -6,7 +6,11 @@
 
 %% Se crea la configuración inicial para la ejecución de la aplicación
 % llamando a initsilop()
-CONFIG = initsilop(); %Crea un conjunto de variables necesarias al principio.
+initsilop(); %Crea un conjunto de variables necesarias al principio.
+
+%Temporalmente trabajaremos con una global en silopdemo para que siga funcionando todo
+global SILOP_CONFIG
+CONFIG=SILOP_CONFIG;
 
 
 %% Se añaden los IMUS con los que se trabajará
