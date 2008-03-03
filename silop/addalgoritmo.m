@@ -2,24 +2,27 @@
 %
 % ADDALGORITMO añade un algoritmo al sistema de procesamiento de las aplicaciones estandar de la toolbox. 
 % No se pueden incluir algoritmos antes de realizar la conexión mediante connectsilop() ni después de 
-% iniciarse el procesamiento con silopstart
+% iniciarse el procesamiento con startsilop
 % 
 % Syntax: 
-%   CONFIG=addalgoritmo(CONFIG, nombre, n_valores_retorno, senhales, params, dependencias)
+%   addalgoritmo(nombre, n_valores_retorno, senhales, params, dependencias)
 %
 %   Parámetros de entrada: 
-%	CONFIG   -> estructura de configuración de la aplicación antes de añadir el sensor
 %	nombre   -> Nombre del algoritmo a usar
 %	n_valores_retorno -> Número de datos calculados por el algoritmo
-%	senhales -> señales que va a emplear el algoritmo
+%	senhales -> Nombre de las señales que va a emplear el algoritmo. Ej: COG.Acc_X
 %	params  -> parametros de configuración del algoritmo
-%	dependencias -> señales generadas por otros programas que necesita el algoritmo
-%   Parámetros de salida: 
-%	CONFIG  Estructura de configuración de la aplicación después de añadir el sensor
+%	dependencias -> nombres de otros algoritmos, cuyos resultados son necesarios
+%
+%   Parámetros de salida: Ninguno
 % 
 % Examples: 
+% addalgoritmo('alg_det_event', 2, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
+% addalgoritmo('alg_est_dist_pendulo' , 1, {'COG.Acc_Z'}, [], {'alg_det_event'});
+% addalgoritmo('alg_est_orient_gyro', 1, {'COG.G_Z'}, [], {});
+% addalgoritmo('alg_est_2d', 2, [], [], {'alg_est_dist_pendulo'  'alg_est_orient_gyro'});
+% addalgoritmo('alg_plot_pos2d', 0, [], [], {'alg_est_2d'});
 %   
-%
 % See also: 
 
 % Author:   Antonio López
@@ -27,39 +30,58 @@
 %           25.01.2008 Incorporado a la toolbox
 %           01.02.2008 se busca con buscaposiciones{k} y no de {l}. Necesario para dependencias multiples   
 
-function CONFIG = addalgoritmo(conf, nombre, n_valores_retorno, senhales, params, dependencias)
+function addalgoritmo(nombre, n_valores_retorno, senhales, params, dependencias)
 
-    CONFIG = conf;
+    global SILOP_CONFIG;
     
-    col_disp = CONFIG.GLOBAL.COLUMNADISPONIBLE;
-    if(col_disp == -1)
-        col_disp = CONFIG.SENHALES.NUMEROSENHALES+1;
-    end;
     
-    alg.nombre = nombre;
-    alg.posiciones = col_disp:col_disp+n_valores_retorno-1;
-    CONFIG.GLOBAL.COLUMNADISPONIBLE = col_disp+n_valores_retorno;
+    alg.senhales=[];
+    if (~isempty(senhales))
+        if (~iscell(senhales))
+            error('la lista de señales debe ser un cell array')
+        end
+        for senhal=senhales
+            [punto,dato]=strtok(senhal{1},'.'); %Rompo por el punto
+            dato=dato(2:end); %Quito el punto
+            if (~isfield(SILOP_CONFIG.SENHALES,punto))
+                error('No existe el punto %s especificado',punto);
+            end
+            if (~isfield(eval(['SILOP_CONFIG.SENHALES.',punto]),dato))
+                error('No existe el dato %s solicitado en %s',dato,punto);
+            end
+            alg.senhales=[alg.senhales eval(['SILOP_CONFIG.SENHALES.',punto,'.',dato])];
+        end
+    end
     
     alg.parametros = params;    
-    alg.senhales = senhales;
-
+    
     if(isempty(dependencias))
         alg.dependencias = {};
     else
         l=length(dependencias);
         alg.dependencias = cell(l, 1);
         for k=1:l
-            pos=buscaposiciones(CONFIG, dependencias{k});
+            pos=buscaposiciones(SILOP_CONFIG, dependencias{k});
             if(isempty(pos))
-		warning('No se encuentra la dependencia indicada. Dependencia invalida');
+                error('No se encuentra la dependencia %s indicada',dependencias{k});
             else
                 alg.dependencias{k} = pos;
             end;
         end;
     end;
      
+    %Muevo esto al final, hasta que ya se que los datos están bien
+    col_disp = SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE;
+    if(col_disp == -1)
+        col_disp = SILOP_CONFIG.SENHALES.NUMEROSENHALES+1;
+    end;
     
-    CONFIG.ALGORITMOS = [CONFIG.ALGORITMOS alg];
+    alg.nombre = nombre;
+    
+    alg.posiciones = col_disp:col_disp+n_valores_retorno-1;
+    SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE = col_disp+n_valores_retorno;
+    
+    SILOP_CONFIG.ALGORITMOS = [SILOP_CONFIG.ALGORITMOS alg];
 
 
 
@@ -80,5 +102,5 @@ function posiciones = buscaposiciones(CONFIG, nombre)
             posiciones = [];
         end;
     else
-        warning('No se han creado algoritmos');
+        error('Aún no existe ningún algoritmo del que depender');
     end;
