@@ -1,13 +1,10 @@
 ToDo:
 Para el 0.9
+	ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SILOP_CONFIG y SetObjectAlignment
+	       Automáticamente todas las señales dependerán de las calibradas.	
+	Que la demo ordene la calibración
 	Documentar la función eventosPiernaG
 	Incluir las funciones de JC para el pie
-	Pasar Config a SILOP_CONFIG global y hacer que desaparezca de la vista del usuario. Implica:
-	1) Modificar la demo 	
-	2) Modificar creacomandos
-	ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de CONFIG y SetObjectAlignment
-	Automáticamente todas las señales dependerán de las calibradas.	
-	Que la demo ordene la calibración
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
@@ -20,6 +17,16 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
+v0.9    Limpieza del warnings del depurador para buscar más fácil los problemas
+	Se aprovecha para hacer un tratamiento más consistente de las señales y los puntos. Ahora casí todo está en listas
+	     que podrían ser incluidas en una única lista dentro de SILOP_CONFIG, para mas fácil modificación.
+	     Actualemente está "duplicada" en initsilop, connectsilop(que sigue accediendo a señales directamente en las
+	     simulaciones), y addimu
+	Pasar Config a SILOP_CONFIG global y hacer que desaparezca de la vista del usuario. Implica:
+	     Modificar la demo, Modificar initsilop, Modificar addimu, Modificar connectsilop, Modificar addalgoritmo
+	     Modificar playsilop y creacomandos.
+	     Modificar stopsilop y loadsilop
+
 v0.8    orientacion por defecto para el COG R=[3,-2,1]
 	connectsilop deberia soportar que los ejes sean negativos en tiempo real
 	corregidos errores diversos. connectsilop no actualizaba bien el numero de señales y otros

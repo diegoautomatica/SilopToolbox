@@ -44,6 +44,8 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
     global SILOP_DATA_BUFFER;
     SILOP_DATA_BUFFER = [];
     global SILOP_CONFIG;
+    global SILOP_DATA_LOG; %Variable para leer el fichero
+        
 
     if(modo_simulacion)
 	if (nargin<2)
@@ -56,62 +58,61 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 	end
         
 	%Si se toman datos de un .log se asume que s�lo contiene el COG
-	if (log(end-3:end)=='.log')
-		for donde={'PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
-                    if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-			        error('solo se puede simular el COG desde un fichero .log');
-		            end
-		end
+	if (strcmp(log(end-3:end),'.log'))
+		for donde={'PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'} %#ok<ALIGN>
+            if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1'])) %#ok<ALIGN>
+			           error('solo se puede simular el COG desde un fichero .log');
+		    end
+        end
 
-        	SILOP_CONFIG.SENHALES.COG.Acc_Z = 4;
-        	SILOP_CONFIG.SENHALES.COG.Acc_Y = 3;
-        	SILOP_CONFIG.SENHALES.COG.Acc_X = 2;
-        	SILOP_CONFIG.SENHALES.COG.G_Z = 7;
-        	SILOP_CONFIG.SENHALES.COG.G_Y = 6;
-        	SILOP_CONFIG.SENHALES.COG.G_X = 5;
-        	SILOP_CONFIG.SENHALES.COG.MG_Z = 10;
-        	SILOP_CONFIG.SENHALES.COG.MG_Y = 9;
-        	SILOP_CONFIG.SENHALES.COG.MG_X = 8;
-            SILOP_CONFIG.SENHALES.NUMEROSENHALES = 10;
+        SILOP_CONFIG.SENHALES.COG.Acc_Z = 4;
+        SILOP_CONFIG.SENHALES.COG.Acc_Y = 3;
+        SILOP_CONFIG.SENHALES.COG.Acc_X = 2;
+        SILOP_CONFIG.SENHALES.COG.G_Z = 7;
+        SILOP_CONFIG.SENHALES.COG.G_Y = 6;
+        SILOP_CONFIG.SENHALES.COG.G_X = 5;
+        SILOP_CONFIG.SENHALES.COG.MG_Z = 10;
+        SILOP_CONFIG.SENHALES.COG.MG_Y = 9;
+        SILOP_CONFIG.SENHALES.COG.MG_X = 8;
+        SILOP_CONFIG.SENHALES.NUMEROSENHALES = 10;
 		
-            global SILOP_DATA_LOG; %Variable para leer el fichero
-            SILOP_DATA_LOG=load(log);
-            orden=SILOP_CONFIG.SENHALES.COG.R;
-            Rot=zeros(3,3);
-            for k=1:3
-                    Rot(k,abs(orden(k)))=sign(orden(k));
-            end;
-            SILOP_DATA_LOG(:,2:4)=SILOP_DATA_LOG(:,2:4)*Rot';
-            SILOP_DATA_LOG(:,5:7)=SILOP_DATA_LOG(:,5:7)*Rot';
-            SILOP_DATA_LOG(:,8:10)=SILOP_DATA_LOG(:,8:10)*Rot';
+        SILOP_DATA_LOG=load(log);
+        orden=SILOP_CONFIG.SENHALES.COG.R;
+        Rot=zeros(3,3);
+        for k=1:3
+            Rot(k,abs(orden(k)))=sign(orden(k));
+        end;
+        SILOP_DATA_LOG(:,2:4)=SILOP_DATA_LOG(:,2:4)*Rot';
+        SILOP_DATA_LOG(:,5:7)=SILOP_DATA_LOG(:,5:7)*Rot';
+        SILOP_DATA_LOG(:,8:10)=SILOP_DATA_LOG(:,8:10)*Rot';
 	%Si se toman datos de un .tana se asume que s�lo contiene aceleraciones del COG
-	elseif (log(end-4:end)=='.tana')
-		for donde={'PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
-                    if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-			        error('solo se puede simular el COG desde un fichero .log');
+	elseif (strcmp(log(end-4:end),'.tana'))
+		for donde={'PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'} %#ok<ALIGN>
+                    if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1'])) %#ok<ALIGN>
+                        error('solo se puede simular el COG desde un fichero .log');
 		            end
         end
-        	SILOP_CONFIG.SENHALES.COG.Acc_Z = 3;
-        	SILOP_CONFIG.SENHALES.COG.Acc_Y = 2;
-        	SILOP_CONFIG.SENHALES.COG.Acc_X = 1;
-        	SILOP_CONFIG.SENHALES.COG.G_Z = -1;
-        	SILOP_CONFIG.SENHALES.COG.G_Y = -1;
-        	SILOP_CONFIG.SENHALES.COG.G_X = -1;
-        	SILOP_CONFIG.SENHALES.COG.MG_Z = -1;
-        	SILOP_CONFIG.SENHALES.COG.MG_Y = -1;
-        	SILOP_CONFIG.SENHALES.COG.MG_X = -1;
-            SILOP_CONFIG.SENHALES.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
-		    global SILOP_DATA_LOG; %Variable para leer el fichero
-		    SILOP_DATA_LOG=load(log); 
+        SILOP_CONFIG.SENHALES.COG.Acc_Z = 3;
+        SILOP_CONFIG.SENHALES.COG.Acc_Y = 2;
+        SILOP_CONFIG.SENHALES.COG.Acc_X = 1;
+        SILOP_CONFIG.SENHALES.COG.G_Z = -1;
+        SILOP_CONFIG.SENHALES.COG.G_Y = -1;
+        SILOP_CONFIG.SENHALES.COG.G_X = -1;
+        SILOP_CONFIG.SENHALES.COG.MG_Z = -1;
+        SILOP_CONFIG.SENHALES.COG.MG_Y = -1;
+        SILOP_CONFIG.SENHALES.COG.MG_X = -1;
+        SILOP_CONFIG.SENHALES.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
+		
+		SILOP_DATA_LOG=load(log); 
 	%Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
-	elseif (log(end-2:end)=='.sl')
+	elseif (strcmp(log(end-2:end),'.sl'))
 		unzip(log);
 		tmp=load('config.mat');
 		%Comprobamos que el log tenga los sensores solicitados
         for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
-                    if ((eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1'])) & (eval(['tmp.CONFIG.SENHALES.',donde{1},'.Serie==-1'])))
-			            error(['no se encuentra el sensor del ',donde{1}]);
-                    end
+            if ((eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1'])) && (eval(['tmp.CONFIG.SENHALES.',donde{1},'.Serie==-1'])))
+                error(['no se encuentra el sensor del ',donde{1}]);
+            end
         end
         
         %Incluimos toda la informaci�n de las se�ales. Puede haber de m�s, pero no molesta.
@@ -122,16 +123,15 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 		if (~isempty(existe))
 		    delete ('datos_alg.log');
 		end
-		global SILOP_DATA_LOG %Variable para leer el fichero
 		SILOP_DATA_LOG=load('datos.log'); 
 		delete ('datos.log');
 	else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
 	end
         
-    global t
-        t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
-        SILOP_CONFIG.BUS.Temporizador = t;
-        SILOP_CONFIG.BUS.Xbus=-1;
+    %global t Para que era global???
+    t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
+    SILOP_CONFIG.BUS.Temporizador = t;
+    SILOP_CONFIG.BUS.Xbus=-1;
          
     else
         if (nargin<3)
@@ -168,11 +168,11 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         % Actualizar los valores de las se�ales
         switch (xbus.modo)
             case 0,
-                factor=9;
+                factor=9; %#ok<NASGU>
             case 1,
-                factor=9+4;
+                factor=9+4; %#ok<NASGU>
             case 2,
-                factor=9+9;
+                factor=9+9; %#ok<NASGU>
         end;
         
         % Identificar sensores y asignar los valores de las columnas

@@ -1,16 +1,16 @@
 % LOADSILOP Carga los datos de un fichero de almacenamiento .sl.
 %
-% INITSILOP Carga los datos de un fichero de almacenamiento .sl.
+% LOADSILOP Carga los datos de un fichero de almacenamiento .sl.
 % Los datos quedan disponibles en las variables captura y CONFIG
 % 
 % Syntax: 
 %   [CONFIG,captura]=loadsilop(fichero);
 %
 %   Parámetros de entrada: El nombre del fichero que se tiene que cargar.
-%   Parámetros de salida: 
-%	CONFIG  Estructura de configuración de los sensores y algoritmos de la aplicación	
-%       captura Matriz con los datos capturados por los sensores y los resultados de los algoritmos(si están
-%		disponibles en el fichero)
+%   Parámetros de salida:  
+%	    CONFIG:  Estructura de configuración de los sensores y algoritmos de la aplicación.	
+%       captura: Matriz con los datos capturados por los sensores y los resultados de los algoritmos(si están
+%		       disponibles en el fichero)
 % 
 % Examples: 
 %   
@@ -35,7 +35,7 @@ end
 
 unzip(fichero);
 tmp=load('config.mat');
-Config=tmp.CONFIG;
+Config=tmp.SILOP_CONFIG;
 delete ('config.mat');
 load('datos.log'); 
 delete ('datos.log');

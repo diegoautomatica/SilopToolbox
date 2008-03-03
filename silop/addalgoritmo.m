@@ -91,7 +91,7 @@ function addalgoritmo(nombre, n_valores_retorno, senhales, params, dependencias)
 function posiciones = buscaposiciones(CONFIG, nombre)
 
     vec = CONFIG.ALGORITMOS;
-    if(length(vec))
+    if(~isempty(vec))
         k=1;
         while ((k<=length(vec))&&(~strcmp(nombre, vec(k).nombre)))
             k = k+1;

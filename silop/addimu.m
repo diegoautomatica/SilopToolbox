@@ -1,49 +1,49 @@
-% ADDIMU Añade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
+% ADDIMU Aï¿½ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
 %
-% ADDIMU añade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox. 
-% Se debe incluir la lista completa de IMUs a usar antes de realizar la conexión
+% ADDIMU aï¿½ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox. 
+% Se debe incluir la lista completa de IMUs a usar antes de realizar la conexiï¿½n
 % 
 % Syntax: 
 %   addimu(posicion,numserie, orientacion);
 %
-%   Parámetros de entrada: 
-%	posicion -> Cadena de texto conteniendo la posición en la que está el sensor.
+%   Parï¿½metros de entrada: 
+%	posicion -> Cadena de texto conteniendo la posiciï¿½n en la que estï¿½ el sensor.
 %		    Puede ser: 'COG','MUSLO_DCHO','MUSLO_IZDO','TIBIA_DCHA','TIBIA_IZDA','PIE_DCHO' o 'PIE_IZDO'.
 %	numserie -> numero de serie
-%       orientacion -> Vector de tres elementos que debe indicar cual es la dirección antero-posterior,
-%                   medio-lateral y vertical referida a los ejes del acelerómetro. X=1,Y=2,Z=3.
-%                   Por defecto vale [3,-2,1] en el COG=[antero-posterior=Z del acelerómetro, Medio-lateral=-Y del
-%                   acelerómetro, vertical=X del acelerómetro].
+%       orientacion -> Vector de tres elementos que debe indicar cual es la direcciï¿½n antero-posterior,
+%                   medio-lateral y vertical referida a los ejes del acelerï¿½metro. X=1,Y=2,Z=3.
+%                   Por defecto vale [3,-2,1] en el COG=[antero-posterior=Z del acelerï¿½metro, Medio-lateral=-Y del
+%                   acelerï¿½metro, vertical=X del acelerï¿½metro].
 %                   En el resto de puntos es [1,2,3], o lo que es lo mismo, no se reorientan por defecto.
-%		    Se aceptan valores negativos para indicar que el eje anatómico y el del acelerómetro son opuestos.
+%		    Se aceptan valores negativos para indicar que el eje anatï¿½mico y el del acelerï¿½metro son opuestos.
 %	            
-%   Parámetros de salida: Ninguno
+%   Parï¿½metros de salida: Ninguno
 % 
 % Examples: 
 %   
 %
 % See also: 
 
-% Author:   Antonio López
+% Author:   Antonio Lï¿½pez
 % History:  24.01.2008  creado
 %           24.01.2008 Incorporado a la toolbox
 %
 
-function addimu(donde, serie, R)
+function addimu(donde, serie, R) %#ok<INUSD>
+	global SILOP_CONFIG; %#ok<NUSED>
 	
 	if (nargin<2)
-		error('es necesario especificar los dos primeros parámetros');
+		error('es necesario especificar los dos primeros parï¿½metros');
 	elseif (nargin<3)
 		if (strcmp(donde,'COG'))
-			R=[3,-2,1];
-		else R=[1,2,3];
+			R=[3,-2,1]; %#ok<NASGU>
+		else R=[1,2,3]; %#ok<NASGU>
 		end
 	end
 
-	if (isempty(strmatch(donde, strvcat('COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'),'exact')))
-		warning('posición de IMU no reconocida')
+	if (isempty(strmatch(donde, {'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'},'exact')))
+        error('posicion de IMU no reconocida')
 	else 
-		global SILOP_CONFIG;
 		eval(['SILOP_CONFIG.SENHALES.',donde,'.Serie=serie;']);
 		eval(['SILOP_CONFIG.SENHALES.',donde,'.R=R;']);
 	end

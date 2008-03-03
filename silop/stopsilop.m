@@ -1,47 +1,48 @@
 % STOPSILOP Detiene el procesamiento de las seÃ±ales, asÃ­ como las comunicaciones con los buses 
 % y/o la simulaciÃ³n de los datosacuerdo a los IMUS y algoritmos indicados
 %
-% STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses 
-% y/o la simulación de los datos de acuerdo a los IMUS y algoritmos indicados. En el caso de que se 
-% estén generando logs, esta función crea los ficheros .sl definitivos.
+% STOPSILOP Detiene el procesamiento de las seÃ±ales, asi como las comunicaciones con los buses 
+% y/o la simulacion de los datos de acuerdo a los IMUS y algoritmos indicados. En el caso de que se 
+% esten generando logs, esta funcion crea los ficheros .sl definitivos.
 % 
 % Syntax: 
-%   stopsilop(CONFIG);
+%   stopsilop();
 %
-%   Parámetros de entrada: 
-%	CONFIG  Estructura de configuración de los sensores y algoritmos de la aplicación	
+%   Parametros de entrada: Ninguno
+%   Parametros de salida: Ninguno
 % 
 % Examples: 
 %   
 %
 % See also: 
 
-% Author:   Diego Álvarez
+% Author:   Diego Alvarez
 % History:  29.01.2008  creado e Incorporado a la toolbox
-%           12.02.2008  añadida la parte del Xbus por Rafa
+%           12.02.2008  aÃ±adida la parte del Xbus por Rafa
 
-function CONFIG=stopsilop(CONFIG)
+function stopsilop()
 
+global SILOP_CONFIG
+global SILOP_DATA_LOG; %#ok<NUSED>
 
-if (CONFIG.BUS.Temporizador ~= -1)
-    stop(CONFIG.BUS.Temporizador);
+if (SILOP_CONFIG.BUS.Temporizador ~= -1)
+    stop(SILOP_CONFIG.BUS.Temporizador);
     clear simula_muestreo;
-    global SILOP_DATA_LOG;
     clear SILOP_DATA_LOG; %Liberamos la memoria del enorme fichero de log.
 end;
-if (isstruct(CONFIG.BUS.Xbus))
-    CONFIG.BUS.Xbus=pararcaptura(CONFIG.BUS.Xbus);
-    destruyexbusmaster(CONFIG.BUS.Xbus);
-    CONFIG.BUS.Xbus=-1;
+if (isstruct(SILOP_CONFIG.BUS.Xbus))
+    SILOP_CONFIG.BUS.Xbus=pararcaptura(SILOP_CONFIG.BUS.Xbus);
+    destruyexbusmaster(SILOP_CONFIG.BUS.Xbus);
+    SILOP_CONFIG.BUS.Xbus=-1;
 end;
-if (isstruct(CONFIG.BUS.File))
-	if (CONFIG.BUS.File.Salvar==2)
-		zip(CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
+if (isstruct(SILOP_CONFIG.BUS.File))
+	if (SILOP_CONFIG.BUS.File.Salvar==2)
+		zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
 		delete ('datos_alg.log');
 	else
-		zip(CONFIG.BUS.File.Name,{'config.mat','datos.log'});
+		zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log'});
 	end		
 	delete ('config.mat');
 	delete ('datos.log');
-	movefile ([CONFIG.BUS.File.Name,'.zip'], CONFIG.BUS.File.Name);
+	movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], CONFIG.BUS.File.Name);
 end
