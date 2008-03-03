@@ -186,7 +186,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
             %Buscamos el dispositivo en cada punto
             if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-               p=eval(['find(id_disp==CONFIG.SENHALES.',donde{1},'.Serie)']);
+               p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
                if (isempty(p))
                   error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',donde{1},' no ha sido encontrado']);
                else

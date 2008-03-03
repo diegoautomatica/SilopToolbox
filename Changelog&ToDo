@@ -1,8 +1,6 @@
 ToDo:
 Para el 0.9
-	ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SILOP_CONFIG y SetObjectAlignment
-	       Automáticamente todas las señales dependerán de las calibradas.	
-	Que la demo ordene la calibración
+	Documentar alg_ejes_anatomicos	
 	Documentar la función eventosPiernaG
 	Incluir las funciones de JC para el pie
 	
@@ -17,7 +15,9 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.9    Limpieza del warnings del depurador para buscar más fácil los problemas
+v0.9    ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SILOP_CONFIG y SetObjectAlignment
+	       Automáticamente todas las señales dependerán de las calibradas.	
+	Limpieza del warnings del depurador para buscar más fácil los problemas
 	Se aprovecha para hacer un tratamiento más consistente de las señales y los puntos. Ahora casí todo está en listas
 	     que podrían ser incluidas en una única lista dentro de SILOP_CONFIG, para mas fácil modificación.
 	     Actualemente está "duplicada" en initsilop, connectsilop(que sigue accediendo a señales directamente en las

@@ -1,16 +1,16 @@
-%ALG_DET_EVENT Algoritmo para la detecci�n de los eventos HS y TO
+%ALG_DET_EVENT Algoritmo para la deteccion de los eventos HS y TO
 %
-%ALG_DET_EVENT Algoritmo para la detecci�n de los eventos HS y TO. Este algoritmo actua como 
-%wrapper de la funci�n eventos_RT.
+%ALG_DET_EVENT Algoritmo para la deteccion de los eventos HS y TO. Este algoritmo actua como 
+%wrapper de la funcion eventos_RT.
 %Se puede configurar mediante:
-%    Config = AddAlgoritmo(Config, 'alg_det_event', 2, [COG.Acc_Z, COG.Acc.X], [], {});
+%    addalgoritmo('alg_det_event', 2, {'COG.Acc_Z', 'COG.Acc.X}, [], {});
 %
-%Par�metros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(vacio en este caso)
-% y dependencias(vacia en este caso)DEBERIA DEPENDER DE ALG_DET_MOV EN EL FUTURO
+%Parametros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(vacio en este caso)
+% y dependencias(vacia en este caso)
 
 %Creado: 30-01-2008 por Diego
 
-function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, dependencias)
+function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, dependencias) %#ok<INUSD>
 
         acel_z = senhales(:,1); %Hay dos se�ales 
 	acel_x = senhales(:,2);

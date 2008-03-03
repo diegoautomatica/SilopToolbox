@@ -138,7 +138,7 @@ function comandos = creacomandos(C)
          subcad = [subcad sprintf(', VENTANA(:, [%s])', vsen(1:end-2))]; %#ok<AGROW>
 
           if(~isempty(alg.parametros))
-              cad_params = sprintf(', CONFIG.ALGORITMOS(%d).parametros', k);
+              cad_params = sprintf(', SILOP_CONFIG.ALGORITMOS(%d).parametros', k);
           else
               cad_params=[', []']; %#ok<NBRAK>
           end;
