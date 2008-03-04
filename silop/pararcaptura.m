@@ -1,13 +1,13 @@
-% PARARCAPTURA Detiene la adquisición de datos, pero mantiene el equipo
+% PARARCAPTURA Detiene la adquisiciï¿½n de datos, pero mantiene el equipo
 % listo para reiniciar la captura
 %
-% PARARCAPTURA Detiene la adquisición de datos, pero mantiene el equipo
+% PARARCAPTURA Detiene la adquisiciï¿½n de datos, pero mantiene el equipo
 % listo para reiniciar la captura
 % 
 % Syntax: XBusMaster=pararcaptura(XBusMaster)
 % 
 % Input parameters:
-%   XBusMaster-> Objeto con la información del dispositivo.
+%   XBusMaster-> Objeto con la informaciï¿½n del dispositivo.
 %
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
@@ -27,4 +27,5 @@
 
 function XBusMaster=pararcaptura(XBusMaster)
 
+stopasync(XBusMaster.puerto)
 XBusMaster.puerto.RequestToSend='off';

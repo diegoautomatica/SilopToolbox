@@ -89,7 +89,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 	elseif (strcmp(log(end-4:end),'.tana'))
 		for donde={'PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'} %#ok<ALIGN>
                     if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1'])) %#ok<ALIGN>
-                        error('solo se puede simular el COG desde un fichero .log');
+                        error('solo se puede simular el COG desde un fichero .tana');
 		            end
         end
         SILOP_CONFIG.SENHALES.COG.Acc_Z = 3;
@@ -116,7 +116,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         end
         
         %Incluimos toda la informaci�n de las se�ales. Puede haber de m�s, pero no molesta.
-		SILOP_CONFIG.SENHALES=tmp.CONFIG.SENHALES;
+		SILOP_CONFIG.SENHALES=tmp.SILOP_CONFIG.SENHALES;
 		%Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.
 		delete ('config.mat');
 		existe=dir('datos_alg.log');
@@ -134,21 +134,21 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
     SILOP_CONFIG.BUS.Xbus=-1;
          
     else
-        if (nargin<3)
+        if (nargin<2)
             puerto='COM24';
         else
             puerto=log;
         end
-        if (nargin<4)
+        if (nargin<3)
             bps=460800;
         end
-        if (nargin<5)
+        if (nargin<4)
             freq=100;
         end
-        if (nargin<6)
+        if (nargin<5)
             modo=0;
         end
-        if (nargin<7)
+        if (nargin<6)
             buffer=1;
         end
         
