@@ -7,6 +7,7 @@
 % 
 % Input parameters:
 %   XBusMaster-> Objeto con la información del dispositivo.
+%   p -> Identificador del sensor, tal y como se proporciona en id_disp
 %
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
@@ -23,13 +24,14 @@
 % Author:   Rafael C. Gonzalez de los Reyes
 % History:  
 
-function [XBusMaster,error]=ReqObjectAlignment(XBusMaster)
+function [XBusMaster,error]=ReqObjectAlignment(XBusMaster,p)
 
 % Envia el mensaje ResetOrientation a todos los dispositivos conectados
 % error vale 1 si no se recibe el mensaje de ack
 % El proceso se queda bloqueado hasta recibir el ack
 
-for k=1:XBusMaster.Conf.DevNum
+k=p;
+%for k=1:XBusMaster.Conf.DevNum
     % Cuerpo del mensaje (excepto el byte de checksum)
     msg=[250,k,224,0];
     % Se calcula el cheksum y se coloca al final
@@ -67,4 +69,4 @@ for k=1:XBusMaster.Conf.DevNum
     end
     q=quantizer('Mode','single');
     XBusMaster.Conf.Dev(k).Orientacion=reshape(hex2num(q,reshape(sprintf('%02X',ack(5:end-1)),[8 9])'),[3 3])';
-end
+%end
