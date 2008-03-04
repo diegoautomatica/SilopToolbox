@@ -39,7 +39,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
             error('no se indica el lugar al que corresponden las señales en alg_ejes_anatomicos');
         end
         %En primer lugar comprobamos si estamos en modo Xbus
-        if (SILOP_CONFIG.BUS.Xbus~=-1)
+        if (isstruct(SILOP_CONFIG.BUS.Xbus))
             id_disp=zeros(1,SILOP_CONFIG.BUS.Xbus.ndisp);
             for k=1:SILOP_CONFIG.BUS.Xbus.ndisp
                 id_disp(k)=eval(SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k));
@@ -52,9 +52,20 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
                     p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
                     %Se calcula la matriz de correccion
                     [filas,columnas]=size(senhales);
-                    if (columnas<3*num_sensor)
-                        [basura,Rot]=ejes_anatomicos(senhales(:,3*num_sensor-2:3*num_sensor),senhales(:,3*num_sensor-2:3*num_sensor),[1,2,3]);
-                        SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot); %O la transpuesta, no estoy seguro                                                                                             
+                    if (columnas>=3*num_sensor)
+                        gotoconfig(SILOP_CONFIG.BUS.Xbus);
+                        SILOP_CONFIG.BUS.Xbus=ReqObjectAlignment(SILOP_CONFIG.BUS.Xbus,p);
+                        Rot1=SILOP_CONFIG.BUS.Xbus.Conf.Dev(p).Orientacion;%Rotacion original
+                        [basura,Rot2]=ejes_anatomicos(senhales(:,3*num_sensor-2:3*num_sensor),senhales(:,3*num_sensor-2:3*num_sensor),[1,2,3]);
+                        SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot2'*Rot1); %Comprobar si no sería Rot2'*Rot1
+                        Original=Rot1
+                        Rot2
+                        Rot2*Rot1
+                        Rot2'*Rot1
+                        Rot1*Rot2
+                        Rot1*Rot2'
+                        gotomeasurement(SILOP_CONFIG.BUS.Xbus);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Rotacion=Rot2*Rot1']);
                     else
                         error('el numero de señales en alg_ejes_anatomicos es insuficiente');
                     end
