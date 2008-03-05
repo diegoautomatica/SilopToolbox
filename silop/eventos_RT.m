@@ -2,7 +2,7 @@
 % el COG
 %
 % EVENTOSRT Esta funcion permite ser llamada de forma consecutiva para obtener los instantes de eventos de Contacto
-% Inicial. Es IMPRESCINDIBLE que la señal esté siendo capturada a 100HZ. Es necesario reinicializar las variables
+% Inicial. Es IMPRESCINDIBLE que la seï¿½al estï¿½ siendo capturada a 100HZ. Es necesario reinicializar las variables
 % persistentes para cada experimento nuevo. 
 % 
 % Syntax:  [retardo_hs,retardo_to] = eventos_RT(ah,av,reset)
@@ -10,7 +10,7 @@
 % Input parameters:
 %    ah        - Valor de la ultima muestra de aceleracion antero-posterior
 %    av        - Valor de la ultima muestra de aceleracion vertical
-%    reset     - Si se usa un tercer parámetro, reinicia el proceso de captura y procesamiento.
+%    reset     - Si se usa un tercer parï¿½metro, reinicia el proceso de captura y procesamiento.
 %
 % Output parameters:
 %    retardo_hs   - 0 si no se ha detectado evento de Initial Contact. N > 0 si se ha detectado
@@ -27,21 +27,21 @@
 % Author:   Javi
 % History:  04.01.2008  file created
 %           16.01.2008  Inclusion de End Contact
-%                       Añadido parámetro reset
+%                       Aï¿½adido parï¿½metro reset
 %                       Incorporada a la toolbox(Diego)
 %           18.01.2008  Bug corregido, eliminado el uso de persistent durante el reset.
-%           18.01.2008  bug corregido, se cambia la llamada a picos por localmaxima, y se comprueba tamaño de pmax
+%           18.01.2008  bug corregido, se cambia la llamada a picos por localmaxima, y se comprueba tamaï¿½o de pmax
 
-function[retardo_hs,retardo_to]=eventosRT(ah,av,reset)
+function[retardo_hs,retardo_to]=eventos_RT(ah,av,reset) %#ok<INUSD>
 
 filtro=[0.0365 0.0374 0.0375 0.0382 0.0381 0.0385 0.0381 0.0382 0.0375 0.0374 0.0365]; %filtro de fase lineal con frecuancia de corte 2Hz
-TROZO=200; %constante que indica el número de muestras que se toman como máximo en RT
-INTERVALO=11; %constante que indica el nº de muestras positivas que debe haber anteriormente al zero-crossing
+TROZO=200; %constante que indica el nï¿½mero de muestras que se toman como mï¿½ximo en RT
+INTERVALO=11; %constante que indica el nï¿½ de muestras positivas que debe haber anteriormente al zero-crossing
 
 %Paso 1: Tomar datos de individuo y paseo
-persistent pers_datah; %señal de aceleración anteroposterior
-persistent pers_data2; %señal filtrada
-persistent pers_datav; %señal de aceleración vertical
+persistent pers_datah; %seï¿½al de aceleraciï¿½n anteroposterior
+persistent pers_data2; %seï¿½al filtrada
+persistent pers_datav; %seï¿½al de aceleraciï¿½n vertical
 persistent pers_indice_ultimo_hs; %indice del ultimo hs
 
 if (nargin>2)  %Implementacion del reset
@@ -62,13 +62,13 @@ end
 pers_datah=[pers_datah(aux:end) ah]; %trozo de las ultimas 200 muestras de aceleracion antero-posterior
 pers_datav=[pers_datav(aux:end) av]; %trozo de las ultimas 200 muestras de aceleracion vertical
 
-%Calculo de la señal filtrada
+%Calculo de la seï¿½al filtrada
 L=min([length(pers_datah),length(filtro)]); %longitud de la convolucion
-valor=0; %variable en la que se guardará la nueva muestra de señal filtrada
+valor=0; %variable en la que se guardarï¿½ la nueva muestra de seï¿½al filtrada
 for j=1:L
     valor=valor+filtro(j)*pers_datah(end-j+1); 
 end
-pers_data2=[pers_data2(aux:end) valor]; %trozo de las ultimas 200 muestras de la señal filtrada
+pers_data2=[pers_data2(aux:end) valor]; %trozo de las ultimas 200 muestras de la seï¿½al filtrada
 
 retardo_hs=0; %en principio no hay evento
 retardo_to=0;
@@ -77,7 +77,7 @@ if(length(pers_datah)>INTERVALO)
    if(pers_data2(end)<0 && pers_data2(end-1)>0)
       %se produjo un zero-crossing
       
-      %calcular periodo de la señal
+      %calcular periodo de la seï¿½al
       if(aux==2) %si tenemos un trozo de 200
        auto=xcorr(pers_datah,TROZO,'unbiased');
        auto=auto(TROZO+1:end);
@@ -103,13 +103,13 @@ if(length(pers_datah)>INTERVALO)
           %tenemos informacion de periodo
           ultimo=find(pers_data2<0);
           if (length(ultimo)>1) %By Diego
-               distancia=ultimo(end)-ultimo(end-1)-1; %nº de muestras positivas
+               distancia=ultimo(end)-ultimo(end-1)-1; %nï¿½ de muestras positivas
                norma=distancia/T;
                if(norma>0.2)
                   %se trata de un ZC
                   flag=1; %lo indicamos con un flag
                end
-	  end
+          end
       end
       if(flag==1) %hubo un ZC
           %Seleccionamos la ventana donde buscamos el pico
@@ -123,13 +123,13 @@ if(length(pers_datah)>INTERVALO)
           aux=pers_datah(peaks)/aux;
           peaks=peaks.*(pers_datah(peaks)>0.95).*(pers_datav(peaks)>=9.8).*(aux>0.3); %nos quedamos con los positivos y aplicamos las reglas 
           % heuristicas encontradas (umbrales)
-          peaks=peaks(find(peaks>=minimo & peaks<=maximo));
+          peaks=peaks(find(peaks>=minimo & peaks<=maximo)); %#ok<FNDSB>
           if(~isempty(peaks))
               %Seleccionamos el pico
               %Criterio: primer pico seguido de ZC
               evento=peaks(end);
               for j=1:length(peaks)-1
-                  if(~isempty(find(pers_datah(peaks(j):peaks(j+1))<0)))
+                  if(~isempty(find(pers_datah(peaks(j):peaks(j+1))<0))) %#ok<EFIND>
                       %hay un paso por cero entre estos ds maximos
                       evento=peaks(j);
                   end
@@ -141,7 +141,7 @@ if(length(pers_datah)>INTERVALO)
        end
    end
    
-   %Comprobamos si tenemos el 15% de la señal para buscar un TO
+   %Comprobamos si tenemos el 15% de la seï¿½al para buscar un TO
    flag_to=0;
    if(pers_indice_ultimo_hs>0)
       distancia=length(pers_datah)-pers_indice_ultimo_hs;

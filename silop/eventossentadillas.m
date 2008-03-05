@@ -69,9 +69,8 @@ for i=1:num_sentadillas
         end
         ind_min_ini=ind_minimo;
     end
-    ind_inicio(i)=2*ind_min_ini - ind_max(i);
+    ind_inicio(i)=2*ind_min_ini - ind_max(i); %#ok<AGROW>
 end
-ind_inicio=ind_inicio
             
 
 

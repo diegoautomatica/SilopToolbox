@@ -3,14 +3,14 @@
 %
 % CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
 % datos desde el dispositivo Xbus Master. El objeto XBusMaster es una
-% estructura que contiene información sobre el puerto serie utilizado para
-% la comunicación con el dispositivo, así como de la configuración del
+% estructura que contiene informaciï¿½n sobre el puerto serie utilizado para
+% la comunicaciï¿½n con el dispositivo, asï¿½ como de la configuraciï¿½n del
 % propio dispositivo.
 % 
 % Syntax: XBusMaster=creaxbusmaster(puerto,bps,freq,modo,buffer,ns)
 % 
 % Input parameters:
-%   puerto->  Cadena con el nombre del puerto al que está conectado el
+%   puerto->  Cadena con el nombre del puerto al que estï¿½ conectado el
 %             XBusMaster (por defecto 'COM24')
 %   bps->     Velocidad de transferencia (por defecto 115200 bps)
 %   freq->    Frecuencia de muestreo (por defecto 100Hz)
@@ -22,7 +22,7 @@
 %   ns->      Numero de sensores conectados (por defecto 1)
 %
 % Output parameters:
-%   XBusMaster  - Estructura que almacena toda la información relacionada con la
+%   XBusMaster  - Estructura que almacena toda la informaciï¿½n relacionada con la
 %                 captura de datos desde el dispositivo Xbus Master.
 %
 % Examples:
@@ -90,7 +90,7 @@ switch (XBusMaster.modo)
         XBusMaster.Data=1+(9+9)*ns;
 end;
 
-SILOP_DATA_BUFFER=zeros(XBusMaster.buffer,XBusMaster.Data);
+SILOP_DATA_BUFFER=zeros(XBusMaster.buffer,XBusMaster.Data); %#ok<NASGU>
 
 if (XBusMaster.DataLength>254)
     XBusMaster.DataLength=XBusMaster.DataLength+7; % se incluye la cabecera y el checksum
@@ -113,7 +113,7 @@ XBusMaster.puerto.RequestToSend = 'off';
     
 XBusMaster.puerto.ByteOrder = 'littleEndian';
 XBusMaster.puerto.BytesAvailableFcnCount = XBusMaster.DataLength*XBusMaster.nm;
-SILOP_DATA_BUFFER=zeros(XBusMaster.puerto.BytesAvailableFcnCount,XBusMaster.buffer);
+SILOP_DATA_BUFFER=zeros(XBusMaster.puerto.BytesAvailableFcnCount,XBusMaster.buffer); %#ok<NASGU>
 XBusMaster.puerto.BytesAvailableFcnMode = 'byte';
 XBusMaster.puerto.InputBufferSize = XBusMaster.DataLength*100;
 XBusMaster.puerto.OutputBufferSize = 512;
@@ -129,16 +129,16 @@ fopen(XBusMaster.puerto);
 gotoconfig(XBusMaster);
 [XBusMaster,error]=InitBus(XBusMaster);
 if (XBusMaster.ndisp~=ns)
-    error('SilopToolbox:creaxbusmaster','El número de sensores conectados es distinto del numero de sensores declarados');
+    error('SilopToolbox:creaxbusmaster','El nï¿½mero de sensores conectados es distinto del numero de sensores declarados');
 end
-[XBusMaster,error]=ReqConfiguration(XBusMaster);
-[XBusMaster,error]=SetPeriod(XBusMaster,XBusMaster.freq);
+XBusMaster=ReqConfiguration(XBusMaster);
+XBusMaster=SetPeriod(XBusMaster,XBusMaster.freq);
 switch (modo)
     case 0,
-        [XBusMaster,error]=SetMTOutputMode(XBusMaster,0);
+        XBusMaster=SetMTOutputMode(XBusMaster,0);
     case 1,
-        [XBusMaster,error]=SetMTOutputMode(XBusMaster,1);
+        XBusMaster=SetMTOutputMode(XBusMaster,1);
     case 2,
-        [XBusMaster,error]=SetMTOutputMode(XBusMaster,3);
+        XBusMaster=SetMTOutputMode(XBusMaster,3);
 end
 SILOP_DATA_BUFFER=[];

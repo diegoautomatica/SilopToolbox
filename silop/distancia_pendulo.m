@@ -55,7 +55,7 @@ end
 
 
 %Se calcula el desplazamienot vertical
-vertical=[];
+%vertical=[];
 %Paso a paso. Doble integral
 aceleracion=AccVert;
 aceleracion=aceleracion-SILOP_distanciapendulo.correccion*mean(aceleracion);%Correcci�n

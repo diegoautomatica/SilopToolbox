@@ -28,7 +28,7 @@
 
 
 %Lee datos del buffer. Llamada por una callback
-function leerXBusData(obj,event,XBusMaster)
+function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
 
 global SILOP_DATA_BUFFER;
 %global iter;
@@ -68,12 +68,12 @@ for k=1:XBusMaster.ns
     mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('%02X',data(31:34)));
     my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('%02X',data(35:38)));
     mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('%02X',data(39:42)));
-    if (XBusMaster.modo==2)
+    %if (XBusMaster.modo==2)
         % corregir la orientacion
-        R=reshape(hex2num(q,reshape(sprintf('%02X',data((43:78)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 9*XBusMaster.nm])'),[9 XBusMaster.nm]); %hex2num(q,sprintf('%02X',data(7:10)));
-    end
+        %R=reshape(hex2num(q,reshape(sprintf('%02X',data((43:78)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 9*XBusMaster.nm])'),[9 XBusMaster.nm]); %hex2num(q,sprintf('%02X',data(7:10)));
+    %end
     %SILOP_DATA_BUFFER=[flipud([muestra ax ay az rx ry rz mx my mz]); SILOP_DATA_BUFFER(1:(end-XBusMaster.nm),:)];
-    SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz];
+    SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; %#ok<AGROW>
 end
 SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
 

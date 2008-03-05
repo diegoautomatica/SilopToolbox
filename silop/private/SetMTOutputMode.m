@@ -55,7 +55,7 @@ for k=1:XBusMaster.Conf.DevNum
     % Cuerpo del mensaje (excepto el byte de checksum)
     msg=[250,k,208,2,outmode];
     % Se calcula el cheksum y se coloca al final
-    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    msg=[msg 256-mod(sum(msg(2:end)),256)]; %#ok<AGROW>
     % Se envia por el puerto serie 
     if (XBusMaster.puerto.BytesAvailable>0)
         % Vaciar el puerto 
@@ -64,16 +64,16 @@ for k=1:XBusMaster.Conf.DevNum
         fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
     end
     % El valor del TimeOut se fija a 1 segundo
-    tout=XBusMaster.puerto.TimeOut;
+    %tout=XBusMaster.puerto.TimeOut;
     XBusMaster.puerto.TimeOut=1;
     fwrite(XBusMaster.puerto,msg,'uint8');
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
-    msg=[];
+    %msg=[];
     [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-    error=0;
+    %error=0;
     if (~isempty(msg))
         disp(msg);
         error=1;
@@ -95,7 +95,7 @@ for k=1:XBusMaster.Conf.DevNum
     % Cuerpo del mensaje (excepto el byte de checksum)
     msg=[250,k,210,4,outsett];
     % Se calcula el cheksum y se coloca al final
-    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    msg=[msg 256-mod(sum(msg(2:end)),256)]; %#ok<AGROW>
     % Se envia por el puerto serie 
     if (XBusMaster.puerto.BytesAvailable>0)
         % Vaciar el puerto 
@@ -104,16 +104,16 @@ for k=1:XBusMaster.Conf.DevNum
         fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
     end
     % El valor del TimeOut se fija a 1 segundo
-    tout=XBusMaster.puerto.TimeOut;
+    %tout=XBusMaster.puerto.TimeOut;
     XBusMaster.puerto.TimeOut=1;
     fwrite(XBusMaster.puerto,msg,'uint8');
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
-    msg=[];
+    %msg=[];
     [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-    error=0;
+    %error=0;
     if (~isempty(msg))
         disp(msg);
         error=1;

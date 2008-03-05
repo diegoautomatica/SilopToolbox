@@ -2,15 +2,15 @@
 % EVENTPIERECTOFF Deteccion de los eventos con un giro sobre el pie
 %
 % EVENTPIERECTOFF Hace la deteccion offline de los eventos del paso al 
-% caminar en linea recta, a partir de la señal de un giroscopo situado en 
-% el pie, sobre el metatarso. La señal del giro se integra para medir el 
+% caminar en linea recta, a partir de la seï¿½al de un giroscopo situado en 
+% el pie, sobre el metatarso. La seï¿½al del giro se integra para medir el 
 % angulo del pie en el plano sagital. 
 % Parte de las ideas de [Sabatini05] con un giro situado sobre el tarso.
 % 
 % Syntax: [tiempos]=eventpierectoff(giroY,freq,th1,th2,th3)
 % 
 % Input parameters:
-%   giroY       - Vector con la señal del giro en el metatarso en deg/s
+%   giroY       - Vector con la seï¿½al del giro en el metatarso en deg/s
 %                   sin ninguna correccion.
 %   freq        - frecuencia de muestreo de los datos anteriores (en Hzs)
 %
@@ -54,7 +54,7 @@ function tiempos=eventpierectoff(giroY,frecuencia,Ths)
    % shorten the parameter vector
    if length(Ths) > length(ThStandard), 
       Ths = Ths(1:length(ThStandard)); 
-      warning(' Too many parameters in Threshols! Thesholds was shortened.');
+      warning(' Too many parameters in Threshols! Thesholds was shortened.'); %#ok<WNTAG>
    end
    % At least the first 2 input parameters are necessary
    if length(Ths) < 4,  error('Not enough thesholds selected (at least [th_ICyFC th_FF th_HO th_MW])'); end
@@ -69,10 +69,10 @@ Datos_filt=filtfilt(b,a,giroY);
 tiempos(:,6)=Datos_filt;   %% uso provisional de esta variable...
 
 
-%% Deteccion de los eventos IC y FC, corresponden a los máximos negativos
+%% Deteccion de los eventos IC y FC, corresponden a los mï¿½ximos negativos
 % y pronunciados (th>60deg/s) primero y segundo que se van encontrando 
 %
-mins=[buscamaximosth(-Datos_filt,Ths(1))];
+mins=buscamaximosth(-Datos_filt,Ths(1));
 mins=find(mins==1);
 
 % Actualizamos la matriz de tiempos con los eventos encontrados:
@@ -80,12 +80,12 @@ ii=0; iii=0;
 for i=1:length(mins)
         if (mod(i,2)+1)==1
            iii=iii+1;
-           ic(iii)=mins(i);
+           ic(iii)=mins(i); %#ok<AGROW>
            tiempos(ic(iii),4)=1; %% IC
         end
         if mod(i,2)==1
             ii=ii+1;
-            fc(ii)=mins(i);
+            fc(ii)=mins(i); %#ok<AGROW>
             tiempos(fc(ii),2)=1; %% FC
         end
 end
@@ -98,9 +98,9 @@ ii=0;
 for i=1:(length(ic)),
     th1=0;
     for t=ic(i):(ic(i)+30),   %% en la duracion de un paso...
-        if ((abs(Datos_filt(t))<Ths(2)) & (th1==0))
+        if ((abs(Datos_filt(t))<Ths(2)) && (th1==0))
             ii=ii+1;
-            ff(ii)=t;
+            ff(ii)=t; %#ok<AGROW>
             tiempos(ff(ii),5)=1; %% FF
             th1=1;
         end
@@ -115,9 +115,9 @@ ii=0;
 for i=1:(length(fc)),
     th1=0;
     for t=fc(i):-1:(fc(i)-20),   %% en la duracion de un paso...
-        if ((abs(Datos_filt(t))<Ths(3)) & (th1==0))
+        if ((abs(Datos_filt(t))<Ths(3)) && (th1==0))
             ii=ii+1;
-            ho(ii)=t;
+            ho(ii)=t; %#ok<AGROW>
             tiempos(ho(ii),1)=1; %% HO
             th1=1;
         end
@@ -130,14 +130,14 @@ end
 % entre pasos consecutivos. 
 % Es el unico maximo positivo mayor de 160 deg/s:
 % 
-maxs=[buscamaximosth(Datos_filt,Ths(4))];
+maxs=buscamaximosth(Datos_filt,Ths(4));
 maxs=find(maxs==1);
 % Actualizamos la matriz de tiempos con los eventos encontrados:
 ii=0;
 for i=1:length(maxs)
        	if (Datos_filt(maxs(i))>160)
             ii=ii+1;
-            mw(ii)=maxs(i);
+            mw(ii)=maxs(i); %#ok<AGROW>
             tiempos(mw(ii),3)=1; %% MW
         end
 end

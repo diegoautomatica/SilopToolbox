@@ -45,12 +45,12 @@ k=p;
         fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
     end
     % El valor del TimeOut se fija a 1 segundo
-    tout=XBusMaster.puerto.TimeOut;
+    %tout=XBusMaster.puerto.TimeOut;
     XBusMaster.puerto.TimeOut=1;
     fwrite(XBusMaster.puerto,msg,'uint8');  
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
-    msg=[];
+    %msg=[];
     [ack,cnt,msg]=fread(XBusMaster.puerto,5+9*4,'uint8');
     error=0;
     if (~isempty(msg))

@@ -1,16 +1,16 @@
-% BUSCAMAXIMOS Detecta todos los máximos de una señal después de aplicar un threshold
+% BUSCAMAXIMOS Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold
 %
-% BUSCAMAXIMOS Detecta todos los máximos de una señal después de aplicar un threshold
+% BUSCAMAXIMOS Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold
 % 
 % Syntax: maximos=buscamaximosth(datos,th)
 % 
 % Input parameters:
-%   datos-> señal en la que se buscarán los máximos
-%   th   -> umbral por debajo del cual un punto no se considerará máximo de la señal
+%   datos-> seï¿½al en la que se buscarï¿½n los mï¿½ximos
+%   th   -> umbral por debajo del cual un punto no se considerarï¿½ mï¿½ximo de la seï¿½al
 %
 % Output parameters:
-%   maximos<- señal del mismo tamaño que datos, en la que aparece un 1 en la posición de cada
-%  		máximo y un 0 en el resto de instantes.
+%   maximos<- seï¿½al del mismo tamaï¿½o que datos, en la que aparece un 1 en la posiciï¿½n de cada
+%  		mï¿½ximo y un 0 en el resto de instantes.
 %
 % Examples:
 %
@@ -23,28 +23,28 @@
 
 function maximos=buscamaximosth(Datos,th)
 
-%% Algoritmo: primero se convierte la se–al en una rectangular, con unos en las
+%% Algoritmo: primero se convierte la seï¿½al en una rectangular, con unos en las
 %% pendientes positivas y ceros en las negativas.
-%% Luego se repite la operaci—n para la se–al rectangular, con lo que
+%% Luego se repite la operaciï¿½n para la seï¿½al rectangular, con lo que
 %% queda una con pulsos de valores +1 (en las transiciones de 0 a 1) y 
-%% -1 (en las transiciones de 1 a 0). Los pulsos +1 son los m‡ximos.
+%% -1 (en las transiciones de 1 a 0). Los pulsos +1 son los mï¿½ximos.
 
 tam=size(Datos);
 tam=tam(1);
 
-%% Obtenci—n de la se–al rectangular:
+%% Obtenciï¿½n de la seï¿½al rectangular:
 Datos2=Datos(2:tam)-Datos(1:tam-1);
 Datos2=Datos2>=0;
 
-%% Obtenci—n de las se–al de pulsos:
+%% Obtenciï¿½n de las seï¿½al de pulsos:
 Datos2=Datos2(1:tam-2)-Datos2(2:tam-1);
 
-%% los m‡ximos son los pulsos positivos:
+%% los mï¿½ximos son los pulsos positivos:
 %%maximos=Datos>0;
 
 for i=1:(tam-2),
-    maximos(i)=0;
-    if (Datos2(i)>0) & (Datos(i+1)>th)
-        maximos(i)=1;
+    maximos(i)=0; %#ok<AGROW>
+    if (Datos2(i)>0) && (Datos(i+1)>th)
+        maximos(i)=1; %#ok<AGROW>
     end
 end

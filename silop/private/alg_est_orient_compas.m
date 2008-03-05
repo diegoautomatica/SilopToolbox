@@ -12,18 +12,17 @@
 
 function resultado = alg_est_orient_compas(previos, senhales, params, dependencias) %#ok<INUSD>
 
-        Campox = senhales(:,1);
-        Campoy = senhales(:,2);
-        Campoz = senhales(:,3);
+    Campox = senhales(:,1);
+    Campoy = senhales(:,2);
+    Campoz = senhales(:,3);
 	resultado = previos;
         
-        mov_sin_calcular = find(isnan(resultado)); %Filas a�n no procesadas
-	if (~isempty(mov_sin_calcular))
-        
-	if (isempty(params))
-		resultado(mov_sin_calcular)=orientacioncompas(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular));        
-	else 
-		resultado(mov_sin_calcular)=orientacioncompas(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular),params); 
-	end       
+    mov_sin_calcular = find(isnan(resultado)); %Filas a�n no procesadas
+    if (~isempty(mov_sin_calcular))
+        if (isempty(params))
+            resultado(mov_sin_calcular)=orientacioncompas(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular));        
+        else 
+            resultado(mov_sin_calcular)=orientacioncompas(Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular),params); 
         end
+    end
 

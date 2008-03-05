@@ -12,19 +12,17 @@
 
 function resultado = alg_est_orient_kalman(previos, senhales, params, dependencias) %#ok<INUSD>
 
-        Giro = senhales(:,1);
+    Giro = senhales(:,1);
 	Campox = senhales(:,2);
-        Campoy = senhales(:,3);
-        Campoz = senhales(:,4);
+    Campoy = senhales(:,3);
+    Campoz = senhales(:,4);
 	resultado = previos;
         
-        mov_sin_calcular = find(isnan(resultado)); %Filas a�n no procesadas
-        if (~isempty(mov_sin_calcular))
-
-	if (isempty(params))
-		resultado(mov_sin_calcular)=orientacionkalman(Giro(mov_sin_calcular),Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular));        
-	else 
-		resultado(mov_sin_calcular)=orientacionkalman(Giro(mov_sin_calcular),Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular),params); 
-	end       
-        
-	end
+    mov_sin_calcular = find(isnan(resultado)); %Filas a�n no procesadas
+    if (~isempty(mov_sin_calcular))
+        if (isempty(params))
+            resultado(mov_sin_calcular)=orientacionkalman(Giro(mov_sin_calcular),Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular));        
+        else 
+            resultado(mov_sin_calcular)=orientacionkalman(Giro(mov_sin_calcular),Campox(mov_sin_calcular),Campoy(mov_sin_calcular),Campoz(mov_sin_calcular),params); 
+        end       
+    end

@@ -75,7 +75,7 @@ tiempos(:,8)=0*AccVert;
 %Deteccion de puntos de footflat.
 %Primera aproximaci�n. m�ximos 1� arm�nico
 Datos_filt=filtro0(AccVert,60,5/frecuencia);
-ff=[buscamaximosth(Datos_filt,10.5)];
+ff=buscamaximosth(Datos_filt,10.5);
 ff=find(ff==1);
 
 
@@ -92,7 +92,7 @@ end
 %Busqueda del resto de HS
 for i=resto:length(ff)
     [maximo,punto]=max(AccHor(ff(i)+ceil(m_inferior*frecuencia):ff(i)+floor(m_superior*frecuencia)));
-    hs(i)=ff(i)+ceil(m_inferior*frecuencia)+punto-1;
+    hs(i)=ff(i)+ceil(m_inferior*frecuencia)+punto-1; %#ok<AGROW>
 end
 
 %Postprocesamiento de los HS, para eliminar posibles espurios m�ltiples
@@ -112,7 +112,7 @@ end
 ff=0*hs;
 to=0*ff;
 ms=0*to;
-po=0*ms;
+%po=0*ms;
 
 
 %Detecci�n del FF. M�ximo desplazamiento respecto al HS
@@ -168,7 +168,7 @@ end
 
 %Iniciamos b�squeda de MS.
 %Para el MS busco los minimos absolutos en [TO, HS]
-ipo=[buscamaximos(-Datos_filt)];
+ipo=buscamaximos(-Datos_filt);
 ipo=find(ipo==1);
 
 %eliminamos un posible MS antes del 1� TO para mantener secuencia estandar
@@ -189,21 +189,21 @@ end
 %Puede que a pesar de todo el n�mero de MSs no coincida con el 
 %n�mero de TOs
 if length(ipo)~=length(ff)
-	warning('los eventos detectados son incongruentes.�todos los datos son caminando??');	
+	warning('los eventos detectados son incongruentes.�todos los datos son caminando??');	 %#ok<WNTAG>
 end
 minimo_de_puntos=min(length(ipo),length(ff));
 
 
 %%Detecci�n del evento NoIdentificado NI: M�ximo entre TO y MS
 for k=1:minimo_de_puntos
- 	if(to(k)<ipo(k))
+    if(to(k)<ipo(k))
             [maxim, pos_maxim] = max(AccVert(to(k):ipo(k)));
             ms(k) = pos_maxim+to(k)-1;
         else 
-	    warning('toe off < initial push off. Muestras %d %d',to(k),ipo(k));
+	    warning('toe off < initial push off. Muestras %d %d',to(k),ipo(k)); %#ok<WNTAG>
 	    to(k) = ipo(k)-2;
 	    ms(k) = ipo(k)-1;
-        end;
+    end;
 end;
 
 for i=1:minimo_de_puntos

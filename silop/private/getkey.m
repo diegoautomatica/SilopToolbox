@@ -41,13 +41,13 @@ function ch = getkey(m)
 
 % Determine the callback string to use
 if nargin == 1,
-    if strcmp(lower(m),'non-ascii'),
-        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ;
+    if strcmpi(m,'non-ascii'),
+        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ; %#ok<NBRAK>
     else       
         error('Argument should be the string ''non-ascii''') ;
     end
 else
-    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ;
+    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ; %#ok<NBRAK>
 end
 
 % Set up the figure

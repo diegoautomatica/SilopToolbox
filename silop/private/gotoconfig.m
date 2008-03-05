@@ -1,16 +1,16 @@
 % GOTOCONFIG Pasa el dispositivo Xbus Master al estado config
 %
-% GOTOCONFIG Envía al dispositivo Xbus Master un mensaje que le obliga
+% GOTOCONFIG Envï¿½a al dispositivo Xbus Master un mensaje que le obliga
 % pasar al modo config. Pueden perderse datos que existan en el buffer de
 % entrada.
 % 
 % Syntax: error=gotoconfig(XBusMaster)
 % 
 % Input parameters:
-%   XBusMaster->  Objeto con la información del dispositivo.
+%   XBusMaster->  Objeto con la informaciï¿½n del dispositivo.
 %
 % Output parameters:
-%   error  - 0 si no se produjo ningún error y 1 en caso contrario.
+%   error  - 0 si no se produjo ningï¿½n error y 1 en caso contrario.
 %
 % Examples:
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2);
@@ -43,12 +43,12 @@ while (XBusMaster.puerto.BytesAvailable>0)
     
 end
 % El valor del TimeOut se fija a 1 segundo
-tout=XBusMaster.puerto.TimeOut;
+%tout=XBusMaster.puerto.TimeOut;
 XBusMaster.puerto.TimeOut=1;
 fwrite(XBusMaster.puerto,msg,'uint8');
 % Se espera a recibir la contestacion
 % Se supone que el buffer de entrada esta vacio
-msg=[];
+%msg=[];
 [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
 error=0;
 if (~isempty(msg))

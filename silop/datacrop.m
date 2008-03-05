@@ -23,7 +23,7 @@
 clear data_file;
 data_file=input('Nombre del archivo de datos a limpiar: ','s');
 jc=load(data_file);
-display('Archivo le’do OK, numero total de muestras:' );tam=size(jc)
+display('Archivo leï¿½do OK, numero total de muestras:' );tam=size(jc);
 p1=1;   % muestra inicial de estudio
 p2=tam(1,1); % Muestra final de estudio, normalmente todo
 figure, subplot(211), plot(jc), grid, xlabel('Datos iniciales');

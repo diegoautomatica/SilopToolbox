@@ -57,7 +57,7 @@ persistent SILOP_orientacionkalman
 if (nargin<7)
     reset=0;
 end
-if ((isempty(SILOP_orientacionkalman))|(reset==1))
+if ((isempty(SILOP_orientacionkalman))||(reset==1))
     SILOP_orientacionkalman.freq=100;
     %el valor inicial se asocia con 0 en el compas
     orientacioncompas(campox,campoy,campoz,orientacioncompas(campox,campoy,campoz));
@@ -86,13 +86,13 @@ angulok=0*angulocompas;
 
 %Matrices de Kalman iniciales
 A=[1 1/SILOP_orientacionkalman.freq 0; 0 1 0; 0 0 1];
-B=0;
+%B=0;
 C=[1,0,0; 0 1 1 ];
 V=[0 0 0 ; 0 0.1 0 ; 0 0 1e-6];
 
 
 %%%  Filtro
-dif_angulos_old=0;
+%dif_angulos_old=0;
 for indice=1:length(angulok)
         %Deteccion de anomalias.
         if (fiablecompas(indice)==0)
@@ -103,7 +103,7 @@ for indice=1:length(angulok)
                 SILOP_orientacionkalman.ruidocompas=1e10;
             end
             %Implementación del reset cuando la diferencia disminuye mucho
-            if ((abs(dif_angulos)<2) & (SILOP_orientacionkalman.ruidocompas>1e9))
+            if ((abs(dif_angulos)<2) && (SILOP_orientacionkalman.ruidocompas>1e9))
                 SILOP_orientacionkalman.P=1e-3*eye(3);
                 SILOP_orientacionkalman.ruidocompas=10;
             end

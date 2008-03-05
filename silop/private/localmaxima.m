@@ -1,12 +1,12 @@
-% LOCALMAXIMA Determina los puntos que son máximos locales de una función en un entorno 
+% LOCALMAXIMA Determina los puntos que son mï¿½ximos locales de una funciï¿½n en un entorno 
 %
-% LOCALMAXIMA Determina los puntos que son máximos locales de una función en un entorno 
+% LOCALMAXIMA Determina los puntos que son mï¿½ximos locales de una funciï¿½n en un entorno 
 % 
 % Syntax: lista=localmaxima(datos,N)
 % 
 % Input parameters:
-%   datos-> señal en la que se buscarán los máximos
-%   N    -> número de datos a cada lado que deben ser menores para que el punto se considere máximo local
+%   datos-> seï¿½al en la que se buscarï¿½n los mï¿½ximos
+%   N    -> nï¿½mero de datos a cada lado que deben ser menores para que el punto se considere mï¿½ximo local
 %
 % Output parameters:
 %   maximos<- vector conteniendo la posicion de los maximos
@@ -21,14 +21,14 @@
 %           21.01.2008  documentada
 
 function [f]=localmaxima(x,N)
-%algoritmo sencillo de lozalización de máximos relativos
-%N indica el nº de muestras por cada lado que el punto tiene que ser mayor
+%algoritmo sencillo de lozalizaciï¿½n de mï¿½ximos relativos
+%N indica el nï¿½ de muestras por cada lado que el punto tiene que ser mayor
 %para ser un maximo
 contador=1;
 f=[];
 for i=N+1:length(x)-N
    if(x(i)==max(x((i-N):(i+N))))
-      f(contador)=i;
+      f(contador)=i; %#ok<AGROW>
       contador=contador+1;
    end
 end

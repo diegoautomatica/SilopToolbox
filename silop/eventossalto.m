@@ -82,7 +82,7 @@ j=1;
 if (num_saltos>=1)
     for i=1:num
         if ind_max(i)> ind_min(j)    
-            ind_max2(j)=ind_max(i);
+            ind_max2(j)=ind_max(i); %#ok<AGROW>
             j=j+1;
         end
         if j>num_saltos  %Ya se asigno un máximo a cada mínimo
@@ -99,7 +99,7 @@ for i=1:num_saltos
      datos_tramo=-AccVert(ind_min(i)+1:ind_max(i)+1); %No es ind_max(i)-1??
      min=buscamaximosth(datos_tramo,-9.81);
      indice=find(min==1);   %Localización del minimo en el tramo
-     ind_min_cerc(i)=indice(end)+ind_min(i); %Paso a las coordenadas globales 
+     ind_min_cerc(i)=indice(end)+ind_min(i); %#ok<AGROW> %Paso a las coordenadas globales 
 end
 
 % Una vez obtenido ese minimo obtengo el paso por 9.81 de la señal de
@@ -108,7 +108,7 @@ for i=1:num_saltos
     datos_tramo=-abs(AccVert(ind_min_cerc(i)+1:ind_max(i)+1)-9.81); %No es ind_max(i)-1??
     paso_g=buscamaximos(datos_tramo);
     ind_g=find(paso_g==1);
-    ind_paso_g(i)=ind_g(1)+ind_min_cerc(i);
+    ind_paso_g(i)=ind_g(1)+ind_min_cerc(i); %#ok<AGROW>
 end
 
 

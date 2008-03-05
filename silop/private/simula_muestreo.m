@@ -1,27 +1,27 @@
-% SIMULA_MUESTREO Callback que simula la realización de un muestreo desde los Xsens
+% SIMULA_MUESTREO Callback que simula la realizaciï¿½n de un muestreo desde los Xsens
 %
-% SIMULA_MUESTREO Callback que simula la realización de un muestreo desde los Xsens. Está pensada para ser llamada
+% SIMULA_MUESTREO Callback que simula la realizaciï¿½n de un muestreo desde los Xsens. Estï¿½ pensada para ser llamada
 % exclusivamente desde connectsilop. Por ahora usa un fichero de datos fijo, 'rafa.log', que debe pasar a ser configurable.
 % 
 % Syntax: 
 %   simula_muestreo(obj, event);
 %
-%   Parámetros de entrada:
-%		obj y event son los parámetros de la callback
-%   Parámetros de salida: Ninguno, modifica la variable global SILOP_DATA_BUFFER
+%   Parï¿½metros de entrada:
+%		obj y event son los parï¿½metros de la callback
+%   Parï¿½metros de salida: Ninguno, modifica la variable global SILOP_DATA_BUFFER
 % 
 % Examples: 
 %   
 %
 % See also: 
 
-% Author:   Antonio López
+% Author:   Antonio Lï¿½pez
 % History:  24.01.2008  creado
 %           25.01.2008 Incorporado a la toolbox
 %
 
 
-function simula_muestreo(obj, event, log)
+function simula_muestreo(obj, event, log) %#ok<INUSD>
 
 persistent puntero_datos;
 if (isempty(puntero_datos))

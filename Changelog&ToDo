@@ -1,8 +1,10 @@
 ToDo:
 Para el 0.9
-	Documentar la función eventosPiernaG
+	Documentar la función eventosPiernaG. 
+		el parametro sin documentar fh no se respeta.
+	eventospierectoff tiene documentacion que no coincide con lo que hace la funcion.
+		el parámetro frecuencia no se respeta.
 	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
-	Caza de bugs.
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
@@ -15,7 +17,9 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v0.9    ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SILOP_CONFIG y SetObjectAlignment
+v0.9    auditoria de codigo. Pillados muchos bugs.
+	stopsilop() por defecto deja todo listo para rellamar a playsilop(). Puede detenerlo todo opcionalmente.
+	ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SILOP_CONFIG y SetObjectAlignment
 	       Automáticamente todas las señales dependerán de las calibradas.	
 	Limpieza del warnings del depurador para buscar más fácil los problemas
 	Se aprovecha para hacer un tratamiento más consistente de las señales y los puntos. Ahora casí todo está en listas

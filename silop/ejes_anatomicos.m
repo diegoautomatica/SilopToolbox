@@ -1,32 +1,33 @@
-% EJES_ANATOMICOS Reorienta los datos obtenidos para que coincidan con los ejes anatómicos.
+% EJES_ANATOMICOS Reorienta los datos obtenidos para que coincidan con los ejes anatï¿½micos.
 %
-% EJES_ANATOMICOS Tomando como base una señal, en la que los instantes iniciales la única aceleración es la de la gravedad realinea los ejes de referencia para que las aceleraciones se correspondan con los ejes antero-posterior, medio-lateral y vertical.
+% EJES_ANATOMICOS Tomando como base una seï¿½al, en la que los instantes iniciales la ï¿½nica aceleraciï¿½n es la de la gravedad realinea los ejes de referencia para que las aceleraciones se correspondan con los ejes antero-posterior, medio-lateral y vertical.
 %
 % Sintax: [acc_c,RR]=ejes_anatomicos(acc,acc_parcial,R)
 %
-% Parámetros de entrada:
+% Parï¿½metros de entrada:
 %    acc           - matriz con todos los datos de las tres aceleraciones del sensor
 %    acc_parcial   - matriz con las aceleraciones correspondientes al intervalo a 
 %                    estudiar
 %    R             - Matriz de rotacion opcional que transforma los datos de los ejes del
-%		     acelerometro a la referencia anatómica teorica. Soporta tres formatos
-%                     1) si no se incluye el parámetro se supone que esta en la posición estandar
-%                     2) si se incluye un vector con tres números se debe indicar cual de los ejes
-%                        de los acelerómetros se corresponde con la aceleración antero-posterior,
+%		     acelerometro a la referencia anatï¿½mica teorica. Soporta tres formatos
+%                     1) si no se incluye el parï¿½metro se supone que esta en la posiciï¿½n estandar
+%                     2) si se incluye un vector con tres nï¿½meros se debe indicar cual de los ejes
+%                        de los acelerï¿½metros se corresponde con la aceleraciï¿½n antero-posterior,
 %                        medio-lateral y vertical respectivamente
-%                     3) si se proporciona una matriz 3x3 debe ser la matriz de rotación que convierte
+%                     3) si se proporciona una matriz 3x3 debe ser la matriz de rotaciï¿½n que convierte
 %                        los ejes de forma directa
 %
-% Parámetros de salida:
-%    acc_c          - una matriz que contine las tres aceleraciones referidas a los ejes anatómicos.
-%                     En la primera columna esta la aceleración en la dirección anteroposterior (positivo en 
-%                     sentido anterior). En la segunda columna la aceleración en la direccion medio-lateral 
-%                     (positivo en sentido medial desde la derecha) y en la tercera columna la aceleración 
+% Parï¿½metros de salida:
+%    acc_c          - una matriz que contine las tres aceleraciones referidas a los ejes anatï¿½micos.
+%                     En la primera columna esta la aceleraciï¿½n en la direcciï¿½n anteroposterior (positivo en 
+%                     sentido anterior). En la segunda columna la aceleraciï¿½n en la direccion medio-lateral 
+%                     (positivo en sentido medial desde la derecha) y en la tercera columna la aceleraciï¿½n 
 %                     vertical (positivo hacia arriba)
 %    RR             - Opcionalmente se devuelve la matriz de rotacion total, que transforma los datos iniciales 
 %                     a los ejes anatomicos. Si los datos estan en forma de vectores fila (n x 3) la forma de 
-%                     obtener los datos referidos a los ejes anatómicos sería hacer la multiplicacion 
-%                     dat_anat=(datos_sensor*RR')% Examples:
+%                     obtener los datos referidos a los ejes anatï¿½micos serï¿½a hacer la multiplicacion 
+%                     dat_anat=(datos_sensor*RR')
+% Examples:
 %
 % See also:
 %
@@ -52,7 +53,7 @@ if (tam1*tam2==3)
 		R(k,abs(orden(k)))=sign(orden(k)); 
 	end;
 else if (tam1*tam2==9)
-	R=R;
+	%R=R;
 else
 	error('Matriz R de formato incorrecto');
     end
@@ -89,11 +90,11 @@ if (abs(c1)>abs(c2))
     % Hacer una rotacion respecto del eje mediolateral (Y) para anular la
     % componente anteroposterior de la gravedad
     ug=mean(datos2,1)/norm(mean(datos2,1));
-    g=norm(mean(datos2));
+    %g=norm(mean(datos2));
 
     % Tomar la proyeccion de ug sobre el plano sagital
-    proy_ug=[ug(1) ug(3)];
-    proy_ug=proy_ug/norm(proy_ug);
+    %proy_ug=[ug(1) ug(3)];
+    %proy_ug=proy_ug/norm(proy_ug);
     c1=ug(1);
     c3=ug(3);
 
@@ -117,11 +118,11 @@ else
     % componente anteroposterior de la gravedad
 
     ug=mean(datos2,1)/norm(mean(datos2,1));
-    g=norm(mean(datos2));
+    %g=norm(mean(datos2));
 
     % Tomar la proyeccion de ug sobre el plano sagital
-    proy_ug=[ug(2) ug(3)];
-    proy_ug=proy_ug/norm(proy_ug);
+    %proy_ug=[ug(2) ug(3)];
+    %proy_ug=proy_ug/norm(proy_ug);
     c2=ug(2);
     c3=ug(3);
 

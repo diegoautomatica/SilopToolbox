@@ -1,18 +1,18 @@
-% ENERGIAWAVELET realizar la descomposición wavelet de una señal
+% ENERGIAWAVELET realizar la descomposiciï¿½n wavelet de una seï¿½al
 %
-% ENERGIAWAVELET realizar la descomposición wavelet de una señal
+% ENERGIAWAVELET realizar la descomposiciï¿½n wavelet de una seï¿½al
 % 
 % Syntax: [energiatotal,desvstdwavelet,valorRMS]=energiawavelet(aceleracion)
 % 
 % Input parameters:
-%   aceleracion-> señal a procesar
+%   aceleracion-> seï¿½al a procesar
 %
 % Output parameters:
-%   energiatotal->Vector que tiene las energías de cada una de las componentes
-%		wavelet obtenidas de la descomposición de la señal aceleracion.
-%   desvstdwavelet->Vector que tiene las desviaciones estándar de cada una de
+%   energiatotal->Vector que tiene las energï¿½as de cada una de las componentes
+%		wavelet obtenidas de la descomposiciï¿½n de la seï¿½al aceleracion.
+%   desvstdwavelet->Vector que tiene las desviaciones estï¿½ndar de cada una de
 %              las componentes wavelet.
-%   valorRMS->Vector que contiene los valores RMS de energía para cada wavelet
+%   valorRMS->Vector que contiene los valores RMS de energï¿½a para cada wavelet
 %   
 %
 % Examples:
@@ -26,34 +26,34 @@
 
 
 
-%realiza la descomposición wavelet de la señal de aceleración
+%realiza la descomposiciï¿½n wavelet de la seï¿½al de aceleraciï¿½n
 function [energiatotal,desvstdwavelet,valorRMS]=energiawavelet(aceleracion) 
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Descomposición wavelet de la señal
+%Descomposiciï¿½n wavelet de la seï¿½al
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Realización de la descomposición de paquetes wavelet
+%Realizaciï¿½n de la descomposiciï¿½n de paquetes wavelet
 
-%Como wavelet "madre" se utilizará una Daubechies de orden 5 'db5'
+%Como wavelet "madre" se utilizarï¿½ una Daubechies de orden 5 'db5'
 [a1,d1]=dwt(aceleracion,'db5');
 [aA2,aD2]=dwt(a1,'db5');
 [aA3,aD3]=dwt(aA2,'db5');
 [aA4,aD4]=dwt(aA3,'db5');
 [aA5,aD5]=dwt(aA4,'db5');
 [aA6,aD6]=dwt(aA5,'db5');    
-[dA2,dD2]=dwt(d1,'db5');
+[dA2,dD2]=dwt(d1,'db5'); %#ok<NASGU>
 [dA3,dD3]=dwt(dA2,'db5');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Cálculo de las energías y valores RMS
+%Cï¿½lculo de las energï¿½as y valores RMS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Cálculo de la energía de la wavelet sumando las energías de:
+%Cï¿½lculo de la energï¿½a de la wavelet sumando las energï¿½as de:
 %aD6, aD5, aD4, aD3, aD2, dA3, dD3
-%También se aprovechará para calcular el valor eficaz
+%Tambiï¿½n se aprovecharï¿½ para calcular el valor eficaz
 energiaaD6=0; energiaaD5=0; energiaaD4=0; energiaaD3=0;
 energiaaD2=0; energiadA3=0; energiadD3=0;
    
@@ -92,7 +92,7 @@ for j=1:length(dD3)
 end
 RMSdD3=sqrt(energiadD3/length(dD3));
 
-%Vector que contiene los valores RMS de cada una de las señales wavelet
+%Vector que contiene los valores RMS de cada una de las seï¿½ales wavelet
 valorRMS=[RMSaD5 RMSaD4 RMSaD3 RMSaD2 RMSdA3 RMSdD3];
 
 energiainf=energiaaD6+energiaaD5+energiaaD4+energiaaD3+energiaaD2;
@@ -102,7 +102,7 @@ energiatotal=energiainf+energiasup;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Segunda forma de hallar la enrgía de la señal
+%Segunda forma de hallar la enrgï¿½a de la seï¿½al
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % energiaa1=0; energiad1=0;
 % for j=1:length(energiaa1)
@@ -119,9 +119,9 @@ energiatotal=energiainf+energiasup;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Calculo de la desviación estándar de la señal
+%Calculo de la desviaciï¿½n estï¿½ndar de la seï¿½al
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%El cálculo de la desviación estándar se realizará mediante la función
+%El cï¿½lculo de la desviaciï¿½n estï¿½ndar se realizarï¿½ mediante la funciï¿½n
 %std(vector)
 desvstdaD5=std(aD5);
 desvstdaD4=std(aD4);

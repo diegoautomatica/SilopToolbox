@@ -120,7 +120,7 @@ else
         sl=SILOP_penduloparcial.pie*ones(size(vertical));
     end
 end
-
+distancia=sl;
 
 
 
