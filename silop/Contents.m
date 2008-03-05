@@ -1,11 +1,11 @@
 % Silop Toolbox
-% Version 0.8 28-Feb-2008
+% Version 0.9 03-Mar-2008
 % SiLoP Toolbox, files in directory  silop/
 %
 %
 % AutoAdd
 % addalgoritmo  - ADDALGORITMO Añade un algoritmo al sistema de procesamiento de las aplicaciones estandar de la toolbox
-% addimu        - ADDIMU A�ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
+% addimu        - ADDIMU A�ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
 % buscamaximos  - BUSCAMAXIMOS Detecta todos los m�ximos de una se�al
 % buscamaximosth - BUSCAMAXIMOS Detecta todos los m�ximos de una se�al despu�s de aplicar un threshold
 % connectsilop  - CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados
@@ -39,7 +39,7 @@
 % orientacioncompas - ORIENTACIONCOMPAS Calcula la orientación en base a los datos de una brújula/compás situada en el COG
 % orientaciongiroscopo - ORIENTACIONGIROSCOPO Calcula la orientación en base a los datos de un giróscopo situado en el COG
 % orientacionkalman - ORIENTACIONKALMAN Calcula la orientación en base a los datos de un giróscopo y un compás situados en el COG
-% pararcaptura  - PARARCAPTURA Detiene la adquisici�n de datos, pero mantiene el equipo
+% pararcaptura  - PARARCAPTURA Detiene la adquisici�n de datos, pero mantiene el equipo
 % playsilop     - PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados
 % silopdemo     - % SILOPDEMO Demostración de las capacidades de la toolbox
 % stopsilop     - STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses 

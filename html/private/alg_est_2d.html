@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_EST_2D Algoritmo para la estimaci�n de la posicion en 2d " />
+<meta name="description" content=" ALG_EST_2D Algoritmo para la estimacion de la posicion en 2d " />
 <meta name="keywords" content="  silopdemo " />
 <title>Documentation of  alg_est_2d</title>
 </head>
@@ -19,17 +19,17 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2)</pre>
+<pre>[resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2) %#ok<INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_EST_2D Algoritmo para la estimaci�n de la posicion en 2d
+ALG_EST_2D Algoritmo para la estimacion de la posicion en 2d
 
-ALG_EST_2D Algoritmo para la estimaci�n de la posicion en 2d. 
+ALG_EST_2D Algoritmo para la estimacion de la posicion en 2d. 
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_est_2d', 2, [], [], {'alg_est_dist' , 'alg_est_orient'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_2d', 2, [], [], {'alg_est_dist' , 'alg_est_orient'});
 
-Par�metros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
+Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
  y dependencias (distancia recorrida en cada paso y orientacion).
 </pre>
 <hr size="3" noshade="noshade" />
@@ -53,7 +53,7 @@ Par�metros: como todos los alg_*. resultados anteriores, se�ales a usar, par
 
 <em class="mcom">%Creado: 01-02-2008 por Diego</em>
 
-function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2)
+function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2) <em class="mcom">%#ok&lt;INUSL&gt;</em>
 
     distancias = dependencia1;
     angulos = dependencia2;
@@ -66,15 +66,15 @@ function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, depend
 	pasos=pasos';
 	if (~isempty(pasos))
 		for k=pasos(1:end)
-		        if (isnan(resultadox(k))) 
-				x=x+distancias(k)*cos(angulos(k));
-				y=y+distancias(k)*sin(angulos(k));
-				resultadox(k)=x;
-				resultadoy(k)=y;
-			else  <em class="mcom">%ya estaba calculado</em>
+            if (isnan(resultadox(k))) 
+                x=x+distancias(k)*cos(angulos(k));
+                y=y+distancias(k)*sin(angulos(k));
+                resultadox(k)=x;
+                resultadoy(k)=y;
+            else  <em class="mcom">%ya estaba calculado</em>
 				x=resultadox(k);
 				y=resultadoy(k);
-			end
+            end
 		end
 	end
 

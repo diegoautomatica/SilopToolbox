@@ -56,14 +56,9 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
                         gotoconfig(SILOP_CONFIG.BUS.Xbus);
                         SILOP_CONFIG.BUS.Xbus=ReqObjectAlignment(SILOP_CONFIG.BUS.Xbus,p);
                         Rot1=SILOP_CONFIG.BUS.Xbus.Conf.Dev(p).Orientacion;%Rotacion original
-                        [basura,Rot2]=ejes_anatomicos(senhales(:,3*num_sensor-2:3*num_sensor),senhales(:,3*num_sensor-2:3*num_sensor),[1,2,3]);
-                        SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot2'*Rot1); %Comprobar si no sería Rot2'*Rot1
-                        Original=Rot1
-                        Rot2
-                        Rot2*Rot1
-                        Rot2'*Rot1
-                        Rot1*Rot2
-                        Rot1*Rot2'
+                        nocero=find(senhales(:,3*num_sensor)~=0);
+                        [basura,Rot2]=ejes_anatomicos(senhales(nocero,3*num_sensor-2:3*num_sensor),senhales(nocero,3*num_sensor-2:3*num_sensor),[1,2,3]);
+                        SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot2*Rot1); %Comprobar si no sería Rot2'*Rot1
                         gotomeasurement(SILOP_CONFIG.BUS.Xbus);
                         eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Rotacion=Rot2*Rot1']);
                     else

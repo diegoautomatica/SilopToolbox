@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" REQOBJECTALIGNMENT Envía el mensaje ReqObjectAlignment al objeto XBusMaster " />
-<meta name="keywords" content="   " />
+<meta name="keywords" content="  alg_ejes_anatomicos " />
 <title>Documentation of  ReqObjectAlignment</title>
 </head>
 <body >
@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[XBusMaster,error]=ReqObjectAlignment(XBusMaster)</pre>
+<pre>[XBusMaster,error]=ReqObjectAlignment(XBusMaster,p)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -32,6 +32,7 @@
  
  Input parameters:
    XBusMaster-&gt; Objeto con la información del dispositivo.
+   p -&gt; Identificador del sensor, tal y como se proporciona en id_disp
 
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
@@ -46,20 +47,35 @@
  See also: 
 </pre>
 <hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="../private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
 <h2 >Listing of function ReqObjectAlignment</h2>
 <pre>
 
 
 <em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
-<em class="mcom">% History:  </em>
+<em class="mcom">% History:  </em>
 
-function [XBusMaster,error]=ReqObjectAlignment(XBusMaster)
+function [XBusMaster,error]=ReqObjectAlignment(XBusMaster,p)
 
 <em class="mcom">% Envia el mensaje <a class="mfun" href="../archive/resetorientation.html">ResetOrientation</a> a todos los dispositivos conectados</em>
 <em class="mcom">% error vale 1 si no se recibe el mensaje de ack</em>
 <em class="mcom">% El proceso se queda bloqueado hasta recibir el ack</em>
 
-for k=1:XBusMaster.Conf.DevNum
+k=p;
+<em class="mcom">%for k=1:XBusMaster.Conf.DevNum</em>
     <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
     msg=[250,k,224,0];
     <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
@@ -97,7 +113,7 @@ for k=1:XBusMaster.Conf.DevNum
     end
     q=quantizer('Mode','single');
     XBusMaster.Conf.Dev(k).Orientacion=reshape(hex2num(q,reshape(sprintf('<em class="mcom">%02X',ack(5:end-1)),[8 9])'),[3 3])';</em>
-end
+<em class="mcom">%end</em>
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

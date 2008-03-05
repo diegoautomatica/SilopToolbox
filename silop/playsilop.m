@@ -32,13 +32,13 @@ global SILOP_DATA_BUFFER;
 	
 VENTANA=zeros(1, SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE-1);
 
-if (nargin<2)
+if (nargin<1)
 	salvar=0;
 end
 
 if (salvar>0)
 	SILOP_CONFIG.BUS.File=struct('Salvar',salvar);
-	if (nargin<3)
+	if (nargin<2)
 		SILOP_CONFIG.BUS.File.Name='datos.sl';
 	else
 		SILOP_CONFIG.BUS.File.Name=fichero;			

@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_EST_DIST_PENDULO Algoritmo para la estimaci�n de la longitud de los pasos mediante el modelo del pendulo " />
+<meta name="description" content=" ALG_EST_DIST_PENDULO Algoritmo para la estimacion de la longitud de los pasos mediante el modelo del pendulo " />
 <meta name="keywords" content=" distancia_pendulo silopdemo " />
 <title>Documentation of  alg_est_dist_pendulo</title>
 </head>
@@ -23,14 +23,14 @@
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_EST_DIST_PENDULO Algoritmo para la estimaci�n de la longitud de los pasos mediante el modelo del pendulo
+ALG_EST_DIST_PENDULO Algoritmo para la estimacion de la longitud de los pasos mediante el modelo del pendulo
 
-ALG_EST_DIST_PENDULO Algoritmo para la estimaci�n de la longitud de los pasos.
- Este algoritmo actua como  wrapper de la funci�n <a class="mfun" href="../distancia_pendulo.html">distancia_pendulo</a>
+ALG_EST_DIST_PENDULO Algoritmo para la estimacion de la longitud de los pasos.
+ Este algoritmo actua como  wrapper de la funcion <a class="mfun" href="../distancia_pendulo.html">distancia_pendulo</a>
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_est_dist_pendulo', 1, [COG.Acc_Z], [freq,pierna], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_dist_pendulo', 1, {'COG.Acc_Z'}, [freq,pierna], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
 
-Par�metros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
+Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
  y dependencias.
 </pre>
 <hr size="3" noshade="noshade" />
@@ -77,14 +77,14 @@ function resultado = alg_est_dist_pendulo(previos, senhales, params, dependencia
 	if (~isempty(eventos_hs))
 		viejoevento=eventos_hs(1);
 		if (length(eventos_hs)&gt;1)
-        	   for k=[eventos_hs(2:end)]
-			if (isnan(resultado(k)))
-				if ((k-viejoevento)&lt;200) <em class="mcom">%Menos de dos segundos un paso</em>
-					resultado(k)=<a class="mfun" href="../distancia_pendulo.html">distancia_pendulo</a>(acel_z(viejoevento:k),freq,pierna);
-				end
-			end
-			viejoevento=k;
-		   end
+            for k=eventos_hs(2:end)
+                if (isnan(resultado(k)))
+                    if ((k-viejoevento)&lt;200) <em class="mcom">%Menos de dos segundos un paso</em>
+                        resultado(k)=<a class="mfun" href="../distancia_pendulo.html">distancia_pendulo</a>(acel_z(viejoevento:k),freq,pierna);
+                    end
+                end
+                viejoevento=k;
+            end
 		end
 	end
 

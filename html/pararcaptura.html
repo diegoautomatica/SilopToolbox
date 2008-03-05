@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" PARARCAPTURA Detiene la adquisición de datos, pero mantiene el equipo " />
+<meta name="description" content=" PARARCAPTURA Detiene la adquisiciï¿½n de datos, pero mantiene el equipo " />
 <meta name="keywords" content="  stopsilop " />
 <title>Documentation of  pararcaptura</title>
 </head>
@@ -23,16 +23,16 @@
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
- PARARCAPTURA Detiene la adquisición de datos, pero mantiene el equipo
+ PARARCAPTURA Detiene la adquisiciï¿½n de datos, pero mantiene el equipo
  listo para reiniciar la captura
 
- PARARCAPTURA Detiene la adquisición de datos, pero mantiene el equipo
+ PARARCAPTURA Detiene la adquisiciï¿½n de datos, pero mantiene el equipo
  listo para reiniciar la captura
  
  Syntax: XBusMaster=pararcaptura(XBusMaster)
  
  Input parameters:
-   XBusMaster-&gt; Objeto con la información del dispositivo.
+   XBusMaster-&gt; Objeto con la informaciï¿½n del dispositivo.
 
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
@@ -66,11 +66,12 @@
 
 
 <em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
-<em class="mcom">% History:  04.12.07    creacion del archivo</em>
+<em class="mcom">% History:  04.12.07    creacion del archivo</em>
 <em class="mcom">%           19.12.07    incorporada a la toolbox</em>
 
 function XBusMaster=pararcaptura(XBusMaster)
 
+stopasync(XBusMaster.puerto)
 XBusMaster.puerto.RequestToSend='off';
 </pre>
 <hr size="3" noshade="noshade" />

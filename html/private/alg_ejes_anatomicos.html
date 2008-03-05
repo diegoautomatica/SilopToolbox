@@ -4,8 +4,8 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_EJES_ANATOMICOS Algoritmo para la reorientación de las matrices de datos " />
-<meta name="keywords" content=" ejes_anatomicos  " />
+<meta name="description" content=" ALG_EJES_ANATOMICOS Algoritmo para la calibracion fina de los datos " />
+<meta name="keywords" content=" ejes_anatomicos gotoconfig gotomeasurement reqobjectalignment setobjectalignment stopsilop " />
 <title>Documentation of  alg_ejes_anatomicos</title>
 </head>
 <body >
@@ -19,33 +19,45 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias)</pre>
+<pre>corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias) %#ok<STOUT,INUSD,INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_EJES_ANATOMICOS Algoritmo para la reorientación de las matrices de datos
+ALG_EJES_ANATOMICOS Algoritmo para la calibracion fina de los datos
+procedentes del Xsens.  
 
-ALG_EJES_ANATOMICOS Algoritmo para la reorientación de las matrices de datos del COG a los 
-  ejes anatómicos.
+ALG_EJES_ANATOMICOS Algoritmo para la calibracion fina de los datos procedentes del Xsens. 
+  No funciona con simulaciones desde un .log. Si se desea trabajar en simulacion con datos que tengan 
+  calibracion fina se deben emplear ficheros .tana o .sl, que ya estÃ¡n
+  correctamente calibrados.
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">AddAlgoritmo</a>(Config, 'alg_ejes_anatomicos', 3, [COG.Acc_X,COG.Acc_Y,COG.Acc_Z], [], {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_ejes_anatomicos', 0, {'COG.Acc_X','COG.Acc_Y','COG.Acc_Z'}, {'COG'}, {});
 
-Parámetros: como todos los alg_ resultados anteriores, 
- señales a usar (las aceleraciones son obligatorias,giros y campo opcionales)
-,parametros(vacio en este caso) y dependencias(vacia en este caso)
+Parametros: como todos los alg_ resultados anteriores, 
+ seÃ±ales a usar (las tres aceleraciones de cada sensor a calibrar)
+ parametros(lista con los nombres de los sensores a calibrar, en el mismo orden que las seÃ±ales) 
+ y dependencias(vacia en este caso)
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
 <table border="0" width="100%">
 <tr align="left">
 <th width="50%">This function calls</th>
-<th width="50%"></th>
+<th width="50%">This function is called by</th>
 </tr>
 <tr valign="top"><td>
 <ul>
 <li><a class="mfun" href="../ejes_anatomicos.html">ejes_anatomicos</a></li>
+<li><a class="mfun" href="../private/gotoconfig.html">gotoconfig</a></li>
+<li><a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a></li>
+<li><a class="mfun" href="../private/ReqObjectAlignment.html">ReqObjectAlignment</a></li>
+<li><a class="mfun" href="../private/SetObjectAlignment.html">SetObjectAlignment</a></li>
 </ul>
-</td><td></td>
+</td><td>
+<ul>
+<li><a class="mfun" href="../stopsilop.html">stopsilop</a></li>
+</ul>
+</td>
 </tr>
 </table>
 <hr size="3" noshade="noshade" />
@@ -53,43 +65,67 @@ Parámetros: como todos los alg_ resultados anteriores,
 <pre>
 
 
-<em class="mcom">%Creado: 19-02-2008 by Diego Álvarez</em>
+<em class="mcom">%Creado: 19-02-2008 by Diego ï¿½lvarez</em>
 
-function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias)
 
-	persistent RR;
-	
-	corregido=previos;
-        mov_sin_calcular = find(isnan(previos)); <em class="mcom">%Filas aún no procesadas</em>
-	[filas,cols]=size(senhales);
-	[filas2,cols2]=size(previos);
-	if ((filas~=filas2) or (cols~=cols2))
-		error('las señales a corregir no coinciden con las señales pasadas a alg_ejes_anatomicos')
-	end
-	if ((cols~=3) and (cols~=6) and (cols~=9)
-		error('número de señales inconsistente en alg_ejes_anatomicos')
-	end
-	    
-	if (isempty(RR)
-		if (length(mov_sin_calcular)&gt;=200)
-			[corregido(mov_sin_calcular,1:3),RR]=<a class="mfun" href="../ejes_anatomicos.html">ejes_anatomicos</a>(senhales(mov_sin_calcular,1:3),senhales(mov_sin_calcular,1:3),[1,2,3]);
-			if (cols&gt;3)
-	            	   corregido(mov_sin_calcular,4:6)=senhales(mov_sin_calcular,4:6)*RR';		
-			end
-	    		if (cols&gt;6)
-	            	   corregido(mov_sin_calcular,7:9)=senhales(mov_sin_calcular,7:9)*RR';		
-	    		end
-		end
-	else
-            corregido(mov_sin_calcular,1:3)=senhales(mov_sin_calcular,1:3)*RR';
-	    if (cols&gt;3)
-	            corregido(mov_sin_calcular,4:6)=senhales(mov_sin_calcular,4:6)*RR';		
-	    end
-	    if (cols&gt;6)
-	            corregido(mov_sin_calcular,7:9)=senhales(mov_sin_calcular,7:9)*RR';		
-	    end
-        end;
-</pre>
+<em class="mcom">%Aviso para los programadores. Este es un algoritmo MUY especial, al</em>
+<em class="mcom">%necesitar acceso al dispositivo XbusMaster. No se debe usar como modelo de</em>
+<em class="mcom">%programaciÃ³n de algoritmos.</em>
+
+function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;STOUT,INUSD,INUSL&gt;</em>
+
+    global SILOP_CONFIG
+    persistent done
+    
+    if (isempty(done))
+        done=0;
+    end
+    
+    [filas,columnas]=size(senhales);
+    if ((~done)&amp;&amp;(filas&gt;=200)) <em class="mcom">%Si tenemos datos y aun no hemos actualizado</em>
+        <em class="mcom">%Se comprueba que se tengan datos</em>
+        if (columnas==0)
+            error('no se han proporcionado seÃ±ales a alg_ejes_anatomicos');
+        end
+        if (isempty(params))
+            error('no se indica el lugar al que corresponden las seÃ±ales en alg_ejes_anatomicos');
+        end
+        <em class="mcom">%En primer lugar comprobamos si estamos en modo Xbus</em>
+        if (isstruct(SILOP_CONFIG.BUS.Xbus))
+            id_disp=zeros(1,SILOP_CONFIG.BUS.Xbus.ndisp);
+            for k=1:SILOP_CONFIG.BUS.Xbus.ndisp
+                id_disp(k)=eval(SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k));
+            end
+    	
+            num_sensor=1;
+            for donde=params <em class="mcom">%lista de sensores a corregir</em>
+                <em class="mcom">%Buscamos el dispositivo en cada punto</em>
+                if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
+                    p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
+                    <em class="mcom">%Se calcula la matriz de correccion</em>
+                    [filas,columnas]=size(senhales);
+                    if (columnas&gt;=3*num_sensor)
+                        <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>(SILOP_CONFIG.BUS.Xbus);
+                        SILOP_CONFIG.BUS.Xbus=<a class="mfun" href="../private/reqobjectalignment.html">ReqObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p);
+                        Rot1=SILOP_CONFIG.BUS.Xbus.Conf.Dev(p).Orientacion;<em class="mcom">%Rotacion original</em>
+                        nocero=find(senhales(:,3*num_sensor)~=0);
+                        [basura,Rot2]=<a class="mfun" href="../ejes_anatomicos.html">ejes_anatomicos</a>(senhales(nocero,3*num_sensor-2:3*num_sensor),senhales(nocero,3*num_sensor-2:3*num_sensor),[1,2,3]);
+                        <a class="mfun" href="../private/setobjectalignment.html">SetObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p,Rot2*Rot1); <em class="mcom">%Comprobar si no serÃ­a Rot2'*Rot1</em>
+                        <a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a>(SILOP_CONFIG.BUS.Xbus);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Rotacion=Rot2*Rot1']);
+                    else
+                        error('el numero de seÃ±ales en alg_ejes_anatomicos es insuficiente');
+                    end
+                else 
+                    error('No existe el sensor indicado en alg_ejes_anatomicos');
+                end
+                num_sensor=num_sensor+1;
+            end
+            done=1;
+        else
+            error('se esta usando una funcion de calibracion fina que solo esta disponible con el XbusMaster');
+        end
+    end</pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->
 <!--copyright-->

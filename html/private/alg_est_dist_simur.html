@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_EST_DIST_SIMUR Algoritmo para la estimaci�n de la longitud de los pasos mediante el modelo pendulo+desplazamiento " />
+<meta name="description" content=" ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos mediante el modelo pendulo+desplazamiento " />
 <meta name="keywords" content=" distancia_pendulo  " />
 <title>Documentation of  alg_est_dist_simur</title>
 </head>
@@ -23,14 +23,14 @@
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_EST_DIST_SIMUR Algoritmo para la estimaci�n de la longitud de los pasos mediante el modelo pendulo+desplazamiento
+ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos mediante el modelo pendulo+desplazamiento
 
-ALG_EST_DIST_SIMUR Algoritmo para la estimaci�n de la longitud de los pasos.Este algoritmo actua como 
-wrapper de la funci�n <a class="mfun" href="../distancia_penduloparcial.html">distancia_penduloparcial</a>
+ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
+wrapper de la funcion <a class="mfun" href="../distancia_penduloparcial.html">distancia_penduloparcial</a>
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_est_dist_simur', 1, [COG.Acc_Z], [freq,hsensor,pie], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_dist_simur', 1, {'COG.Acc_Z'}, [freq,hsensor,pie], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
 
-Par�metros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
+Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
  y dependencias.
 </pre>
 <hr size="3" noshade="noshade" />
@@ -78,19 +78,19 @@ function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
 	if (~isempty(eventos_hs))
 		viejoevento=eventos_hs(1);
 		if (length(eventos_hs)&gt;1)
-        	   for k=[eventos_hs(2:end)]
-			if (isnan(resultado(k)))
-				if ((k-viejoevento)&lt;200) <em class="mcom">%Menos de dos segundos un paso</em>
-					to=find(dependencias(viejoevento:k,2));
-					if (isempty(to))
-						warning('Toe-Off no detectado. Se pierde un paso');
-					else
-					   resultado(k)=<a class="mfun" href="../distancia_pendulo.html">distancia_pendulo</a>(acel_z(viejoevento:k),to(1),freq,hsensor,pie);
-					end
-				end
-			end
-			viejoevento=k;
-		   end
+        	for k=eventos_hs(2:end) <em class="mcom">%#ok&lt;ALIGN&gt;</em>
+                if (isnan(resultado(k)))
+                    if ((k-viejoevento)&lt;200) <em class="mcom">%Menos de dos segundos un paso</em>
+                        to=find(dependencias(viejoevento:k,2));
+                        if (isempty(to))
+                            warning('Toe-Off no detectado. Se pierde un paso'); <em class="mcom">%#ok&lt;WNTAG&gt;</em>
+                        else
+                            resultado(k)=<a class="mfun" href="../distancia_pendulo.html">distancia_pendulo</a>(acel_z(viejoevento:k),to(1),freq,hsensor,pie);
+                        end
+                    end
+                end
+                viejoevento=k;
+            end
 		end
 	end
 

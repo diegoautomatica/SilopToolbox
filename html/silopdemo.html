@@ -56,45 +56,36 @@
 
 %<em class="mcom">% Se crea la configuración inicial para la ejecución de la aplicación</em>
 <em class="mcom">% llamando a <a class="mfun" href="initsilop.html">initsilop</a>()</em>
-CONFIG = <a class="mfun" href="initsilop.html">initsilop</a>(); <em class="mcom">%Crea un conjunto de variables necesarias al principio.</em>
+initsilop(); 
 
 
 %<em class="mcom">% Se añaden los IMUS con los que se trabajará</em>
 <em class="mcom">% En este caso un IMU en el COG</em>
-CONFIG = <a class="mfun" href="addimu.html">addimu</a>(CONFIG, 'COG', 204);
+addimu('COG', 204);
 
 
 %<em class="mcom">% Nos conectamos al sistema de adquisición de datos.</em>
 <em class="mcom">% En este caso escogemos hacerlo trabajando en simulación y con un fichero</em>
 <em class="mcom">% de log</em>
-CONFIG = <a class="mfun" href="connectsilop.html">connectsilop</a>(CONFIG,1); <em class="mcom">%Conectamos al sistema de muestreo</em>
+connectsilop(1); <em class="mcom">%Conectamos al sistema de muestreo</em>
 
-
-%<em class="mcom">% Creamos abreviaturas de los nombres de las señales</em>
-<em class="mcom">% De esta forma las podremos usar más comodamente </em>
-
-Acc_X=CONFIG.SENHALES.COG.Acc_X;
-Acc_Y=CONFIG.SENHALES.COG.Acc_Y;
-Acc_Z=CONFIG.SENHALES.COG.Acc_Z;
-G_Z=CONFIG.SENHALES.COG.G_Z;
 
 %<em class="mcom">% Añadimos los algoritmos necesarios.</em>
 <em class="mcom">% Añadimos el algoritmo de deteccion de eventos, para localizar los instantes de HS y TO</em>
-
-CONFIG = <a class="mfun" href="addalgoritmo.html">addalgoritmo</a>(CONFIG, '<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>', 2, [Acc_Z, Acc_X], [], {});
+addalgoritmo('<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>', 2, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
 
 %<em class="mcom">% Añadimos los algoritmos restantes,</em>
 <em class="mcom">% medicion de pasos, estimacion de la orientacion, calculo de posiciones 2d</em>
 <em class="mcom">% y representación de la posición en 2d</em>
+addalgoritmo('<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>' , 1, {'COG.Acc_Z'}, [], {'<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>'});
+addalgoritmo('<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>', 1, {'COG.G_Z'}, [], {});
+addalgoritmo('<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>', 2, [], [], {'<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>'  '<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>'});
+addalgoritmo('<a class="mfun" href="private/alg_plot_pos2d.html">alg_plot_pos2d</a>', 0, [], [], {'<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>'});
 
-CONFIG = <a class="mfun" href="addalgoritmo.html">addalgoritmo</a>(CONFIG, '<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>' , 1, [Acc_Z], [], {'<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>'});
-CONFIG = <a class="mfun" href="addalgoritmo.html">addalgoritmo</a>(CONFIG, '<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>', 1, [G_Z], [], {});
-CONFIG = <a class="mfun" href="addalgoritmo.html">addalgoritmo</a>(CONFIG, '<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>', 2, [], [], {'<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>'  '<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>'});
-CONFIG = <a class="mfun" href="addalgoritmo.html">addalgoritmo</a>(CONFIG, '<a class="mfun" href="private/alg_plot_pos2d.html">alg_plot_pos2d</a>', 0, [], [], {'<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>'});
     
 %<em class="mcom">% Se pone en marcha el proceso</em>
 <em class="mcom">% Se detiene mediante la pulsación de la tecla ESC</em>
-CONFIG=<a class="mfun" href="playsilop.html">playsilop</a>(CONFIG,2);
+playsilop();
 
 
 

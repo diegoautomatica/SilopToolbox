@@ -1,8 +1,8 @@
 ToDo:
 Para el 0.9
-	Documentar alg_ejes_anatomicos	
 	Documentar la función eventosPiernaG
-	Incluir las funciones de JC para el pie
+	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
+	Caza de bugs.
 	
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
@@ -28,7 +28,7 @@ v0.9    ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SIL
 	     Modificar stopsilop y loadsilop
 
 v0.8    orientacion por defecto para el COG R=[3,-2,1]
-	connectsilop deberia soportar que los ejes sean negativos en tiempo real
+	connectsilop soporta que los ejes sean negativos en tiempo real
 	corregidos errores diversos. connectsilop no actualizaba bien el numero de señales y otros
 	corregidos errores en algoritmos alg_det_event y alg_est_orientacion* cuando no se tienen datos.
 	connectsilop ya permite reorientar totalmente en simulación. Se rotan los datos originales.

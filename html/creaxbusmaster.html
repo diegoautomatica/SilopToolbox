@@ -28,14 +28,14 @@
 
  CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
  datos desde el dispositivo Xbus Master. El objeto XBusMaster es una
- estructura que contiene informaciï¿½n sobre el puerto serie utilizado para
- la comunicaciï¿½n con el dispositivo, asï¿½ como de la configuraciï¿½n del
+ estructura que contiene información sobre el puerto serie utilizado para
+ la comunicación con el dispositivo, así como de la configuración del
  propio dispositivo.
  
  Syntax: XBusMaster=creaxbusmaster(puerto,bps,freq,modo,buffer,ns)
  
  Input parameters:
-   puerto-&gt;  Cadena con el nombre del puerto al que estï¿½ conectado el
+   puerto-&gt;  Cadena con el nombre del puerto al que está conectado el
              XBusMaster (por defecto 'COM24')
    bps-&gt;     Velocidad de transferencia (por defecto 115200 bps)
    freq-&gt;    Frecuencia de muestreo (por defecto 100Hz)
@@ -47,7 +47,7 @@
    ns-&gt;      Numero de sensores conectados (por defecto 1)
 
  Output parameters:
-   XBusMaster  - Estructura que almacena toda la informaciï¿½n relacionada con la
+   XBusMaster  - Estructura que almacena toda la información relacionada con la
                  captura de datos desde el dispositivo Xbus Master.
 
  Examples:
@@ -87,7 +87,7 @@
 <em class="mcom">% History:  04.12.07    creacion del archivo</em>
 <em class="mcom">%           18.12.07    incorporada a la toolbox por Diego. Renombrado variable global</em>
 <em class="mcom">%           18.01.08    reset de la variable global al salir</em>
-<em class="mcom">%           12.02.08    modificaciones para las aplicaciones silop</em>
+<em class="mcom">%           12.02.08    modificaciones para las aplicaciones silop</em>
 
 function XBusMaster=creaxbusmaster(puerto,bps,freq,modo,buffer,ns)
 
@@ -181,7 +181,7 @@ fopen(XBusMaster.puerto);
 gotoconfig(XBusMaster);
 [XBusMaster,error]=<a class="mfun" href="private/initbus.html">InitBus</a>(XBusMaster);
 if (XBusMaster.ndisp~=ns)
-    error('SilopToolbox:creaxbusmaster','El nï¿½mero de sensores conectados es distinto del numero de sensores declarados');
+    error('SilopToolbox:creaxbusmaster','El número de sensores conectados es distinto del numero de sensores declarados');
 end
 [XBusMaster,error]=<a class="mfun" href="private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
 [XBusMaster,error]=<a class="mfun" href="private/setperiod.html">SetPeriod</a>(XBusMaster,XBusMaster.freq);

@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>alg_plot_pos2d(valores_actuales, senhales, params, dependencias)</pre>
+<pre>alg_plot_pos2d(valores_actuales, senhales, params, dependencias) %#ok<INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -27,7 +27,7 @@ ALG_PLOT_POS2D Algoritmo para la representacion de la posicion en 2d
 
 ALG_PLOT_SENHALES Algoritmo para la representacion de la posicion en 2d
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_plot_pos2d', 0, [], [], {'<a class="mfun" href="../private/alg_est_2d.html">alg_est_2d</a>'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_plot_pos2d', 0, [], [], {'<a class="mfun" href="../private/alg_est_2d.html">alg_est_2d</a>'});
 
 Parámetros: como todos los alg_*. resultados anteriores, señales a usar{vacio en este caso}, 
  parametros(vacio en este caso) y dependencias{'<a class="mfun" href="../private/alg_est_2d.html">alg_est_2d</a>'}.
@@ -53,7 +53,7 @@ Parámetros: como todos los alg_*. resultados anteriores, señales a usar{vacio 
 
 <em class="mcom">%Creado: 06-02-2008 por Diego</em>
 
-function alg_plot_pos2d(valores_actuales, senhales, params, dependencias)
+function alg_plot_pos2d(valores_actuales, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSL&gt;</em>
 <em class="mcom">%    C = <a class="mfun" href="../addalgoritmo.html">AddAlgoritmo</a>(C, 'alg_plot_pos2d', 0, [], [], {'<a class="mfun" href="../private/alg_est_2d.html">alg_est_2d</a>'}); </em>
 
 

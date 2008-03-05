@@ -24,8 +24,10 @@ function initsilop()
 
 global SILOP_CONFIG
 if (~isempty(SILOP_CONFIG))
-	SILOP_CONFIG.BUS.File.Salvar=0;
-	stopsilop();
+    if (isstruct(SILOP_CONFIG.BUS.File))
+    	SILOP_CONFIG.BUS.File.Salvar=0;
+    end
+    stopsilop(1);
 	SILOP_CONFIG=[];
 end
 

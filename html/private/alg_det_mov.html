@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_DET_MOV Algoritmo para la detección del movimiento " />
+<meta name="description" content=" ALG_DET_MOV Algoritmo para la deteccion del movimiento " />
 <meta name="keywords" content="   " />
 <title>Documentation of  alg_det_mov</title>
 </head>
@@ -19,17 +19,17 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>resultado = alg_det_mov(previos, senhales, params, dependencias)</pre>
+<pre>resultado = alg_det_mov(previos, senhales, params, dependencias) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_DET_MOV Algoritmo para la detección del movimiento
+ALG_DET_MOV Algoritmo para la deteccion del movimiento
 
-ALG_DET_MOV Algoritmo para la detección del movimiento basado en la aceleración vertical del COG.
+ALG_DET_MOV Algoritmo para la deteccion del movimiento basado en la aceleracion vertical del COG.
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">AddAlgoritmo</a>(Config, 'alg_det_mov', 1, [COG.Acc_Z], [], {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_det_mov', 1, {'COG.Acc_Z'}, [], {});
 
-Parámetros: como todos los alg_ resultados anteriores, señales a usar, parametros(vacio en este caso)
+Parametros: como todos los alg_ resultados anteriores, seï¿½ales a usar, parametros(vacio en este caso)
  y dependencias(vacia en este caso)
 </pre>
 <hr size="3" noshade="noshade" />
@@ -37,16 +37,16 @@ Parámetros: como todos los alg_ resultados anteriores, señales a usar, parametro
 <pre>
 
 
-<em class="mcom">%Creado: xx-01-2008 Antonio López</em>
+<em class="mcom">%Creado: xx-01-2008 Antonio Lï¿½pez</em>
 <em class="mcom">%        30-01-2008 Incorporado, editado y renombrado por Diego</em>
 <em class="mcom">%        06-02-2008 Revisado y comprobado por Diego, corregido para buscar contra la media.</em>
 
-function resultado = alg_det_mov(previos, senhales, params, dependencias)
+function resultado = alg_det_mov(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
-        acel_z = senhales; <em class="mcom">%Hay una sola señal que es la aceleración Z del COG</em>
+        acel_z = senhales; <em class="mcom">%Hay una sola seï¿½al que es la aceleraciï¿½n Z del COG</em>
         resultado = previos;
         
-        mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aún no procesadas</em>
+        mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aï¿½n no procesadas</em>
         
         if(length(mov_sin_calcular)&gt;=50)
             for k=mov_sin_calcular(1):50:mov_sin_calcular(end)-50+1

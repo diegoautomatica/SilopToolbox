@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>alg_plot_dependencias(valores_actuales, senhales, params, dependencias)</pre>
+<pre>alg_plot_dependencias(valores_actuales, senhales, params, dependencias) %#ok<INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -27,7 +27,7 @@ ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros al
 
 ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros algoritmos
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_plot_dependencias', 0, [], [], {'dependencia'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_plot_dependencias', 0, [], [], {'dependencia'});
 
 Parámetros: como todos los alg_*. resultados anteriores, señales a usar, parametros(vacio en este caso)
  y dependencias{un algoritmo}.
@@ -39,7 +39,7 @@ Parámetros: como todos los alg_*. resultados anteriores, señales a usar, param
 
 <em class="mcom">%Creado: 01-02-2008 por Diego</em>
 
-function alg_plot_dependencias(valores_actuales, senhales, params, dependencias)
+function alg_plot_dependencias(valores_actuales, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSL&gt;</em>
 
 
 	persistent mifigura

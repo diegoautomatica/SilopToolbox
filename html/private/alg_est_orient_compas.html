@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_EST_ORIENT_COMPAS Algoritmo para la estimacion de la orientación mediante la brújula " />
+<meta name="description" content=" ALG_EST_ORIENT_COMPAS Algoritmo para la estimacion de la orientaciï¿½n mediante la brï¿½jula " />
 <meta name="keywords" content=" orientacioncompas  " />
 <title>Documentation of  alg_est_orient_compas</title>
 </head>
@@ -19,19 +19,19 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>resultado = alg_est_orient_compas(previos, senhales, params, dependencias)</pre>
+<pre>resultado = alg_est_orient_compas(previos, senhales, params, dependencias) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_EST_ORIENT_COMPAS Algoritmo para la estimacion de la orientación mediante la brújula
+ALG_EST_ORIENT_COMPAS Algoritmo para la estimacion de la orientaciï¿½n mediante la brï¿½jula
 
-ALG_EST_ORIENT_COMPAS Algoritmo para la estimación de la orientación mediante la brújula. 
- Este algoritmo actua como wrapper de la función orientacionbrújula.
+ALG_EST_ORIENT_COMPAS Algoritmo para la estimaciï¿½n de la orientaciï¿½n mediante la brï¿½jula. 
+ Este algoritmo actua como wrapper de la funciï¿½n orientacionbrï¿½jula.
 Se puede configurar mediante:
-    Config = <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>(Config, 'alg_est_orien_compast', 1, [COG.MG_X,COG.MG_Y,COG.MG_Z], [], {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_orien_compast', 1, {'COG.MG_X','COG.MG_Y','COG.MG_Z'}, [], {});
 
-Parámetros: como todos los alg_ resultados anteriores, señales a usar, parametros(se puede indicar 
- únicamente la frecuencia de muestreo) y dependencias(vacia en este caso)
+Parï¿½metros: como todos los alg_ resultados anteriores, seï¿½ales a usar, parametros(se puede indicar 
+ ï¿½nicamente la frecuencia de muestreo) y dependencias(vacia en este caso)
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -54,14 +54,14 @@ Parámetros: como todos los alg_ resultados anteriores, señales a usar, parametro
 
 <em class="mcom">%Creado: 12-02-2008 por Diego</em>
 
-function resultado = alg_est_orient_compas(previos, senhales, params, dependencias)
+function resultado = alg_est_orient_compas(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
         Campox = senhales(:,1);
         Campoy = senhales(:,2);
         Campoz = senhales(:,3);
 	resultado = previos;
         
-        mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aún no procesadas</em>
+        mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aï¿½n no procesadas</em>
 	if (~isempty(mov_sin_calcular))
         
 	if (isempty(params))

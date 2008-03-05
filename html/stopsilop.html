@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" STOPSILOP Detiene el procesamiento de las seÃ±ales, asÃ­ como las comunicaciones con los buses  " />
-<meta name="keywords" content=" destruyexbusmaster pararcaptura simula_muestreo playsilop " />
+<meta name="keywords" content=" alg_ejes_anatomicos destruyexbusmaster pararcaptura simula_muestreo initsilop playsilop " />
 <title>Documentation of  stopsilop</title>
 </head>
 <body >
@@ -19,22 +19,25 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>CONFIG=stopsilop(CONFIG)</pre>
+<pre>stopsilop(modo)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
  STOPSILOP Detiene el procesamiento de las seÃ±ales, asÃ­ como las comunicaciones con los buses 
  y/o la simulaciÃ³n de los datosacuerdo a los IMUS y algoritmos indicados
 
- STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses 
- y/o la simulación de los datos de acuerdo a los IMUS y algoritmos indicados. En el caso de que se 
- estén generando logs, esta función crea los ficheros .sl definitivos.
+ STOPSILOP Detiene el procesamiento de las seÃ±ales, asi como las comunicaciones con los buses 
+ y/o la simulacion de los datos de acuerdo a los IMUS y algoritmos indicados. En el caso de que se 
+ esten generando logs, esta funcion crea los ficheros .sl definitivos.
  
  Syntax: 
-   stopsilop(CONFIG);
+   stopsilop(modo);
 
-   Parámetros de entrada: 
-	CONFIG  Estructura de configuración de los sensores y algoritmos de la aplicación	
+   Parametros de entrada: 
+       Modo: indica si se debe detener totalmente el sistema (modo=1) o
+               solo la captura y procesamiento de datos (modo=0) en cuyo caso se podrÃ­a 
+               reiniciar de nuevo con <a class="mfun" href="playsilop.html">playsilop</a>()
+   Parametros de salida: Ninguno
  
  Examples: 
    
@@ -50,12 +53,14 @@
 </tr>
 <tr valign="top"><td>
 <ul>
+<li><a class="mfun" href="private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a></li>
 <li><a class="mfun" href="destruyexbusmaster.html">destruyexbusmaster</a></li>
 <li><a class="mfun" href="pararcaptura.html">pararcaptura</a></li>
 <li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
 </ul>
 </td><td>
 <ul>
+<li><a class="mfun" href="initsilop.html">initsilop</a></li>
 <li><a class="mfun" href="playsilop.html">playsilop</a></li>
 </ul>
 </td>
@@ -66,34 +71,48 @@
 <pre>
 
 
-<em class="mcom">% Author:   Diego Álvarez</em>
+<em class="mcom">% Author:   Diego Alvarez</em>
 <em class="mcom">% History:  29.01.2008  creado e Incorporado a la toolbox</em>
-<em class="mcom">%           12.02.2008  añadida la parte del Xbus por Rafa</em>
+<em class="mcom">%           12.02.2008  aÃ±adida la parte del Xbus por Rafa</em>
 
-function CONFIG=stopsilop(CONFIG)
+function stopsilop(modo)
 
+if (nargin&lt;1)
+    modo=0;
+end
 
-if (CONFIG.BUS.Temporizador ~= -1)
-    stop(CONFIG.BUS.Temporizador);
+global SILOP_CONFIG
+global SILOP_DATA_LOG; <em class="mcom">%#ok&lt;NUSED&gt;</em>
+
+if (SILOP_CONFIG.BUS.Temporizador ~= -1)
+    stop(SILOP_CONFIG.BUS.Temporizador);
+    if (modo&gt;0)
+        delete(SILOP_CONFIG.BUS.Temporizador);
+        SILOP_CONFIG.BUS.Temporizador=-1;
+    end
     clear <a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>;
-    global SILOP_DATA_LOG;
     clear SILOP_DATA_LOG; <em class="mcom">%Liberamos la memoria del enorme fichero de log.</em>
 end;
-if (isstruct(CONFIG.BUS.Xbus))
-    CONFIG.BUS.Xbus=<a class="mfun" href="pararcaptura.html">pararcaptura</a>(CONFIG.BUS.Xbus);
-    <a class="mfun" href="destruyexbusmaster.html">destruyexbusmaster</a>(CONFIG.BUS.Xbus);
-    CONFIG.BUS.Xbus=-1;
+if (isstruct(SILOP_CONFIG.BUS.Xbus))
+    SILOP_CONFIG.BUS.Xbus=<a class="mfun" href="pararcaptura.html">pararcaptura</a>(SILOP_CONFIG.BUS.Xbus);
+    if (modo&gt;0)
+        <a class="mfun" href="destruyexbusmaster.html">destruyexbusmaster</a>(SILOP_CONFIG.BUS.Xbus);
+        SILOP_CONFIG.BUS.Xbus=-1;
+    end
+    clear <a class="mfun" href="private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a>
 end;
-if (isstruct(CONFIG.BUS.File))
-	if (CONFIG.BUS.File.Salvar==2)
-		zip(CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
-		delete ('datos_alg.log');
-	else
-		zip(CONFIG.BUS.File.Name,{'config.mat','datos.log'});
-	end		
-	delete ('config.mat');
-	delete ('datos.log');
-	movefile ([CONFIG.BUS.File.Name,'.zip'], CONFIG.BUS.File.Name);
+if (isstruct(SILOP_CONFIG.BUS.File))
+    if (SILOP_CONFIG.BUS.File.Salvar&gt;0)
+        if (SILOP_CONFIG.BUS.File.Salvar==2)
+            zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
+            delete ('datos_alg.log');
+        else
+            zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log'});
+        end		
+        delete ('config.mat');
+        delete ('datos.log');
+        movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], CONFIG.BUS.File.Name);
+    end
 end
 </pre>
 <hr size="3" noshade="noshade" />
