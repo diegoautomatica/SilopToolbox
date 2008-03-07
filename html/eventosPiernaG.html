@@ -44,7 +44,7 @@ if (tibia_R(p)&lt;0)
     tibia_R=-tibia_R;
 end
 
-<em class="mcom">% Filtra las se–ales mas bajas.</em>
+<em class="mcom">% Filtra las seï¿½ales mas bajas.</em>
 <em class="mcom">% El umbral se fija en 0.75 rad/s</em>
 <em class="mcom">%tibia_L=tibia_L.*(abs(tibia_L)&gt;0.55);</em>
 <em class="mcom">%tibia_R=tibia_R.*(abs(tibia_R)&gt;0.55);</em>
@@ -54,29 +54,29 @@ n=4;
 filtro=ones(2*n+1,1); filtro=filtro/sum(filtro);
 tmp_signal=conv(tibia_L,filtro);
 tmp_signal=tmp_signal(1+n:end-n);
-[MSL1,m,p]=picos(tmp_signal.*(tmp_signal&gt;0),11);
-[MSL2,m,p]=picos(tmp_signal.*(tmp_signal&lt;0),7);
+MSL1=picos(tmp_signal.*(tmp_signal&gt;0),11);
+MSL2=picos(tmp_signal.*(tmp_signal&lt;0),7);
 
 n=4;
 filtro=ones(2*n+1,1); filtro=filtro/sum(filtro);
 tmp_signal=conv(tibia_R,filtro);
 tmp_signal=tmp_signal(1+n:end-n);
-[MSR1,m,p]=picos(tmp_signal.*(tmp_signal&gt;0),11);
-[MSR2,m,p]=picos(tmp_signal.*(tmp_signal&lt;0),7);
+MSR1=picos(tmp_signal.*(tmp_signal&gt;0),11);
+MSR2=picos(tmp_signal.*(tmp_signal&lt;0),7);
 
-r1=[];
-r2=[];
+<em class="mcom">%r1=[];</em>
+<em class="mcom">%r2=[];</em>
 eventos=zeros(length(tibia_L),8);
 for k=MSL1'
     k2=(find(abs(MSR2-k)&lt;15));
-    if (any(k2) &amp; tibia_L(k)&gt;1)
+    if (any(k2) &amp;&amp; tibia_L(k)&gt;1)
         eventos(k,1)=1;
         eventos(MSR2(k2),6)=1;
     end,
 end
 for k=MSR1'
     k2=find(abs(MSL2-k)&lt;15);
-    if (any(k2) &amp; tibia_R(k)&gt;1)
+    if (any(k2) &amp;&amp; tibia_R(k)&gt;1)
         eventos(k,5)=1;
         eventos(MSL2(k2),2)=1;
     end,
@@ -96,20 +96,20 @@ for k=1:length(MSL1) <em class="mcom">% para cada evento midstance detectado</em
     if (~isempty(k2))
         <em class="mcom">% si se ha encontrado al menos un k2, se buscan picos a escala 1</em>
         <em class="mcom">% entre k1 y k2</em>
-        [pmax,pmin,plocal]=picos(tibia_L(MSL1(k):MSL2(k2)),1);
+        [pmax,pmin]=picos(tibia_L(MSL1(k):MSL2(k2)),1);
         <em class="mcom">% Nos quedamos con los maximos que siguen al primer minimo</em>
-        pmax=pmax(find(pmax&gt;pmin(1)));
-        if (length(pmin)&gt;0)
+        pmax=pmax(find(pmax&gt;pmin(1))); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+        if (~isempty(pmin))
             <em class="mcom">% Marcamos el primer minimo como un posible HS</em>
             eventos(pmin(1)+MSL1(k)-1,3)=1; 
         end
-        if (length(pmax)&gt;0)
+        if (~isempty(pmax))
             <em class="mcom">% Marcamos el maximo que sigue el primer minimo como el segundo</em>
             <em class="mcom">% candido a HS</em>
             eventos(pmax(1)+MSL1(k)-1,3)=2;
         end
         if (length(pmin)&gt;1)
-            <em class="mcom">% El segundo mínimo es el siguiente candidato a HS</em>
+            <em class="mcom">% El segundo mï¿½nimo es el siguiente candidato a HS</em>
             eventos(pmin(2)+MSL1(k)-1,3)=3;
         end
     end
@@ -117,12 +117,12 @@ end
 for k=1:length(MSR1)
     k2=find(MSR2&gt;MSR1(k) &amp; MSR2&lt;min(MSR1(k)+2*64,length(tibia_R)),1);
     if (~isempty(k2))
-        [pmax,pmin,plocal]=picos(tibia_R(MSR1(k)+5:MSR2(k2)),1);
-        pmax=pmax(find(pmax&gt;pmin(1)));
-        if (length(pmin)&gt;0)
+        [pmax,pmin]=picos(tibia_R(MSR1(k)+5:MSR2(k2)),1);
+        pmax=pmax(find(pmax&gt;pmin(1))); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+        if (~isempty(pmin))
             eventos(pmin(1)+MSR1(k)+4,7)=1;
         end
-        if (length(pmax)&gt;0)
+        if (~isempty(pmax))
             eventos(pmax(1)+MSR1(k)+4,7)=2;
         end
         if (length(pmin)&gt;1)
@@ -137,7 +137,7 @@ for k=1:length(MSL2) <em class="mcom">% Para cada evento midstance de la fase de
     k2=find(MSL1&gt;MSL2(k) &amp; MSL1&lt;min(MSL2(k)+64,length(tibia_L)),1);
     if (~isempty(k2))
         <em class="mcom">% si se encontro</em>
-        <em class="mcom">% se busca el evento TO como el mínimo absoluto entre ambos eventos</em>
+        <em class="mcom">% se busca el evento TO como el mï¿½nimo absoluto entre ambos eventos</em>
         <em class="mcom">% de midswing</em>
         [m,p]=min(tibia_L(MSL2(k):MSL1(k2)));
         eventos(p+MSL2(k)-1,4)=1;
@@ -156,14 +156,14 @@ if (nargin&gt;2)
     plot(tibia_L)
     hold
     plot(tibia_R,'g')
-    plot(find(eventos(:,6)),tibia_R(find(eventos(:,6))),'m*');
-    plot(find(eventos(:,5)),tibia_R(find(eventos(:,5))),'ms');
-    plot(find(eventos(:,7)),tibia_R(find(eventos(:,7))),'md');
-    plot(find(eventos(:,8)),tibia_R(find(eventos(:,8))),'mo');
-    plot(find(eventos(:,2)),tibia_L(find(eventos(:,2))),'r*');
-    plot(find(eventos(:,1)),tibia_L(find(eventos(:,1))),'rs');
-    plot(find(eventos(:,3)),tibia_L(find(eventos(:,3))),'rd');
-    plot(find(eventos(:,4)),tibia_L(find(eventos(:,4))),'ro');
+    plot(find(eventos(:,6)),tibia_R(find(eventos(:,6))),'m*'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,5)),tibia_R(find(eventos(:,5))),'ms'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,7)),tibia_R(find(eventos(:,7))),'md'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,8)),tibia_R(find(eventos(:,8))),'mo'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,2)),tibia_L(find(eventos(:,2))),'r*'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,1)),tibia_L(find(eventos(:,1))),'rs'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,3)),tibia_L(find(eventos(:,3))),'rd'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plot(find(eventos(:,4)),tibia_L(find(eventos(:,4))),'ro'); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
 end
 
 
@@ -172,14 +172,14 @@ end
 function [pmax,pmin,plocal]=picos(datos,n)
 
 
-der_dch=[diff(datos); 0];
-der_izd=[0; diff(datos)];
-minimos=[];
-maximos=[];
+<em class="mcom">%der_dch=[diff(datos); 0];</em>
+<em class="mcom">%der_izd=[0; diff(datos)];</em>
+<em class="mcom">%minimos=[];</em>
+<em class="mcom">%maximos=[];</em>
 
 prod=[];
 for desp=1:n
-    prod=[prod [datos((desp+1):end)-datos(1:(end-desp)); zeros(desp,1)].*[zeros(desp,1); datos((desp+1):end)-datos(1:(end-desp))]];
+    prod=[prod [datos((desp+1):end)-datos(1:(end-desp)); zeros(desp,1)].*[zeros(desp,1); datos((desp+1):end)-datos(1:(end-desp))]]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
 end
 prod=all(prod&lt;0,2);
 p=find(prod);
@@ -192,9 +192,9 @@ maximos=(datos(p)==max(tmp,[],2));
 pmax=[p maximos minimos];
 
 if (nargout&gt;1)
-    pmax=p(find(maximos));
-    pmin=p(find(minimos));
-    plocal=p(find(~maximos &amp; ~minimos));
+    pmax=p(find(maximos)); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    pmin=p(find(minimos)); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
+    plocal=p(find(~maximos &amp; ~minimos)); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
 end</pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

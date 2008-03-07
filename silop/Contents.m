@@ -7,7 +7,7 @@
 % addalgoritmo  - ADDALGORITMO AÃ±ade un algoritmo al sistema de procesamiento de las aplicaciones estandar de la toolbox
 % addimu        - ADDIMU Aï¿½ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
 % buscamaximos  - BUSCAMAXIMOS Detecta todos los máximos de una señal
-% buscamaximosth - BUSCAMAXIMOS Detecta todos los máximos de una señal después de aplicar un threshold
+% buscamaximosth - BUSCAMAXIMOS Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold
 % connectsilop  - CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados
 % continuarcaptura - CONTINUARCAPTURA Reanuda la adquisición de datos tras una llamada a
 % creaxbusmaster - CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
@@ -17,10 +17,10 @@
 % distancia_pendulo - DISTANCIA_PENDULO Calcula la distancia recorrida en un paso mediante el modelo del pendulo invertido desde el COG
 % distancia_penduloparcial - DISTANCIA_PENDULOPARCIAL Calcula la distancia recorrida en un paso mediante el modelo del pendulo invertido 
 % distancia_raizcuarta - DISTANCIA_RAIZCUARTA Calcula la distancia recorrida en un paso mediante el modelo empï¿½rico de la raiz cuarta
-% ejes_anatomicos - EJES_ANATOMICOS Reorienta los datos obtenidos para que coincidan con los ejes anatómicos.
-% entrena_ident_act - ENTRENA_IDENT_ACT permite entrenar una red neuronal que identificará las actividades realizadas por un individuo.
+% ejes_anatomicos - EJES_ANATOMICOS Reorienta los datos obtenidos para que coincidan con los ejes anatï¿½micos.
+% entrena_ident_act - ENTRENA_IDENT_ACT permite entrenar una red neuronal que identificarï¿½ las actividades realizadas por un individuo.
 % evaluasalto   - EVALUASALTO Estima la duraciÃ³n de cada salto individual en funciÃ³n de los datos devueltos
-% evaluasentadillas - EVALUASENTADILLAS Calcula los parámetros más relevantes de un conjunto de sentadillas en función de los datos devueltos
+% evaluasentadillas - EVALUASENTADILLAS Calcula los parï¿½metros mï¿½s relevantes de un conjunto de sentadillas en funciï¿½n de los datos devueltos
 % eventos_RT    - EVENTOSRT Deteccion de Initial Contact y End Contact en Tiempo Real con acelerometro en
 % eventosCOGrecto - EVENTOSCOGRECTO Detecta 5 eventos a partir de las acelerariones verticales y horizontales del COG. Funciï¿½n Off-line
 % eventosPiernaG - Detecta los eventos del paso a partir de las velocidades de giro de las
@@ -30,7 +30,7 @@
 % eventpierectoff - EVENTPIERECTOFF Deteccion de los eventos con un giro sobre el pie
 % filtro0       - FILTRO0 Filtro paso bajo de fase cero
 % frecuenciapaladas - FRECUENCIAPALADAS Devuelve una seÃ±al con la frecuencia de palada. 
-% ident_act     - IDENT_ACT Identifica la actividad que se está realizando
+% ident_act     - IDENT_ACT Identifica la actividad que se estï¿½ realizando
 % iniciacaptura - INICIACAPTURA Comienza la captura de datos
 % initsilop     - INITSILOP Inicializa el sistema de procesamiento de las aplicaciones estandar de la toolbox
 % integrasig    - INTEGRASIG Integra una senyal hasta un instante, incluyendo reseteo

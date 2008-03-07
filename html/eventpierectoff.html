@@ -27,15 +27,15 @@
  EVENTPIERECTOFF Deteccion de los eventos con un giro sobre el pie
 
  EVENTPIERECTOFF Hace la deteccion offline de los eventos del paso al 
- caminar en linea recta, a partir de la señal de un giroscopo situado en 
- el pie, sobre el metatarso. La señal del giro se integra para medir el 
+ caminar en linea recta, a partir de la seï¿½al de un giroscopo situado en 
+ el pie, sobre el metatarso. La seï¿½al del giro se integra para medir el 
  angulo del pie en el plano sagital. 
  Parte de las ideas de [Sabatini05] con un giro situado sobre el tarso.
  
  Syntax: [tiempos]=eventpierectoff(giroY,freq,th1,th2,th3)
  
  Input parameters:
-   giroY       - Vector con la señal del giro en el metatarso en deg/s
+   giroY       - Vector con la seï¿½al del giro en el metatarso en deg/s
                    sin ninguna correccion.
    freq        - frecuencia de muestreo de los datos anteriores (en Hzs)
 
@@ -98,7 +98,7 @@ function tiempos=eventpierectoff(giroY,frecuencia,Ths)
    <em class="mcom">% shorten the parameter vector</em>
    if length(Ths) &gt; length(ThStandard), 
       Ths = Ths(1:length(ThStandard)); 
-      warning(' Too many parameters in Threshols! Thesholds was shortened.');
+      warning(' Too many parameters in Threshols! Thesholds was shortened.'); <em class="mcom">%#ok&lt;WNTAG&gt;</em>
    end
    <em class="mcom">% At least the first 2 input parameters are necessary</em>
    if length(Ths) &lt; 4,  error('Not enough thesholds selected (at least [th_ICyFC th_FF th_HO th_MW])'); end
@@ -113,10 +113,10 @@ Datos_filt=filtfilt(b,a,giroY);
 tiempos(:,6)=Datos_filt;   %<em class="mcom">% uso provisional de esta variable...</em>
 
 
-%<em class="mcom">% Deteccion de los eventos IC y FC, corresponden a los máximos negativos</em>
+%<em class="mcom">% Deteccion de los eventos IC y FC, corresponden a los mï¿½ximos negativos</em>
 <em class="mcom">% y pronunciados (th&gt;60deg/s) primero y segundo que se van encontrando </em>
 <em class="mcom">%</em>
-mins=[<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(-Datos_filt,Ths(1))];
+mins=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(-Datos_filt,Ths(1));
 mins=find(mins==1);
 
 <em class="mcom">% Actualizamos la matriz de tiempos con los eventos encontrados:</em>
@@ -124,12 +124,12 @@ ii=0; iii=0;
 for i=1:length(mins)
         if (mod(i,2)+1)==1
            iii=iii+1;
-           ic(iii)=mins(i);
+           ic(iii)=mins(i); <em class="mcom">%#ok&lt;AGROW&gt;</em>
            tiempos(ic(iii),4)=1; %<em class="mcom">% IC</em>
         end
         if mod(i,2)==1
             ii=ii+1;
-            fc(ii)=mins(i);
+            fc(ii)=mins(i); <em class="mcom">%#ok&lt;AGROW&gt;</em>
             tiempos(fc(ii),2)=1; %<em class="mcom">% FC</em>
         end
 end
@@ -142,9 +142,9 @@ ii=0;
 for i=1:(length(ic)),
     th1=0;
     for t=ic(i):(ic(i)+30),   %<em class="mcom">% en la duracion de un paso...</em>
-        if ((abs(Datos_filt(t))&lt;Ths(2)) &amp; (th1==0))
+        if ((abs(Datos_filt(t))&lt;Ths(2)) &amp;&amp; (th1==0))
             ii=ii+1;
-            ff(ii)=t;
+            ff(ii)=t; <em class="mcom">%#ok&lt;AGROW&gt;</em>
             tiempos(ff(ii),5)=1; %<em class="mcom">% FF</em>
             th1=1;
         end
@@ -159,9 +159,9 @@ ii=0;
 for i=1:(length(fc)),
     th1=0;
     for t=fc(i):-1:(fc(i)-20),   %<em class="mcom">% en la duracion de un paso...</em>
-        if ((abs(Datos_filt(t))&lt;Ths(3)) &amp; (th1==0))
+        if ((abs(Datos_filt(t))&lt;Ths(3)) &amp;&amp; (th1==0))
             ii=ii+1;
-            ho(ii)=t;
+            ho(ii)=t; <em class="mcom">%#ok&lt;AGROW&gt;</em>
             tiempos(ho(ii),1)=1; %<em class="mcom">% HO</em>
             th1=1;
         end
@@ -174,14 +174,14 @@ end
 <em class="mcom">% entre pasos consecutivos. </em>
 <em class="mcom">% Es el unico maximo positivo mayor de 160 deg/s:</em>
 <em class="mcom">% </em>
-maxs=[<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(Datos_filt,Ths(4))];
+maxs=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(Datos_filt,Ths(4));
 maxs=find(maxs==1);
 <em class="mcom">% Actualizamos la matriz de tiempos con los eventos encontrados:</em>
 ii=0;
 for i=1:length(maxs)
        	if (Datos_filt(maxs(i))&gt;160)
             ii=ii+1;
-            mw(ii)=maxs(i);
+            mw(ii)=maxs(i); <em class="mcom">%#ok&lt;AGROW&gt;</em>
             tiempos(mw(ii),3)=1; %<em class="mcom">% MW</em>
         end
 end

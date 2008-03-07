@@ -121,7 +121,7 @@ tiempos(:,8)=0*AccVert;
 <em class="mcom">%Deteccion de puntos de footflat.</em>
 <em class="mcom">%Primera aproximaci�n. m�ximos 1� arm�nico</em>
 Datos_filt=<a class="mfun" href="filtro0.html">filtro0</a>(AccVert,60,5/frecuencia);
-ff=[<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(Datos_filt,10.5)];
+ff=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(Datos_filt,10.5);
 ff=find(ff==1);
 
 
@@ -138,7 +138,7 @@ end
 <em class="mcom">%Busqueda del resto de HS</em>
 for i=resto:length(ff)
     [maximo,punto]=max(AccHor(ff(i)+ceil(m_inferior*frecuencia):ff(i)+floor(m_superior*frecuencia)));
-    hs(i)=ff(i)+ceil(m_inferior*frecuencia)+punto-1;
+    hs(i)=ff(i)+ceil(m_inferior*frecuencia)+punto-1; <em class="mcom">%#ok&lt;AGROW&gt;</em>
 end
 
 <em class="mcom">%Postprocesamiento de los HS, para eliminar posibles espurios m�ltiples</em>
@@ -158,7 +158,7 @@ end
 ff=0*hs;
 to=0*ff;
 ms=0*to;
-po=0*ms;
+<em class="mcom">%po=0*ms;</em>
 
 
 <em class="mcom">%Detecci�n del FF. M�ximo desplazamiento respecto al HS</em>
@@ -214,7 +214,7 @@ end
 
 <em class="mcom">%Iniciamos b�squeda de MS.</em>
 <em class="mcom">%Para el MS busco los minimos absolutos en [TO, HS]</em>
-ipo=[<a class="mfun" href="buscamaximos.html">buscamaximos</a>(-Datos_filt)];
+ipo=<a class="mfun" href="buscamaximos.html">buscamaximos</a>(-Datos_filt);
 ipo=find(ipo==1);
 
 <em class="mcom">%eliminamos un posible MS antes del 1� TO para mantener secuencia estandar</em>
@@ -235,21 +235,21 @@ end
 <em class="mcom">%Puede que a pesar de todo el n�mero de MSs no coincida con el </em>
 <em class="mcom">%n�mero de TOs</em>
 if length(ipo)~=length(ff)
-	warning('los eventos detectados son incongruentes.�todos los datos son caminando??');	
+	warning('los eventos detectados son incongruentes.�todos los datos son caminando??');	 <em class="mcom">%#ok&lt;WNTAG&gt;</em>
 end
 minimo_de_puntos=min(length(ipo),length(ff));
 
 
 %<em class="mcom">%Detecci�n del evento NoIdentificado NI: M�ximo entre TO y MS</em>
 for k=1:minimo_de_puntos
- 	if(to(k)&lt;ipo(k))
+    if(to(k)&lt;ipo(k))
             [maxim, pos_maxim] = max(AccVert(to(k):ipo(k)));
             ms(k) = pos_maxim+to(k)-1;
         else 
-	    warning('toe off &lt; initial push off. Muestras %d <em class="mcom">%d',to(k),ipo(k));</em>
+	    warning('toe off &lt; initial push off. Muestras %d %d',to(k),ipo(k)); <em class="mcom">%#ok&lt;WNTAG&gt;</em>
 	    to(k) = ipo(k)-2;
 	    ms(k) = ipo(k)-1;
-        end;
+    end;
 end;
 
 for i=1:minimo_de_puntos

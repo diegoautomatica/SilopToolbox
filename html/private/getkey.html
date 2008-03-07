@@ -78,18 +78,18 @@ function ch = getkey(m)
 <em class="mcom">%</em>
 <em class="mcom">% History</em>
 <em class="mcom">% 2005 - creation</em>
-<em class="mcom">% dec 2006 - modified lay-out and help</em>
+<em class="mcom">% dec 2006 - modified lay-out and help</em>
 <em class="mcom">% 13-02-2008- modificada para esperar un tiempo máximo y no bloquear el proceso.    </em>
 
 <em class="mcom">% Determine the callback string to use</em>
 if nargin == 1,
-    if strcmp(lower(m),'non-ascii'),
-        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ;
+    if strcmpi(m,'non-ascii'),
+        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ; <em class="mcom">%#ok&lt;NBRAK&gt;</em>
     else       
         error('Argument should be the string ''non-ascii''') ;
     end
 else
-    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ;
+    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ; <em class="mcom">%#ok&lt;NBRAK&gt;</em>
 end
 
 <em class="mcom">% Set up the figure</em>

@@ -25,19 +25,19 @@
 <pre>
  INICIACAPTURA Comienza la captura de datos
 
- INICIACAPTURA Envía al dispositivo Xbus Master un mensaje que le obliga
+ INICIACAPTURA Envï¿½a al dispositivo Xbus Master un mensaje que le obliga
  a comenzar la captura (pasar al modo measurement)
  
  Syntax: [XBusMaster,error]=iniciacaptura(XBusMaster)
  
  Input parameters:
-   XBusMaster-&gt; Objeto con la información del dispositivo, tal y como se proporciona
+   XBusMaster-&gt; Objeto con la informaciï¿½n del dispositivo, tal y como se proporciona
                 por <a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>
 
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
                modificado durante la llamada.
-   error     - 0 si no se produjo ningún error y 1 en caso contrario.
+   error     - 0 si no se produjo ningï¿½n error y 1 en caso contrario.
 
  Examples:
  &gt;&gt; xb=<a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
@@ -69,12 +69,12 @@
 <pre>
 
 
-<em class="mcom">% Author:   Diego Álvarez</em>
+<em class="mcom">% Author:   Diego ï¿½lvarez</em>
 <em class="mcom">% History:  18.12.07    creacion del archivo</em>
 
 function [XBusMaster,error]=iniciacaptura(XBusMaster)
 
-[XBusMaster,error]=<a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a>(XBusMaster)
+[XBusMaster,error]=<a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a>(XBusMaster);
 
 </pre>
 <hr size="3" noshade="noshade" />

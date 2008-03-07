@@ -91,12 +91,12 @@ if (XBusMaster.puerto.BytesAvailable&gt;0)
     fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
 end
 <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
-tout=XBusMaster.puerto.TimeOut;
+<em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
 XBusMaster.puerto.TimeOut=1;
 fwrite(XBusMaster.puerto,msg,'uint8');
 <em class="mcom">% Se espera a recibir la contestacion</em>
 <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-msg=[];
+<em class="mcom">%msg=[];</em>
 <em class="mcom">% Primero se leen 4 bytes para concer la longitud total del mensaje</em>
 <em class="mcom">% NOTA: Al no conocer la longitud total de mensaje, si especificamos el</em>
 <em class="mcom">% maximo valor posible, la funcion fread se bloquearia hasta que venciese</em>

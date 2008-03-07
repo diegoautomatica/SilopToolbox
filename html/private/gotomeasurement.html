@@ -19,24 +19,24 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[XBusMaster,error]=gotomesurement(XBusMaster)</pre>
+<pre>[XBusMaster,error]=gotomeasurement(XBusMaster)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
  GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement
 
- GOTOMEASUREMENT Envía al dispositivo Xbus Master un mensaje que le obliga
+ GOTOMEASUREMENT Envï¿½a al dispositivo Xbus Master un mensaje que le obliga
  a pasar al modo measurement
  
  Syntax: [XBusMaster,error]=gotomeasurement(XBusMaster)
  
  Input parameters:
-   XBusMaster-&gt; Objeto con la información del dispositivo.
+   XBusMaster-&gt; Objeto con la informaciï¿½n del dispositivo.
 
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
                modificado durante la llamada.
-   error     - 0 si no se produjo ningún error y 1 en caso contrario.
+   error     - 0 si no se produjo ningï¿½n error y 1 en caso contrario.
                (nop hubo mensaje de ack)
 
  Examples:
@@ -74,7 +74,7 @@
 <em class="mcom">% History:  04.12.07    creacion del archivo</em>
 <em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
 
-function [XBusMaster,error]=gotomesurement(XBusMaster)
+function [XBusMaster,error]=gotomeasurement(XBusMaster)
 
 global SILOP_DATA_BUFFER;
 
@@ -98,12 +98,12 @@ if (XBusMaster.puerto.BytesAvailable&gt;0)
     
 end
 <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
-tout=XBusMaster.puerto.TimeOut;
+<em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
 XBusMaster.puerto.TimeOut=1;
 fwrite(XBusMaster.puerto,msg,'uint8');
 <em class="mcom">% Se espera a recibir la contestacion</em>
 <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-msg=[];
+<em class="mcom">%msg=[];</em>
 [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
 error=0;
 if (~isempty(msg))
@@ -120,13 +120,13 @@ else
         end
     end
 end
-bytes=(2+XBusMaster.Conf.Dev(1).DataLength*XBusMaster.Conf.DevNum);
-if (bytes&gt;254)
-    bytes=bytes+6+1;
-else
-    bytes=bytes+4+1;
-end
-<em class="mcom">% XBusMaster.puerto.BytesAvailableFcnCount=bytes;</em>
+<em class="mcom">%bytes=(2+XBusMaster.Conf.Dev(1).DataLength*XBusMaster.Conf.DevNum);</em>
+<em class="mcom">%if (bytes&gt;254)</em>
+<em class="mcom">%    bytes=bytes+6+1;</em>
+<em class="mcom">%else</em>
+<em class="mcom">%    bytes=bytes+4+1;</em>
+<em class="mcom">%end</em>
+<em class="mcom">% XBusMaster.puerto.BytesAvailableFcnCount=bytes;</em>
 leerXBusDatahandle=@<a class="mfun" href="../private/leerxbusdata.html">leerXBusData</a>;
 XBusMaster.puerto.BytesAvailableFcn={leerXBusDatahandle, XBusMaster};
 XBusMaster.puerto.RequestToSend='on';

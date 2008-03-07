@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" BUSCAMAXIMOS Detecta todos los máximos de una señal después de aplicar un threshold " />
+<meta name="description" content=" BUSCAMAXIMOS Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold " />
 <meta name="keywords" content="  evaluasentadillas eventoscogrecto eventospiraguas eventossalto eventossentadillas eventpierectoff " />
 <title>Documentation of  buscamaximosth</title>
 </head>
@@ -19,23 +19,23 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>maximos=buscamaximosth(Datos,th)</pre>
+<pre>maximos=buscamaximosth(Datos,th)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
- <a class="mfun" href="buscamaximos.html">BUSCAMAXIMOS</a> Detecta todos los máximos de una señal después de aplicar un threshold
+ <a class="mfun" href="buscamaximos.html">BUSCAMAXIMOS</a> Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold
 
- <a class="mfun" href="buscamaximos.html">BUSCAMAXIMOS</a> Detecta todos los máximos de una señal después de aplicar un threshold
+ <a class="mfun" href="buscamaximos.html">BUSCAMAXIMOS</a> Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold
  
  Syntax: maximos=buscamaximosth(datos,th)
  
  Input parameters:
-   datos-&gt; señal en la que se buscarán los máximos
-   th   -&gt; umbral por debajo del cual un punto no se considerará máximo de la señal
+   datos-&gt; seï¿½al en la que se buscarï¿½n los mï¿½ximos
+   th   -&gt; umbral por debajo del cual un punto no se considerarï¿½ mï¿½ximo de la seï¿½al
 
  Output parameters:
-   maximos&lt;- señal del mismo tamaño que datos, en la que aparece un 1 en la posición de cada
-  		máximo y un 0 en el resto de instantes.
+   maximos&lt;- seï¿½al del mismo tamaï¿½o que datos, en la que aparece un 1 en la posiciï¿½n de cada
+  		mï¿½ximo y un 0 en el resto de instantes.
 
  Examples:
 
@@ -66,35 +66,35 @@
 
 
 <em class="mcom">% Author:   JC</em>
-<em class="mcom">% History:  xx.yy.zz    JC,  creacion del archivo</em>
-<em class="mcom">%           18.06.2006  comentarios de JC</em>
+<em class="mcom">% History:  xx.yy.zz    JC,  creacion del archivo</em>
+<em class="mcom">%           18.06.2006  comentarios de JC</em>
 <em class="mcom">%           21.01.08    documentada</em>
 
 function maximos=buscamaximosth(Datos,th)
 
-%<em class="mcom">% Algoritmo: primero se convierte la se–al en una rectangular, con unos en las</em>
-%<em class="mcom">% pendientes positivas y ceros en las negativas.</em>
-%<em class="mcom">% Luego se repite la operaci—n para la se–al rectangular, con lo que</em>
-%<em class="mcom">% queda una con pulsos de valores +1 (en las transiciones de 0 a 1) y </em>
-%<em class="mcom">% -1 (en las transiciones de 1 a 0). Los pulsos +1 son los m‡ximos.</em>
+%<em class="mcom">% Algoritmo: primero se convierte la seï¿½al en una rectangular, con unos en las</em>
+%<em class="mcom">% pendientes positivas y ceros en las negativas.</em>
+%<em class="mcom">% Luego se repite la operaciï¿½n para la seï¿½al rectangular, con lo que</em>
+%<em class="mcom">% queda una con pulsos de valores +1 (en las transiciones de 0 a 1) y </em>
+%<em class="mcom">% -1 (en las transiciones de 1 a 0). Los pulsos +1 son los mï¿½ximos.</em>
 
 tam=size(Datos);
 tam=tam(1);
 
-%<em class="mcom">% Obtenci—n de la se–al rectangular:</em>
+%<em class="mcom">% Obtenciï¿½n de la seï¿½al rectangular:</em>
 Datos2=Datos(2:tam)-Datos(1:tam-1);
 Datos2=Datos2&gt;=0;
 
-%<em class="mcom">% Obtenci—n de las se–al de pulsos:</em>
+%<em class="mcom">% Obtenciï¿½n de las seï¿½al de pulsos:</em>
 Datos2=Datos2(1:tam-2)-Datos2(2:tam-1);
 
-%<em class="mcom">% los m‡ximos son los pulsos positivos:</em>
-%<em class="mcom">%maximos=Datos&gt;0;</em>
+%<em class="mcom">% los mï¿½ximos son los pulsos positivos:</em>
+%<em class="mcom">%maximos=Datos&gt;0;</em>
 
 for i=1:(tam-2),
-    maximos(i)=0;
-    if (Datos2(i)&gt;0) &amp; (Datos(i+1)&gt;th)
-        maximos(i)=1;
+    maximos(i)=0; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+    if (Datos2(i)&gt;0) &amp;&amp; (Datos(i+1)&gt;th)
+        maximos(i)=1; <em class="mcom">%#ok&lt;AGROW&gt;</em>
     end
 end
 </pre>

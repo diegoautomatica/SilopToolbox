@@ -39,13 +39,13 @@
  Syntax: [sigint]=integrasig(sig,eventof,alfa,freq)
  
  Input parameters:
-   sig         - Vector con la se–al original a integrar.
+   sig         - Vector con la seï¿½al original a integrar.
    eventof     - Instante final de la integracion
    alfa        - coeficiente de reset, entre 0 (sin reseteo) y 1 (lineal)
    freq        - frecuencia de muestreo de los datos anteriores (en Hzs)
 
  Output parameters:
-   sigint     - senyal integrada y reseteada, de tama–o el de la se–al  
+   sigint     - senyal integrada y reseteada, de tamaï¿½o el de la seï¿½al  
                    original, y con ceros a partir de la posicion eventof
  Examples:
  % integracion de un giro muestreado a 100 Hz para obtener angulo, se 
@@ -75,7 +75,7 @@ function [sigint]=integrasig(sig,eventof,alfa,freq)
    <em class="mcom">% At least the first input parameters is necessary</em>
    if nargin &lt; 1,  error('Not enough input parameters (at least 1 parameter - signal to integrate)'); end
    <em class="mcom">% When too many options are contained, issue a warning</em>
-   if nargin &gt; 4,  warning('Too many input parameters! Only four are used'); end
+   if nargin &gt; 4,  warning('Too many input parameters! Only four are used'); end <em class="mcom">%#ok&lt;WNTAG&gt;</em>
    if isnan(sig), sig = []; end
    <em class="mcom">% The 3 other input parameter are optional,</em>
    if nargin &lt; 2,  
@@ -97,7 +97,9 @@ tmp=(1/freq)*cumsum(sig(1:eventof,:));
 aux=zeros(size(sig,1)-eventof,1);
 
 <em class="mcom">% si procede se hace el reseteo:</em>
-if ne(alfa,0),     
+if ne(alfa,0),
+    coef=zeros(eventof,1);
+    tmp2=zeros(eventof,1);    
     for i=1:eventof,
         coef(i)=((eventof-i)/(eventof-1))^alfa; <em class="mcom">% numeros entre 1 y 0</em>
         tmp2(i)=coef(i)*tmp(i); <em class="mcom">% se aplica la correcion</em>

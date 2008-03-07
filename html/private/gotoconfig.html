@@ -25,17 +25,17 @@
 <pre>
  GOTOCONFIG Pasa el dispositivo Xbus Master al estado config
 
- GOTOCONFIG Envía al dispositivo Xbus Master un mensaje que le obliga
+ GOTOCONFIG Envï¿½a al dispositivo Xbus Master un mensaje que le obliga
  pasar al modo config. Pueden perderse datos que existan en el buffer de
  entrada.
  
  Syntax: error=gotoconfig(XBusMaster)
  
  Input parameters:
-   XBusMaster-&gt;  Objeto con la información del dispositivo.
+   XBusMaster-&gt;  Objeto con la informaciï¿½n del dispositivo.
 
  Output parameters:
-   error  - 0 si no se produjo ningún error y 1 en caso contrario.
+   error  - 0 si no se produjo ningï¿½n error y 1 en caso contrario.
 
  Examples:
  &gt;&gt; xb=<a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
@@ -65,7 +65,7 @@
 
 
 <em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
-<em class="mcom">% History:  04.12.07    creacion del archivo</em>
+<em class="mcom">% History:  04.12.07    creacion del archivo</em>
 <em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
 
 function error=gotoconfig(XBusMaster)
@@ -88,12 +88,12 @@ while (XBusMaster.puerto.BytesAvailable&gt;0)
     
 end
 <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
-tout=XBusMaster.puerto.TimeOut;
+<em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
 XBusMaster.puerto.TimeOut=1;
 fwrite(XBusMaster.puerto,msg,'uint8');
 <em class="mcom">% Se espera a recibir la contestacion</em>
 <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
-msg=[];
+<em class="mcom">%msg=[];</em>
 [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
 error=0;
 if (~isempty(msg))

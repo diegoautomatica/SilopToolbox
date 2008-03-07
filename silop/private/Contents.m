@@ -17,18 +17,17 @@
 % alg_plot_dependencias - ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros algoritmos
 % alg_plot_pos2d - ALG_PLOT_POS2D Algoritmo para la representacion de la posicion en 2d
 % alg_plot_senhales - ALG_PLOT_SENHALES Algoritmo para la representacion de seÃ±ales
-% creacomandos  - OJO, que falta el igual
-% energiawavelet - ENERGIAWAVELET realizar la descomposición wavelet de una señal
+% energiawavelet - ENERGIAWAVELET realizar la descomposiciï¿½n wavelet de una seï¿½al
 % getkey        - GETKEY - get a single keypress
 % gotoconfig    - GOTOCONFIG Pasa el dispositivo Xbus Master al estado config
 % gotomeasurement - GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement
 % InitBus       - INITBUS EnvÃ­a el mensaje InitBus al objeto XBusMaster
 % leerXBusData  - LEERXBUSDATA Lee datos desde el dispositivo Xbus Master
-% localmaxima   - LOCALMAXIMA Determina los puntos que son máximos locales de una función en un entorno 
+% localmaxima   - LOCALMAXIMA Determina los puntos que son mï¿½ximos locales de una funciï¿½n en un entorno 
 % ReqConfiguration - REQCONFIGURATION EnvÃ­a el mensaje RequestConfiguration al objeto XBusMaster
 % ReqObjectAlignment - REQOBJECTALIGNMENT EnvÃ­a el mensaje ReqObjectAlignment al objeto XBusMaster
 % SetMTOutputMode - SETMTOUTPUTMODE EnvÃ­a el mensaje SetOutputMode a todos los dispositivos
 % SetObjectAlignment - SETOBJECTALIGNMENT EnvÃ­a el mensaje SetObjectAlignment al objeto XBusMaster
 % SetPeriod     - SETPERIOD EnvÃ­a el mensaje SetPeriod al objeto XBusMaster
-% simula_muestreo - SIMULA_MUESTREO Callback que simula la realización de un muestreo desde los Xsens
+% simula_muestreo - SIMULA_MUESTREO Callback que simula la realizaciï¿½n de un muestreo desde los Xsens
 

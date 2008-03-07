@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" IDENT_ACT Identifica la actividad que se está realizando " />
+<meta name="description" content=" IDENT_ACT Identifica la actividad que se estï¿½ realizando " />
 <meta name="keywords" content=" ejes_anatomicos energiawavelet  " />
 <title>Documentation of  ident_act</title>
 </head>
@@ -19,25 +19,25 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>identificacion=ident_act(redneuronal,parametros,matriz)</pre>
+<pre>identificacion=ident_act(redneuronal,parametros,matriz)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
- IDENT_ACT Identifica la actividad que se está realizando
+ IDENT_ACT Identifica la actividad que se estï¿½ realizando
 
- IDENT_ACT Identifica la actividad que se está realizando en base a una red neuronal previamente entrenada.
+ IDENT_ACT Identifica la actividad que se estï¿½ realizando en base a una red neuronal previamente entrenada.
  Las actividades identificadas son caminar y  subir/bajar escaleras/rampas
 
  Sintax:
  identificacion=ident_act(redneuronal,parametros,datos)
 
- Parámetros de entrada:
+ Parï¿½metros de entrada:
     redneuronal   - Variable que tiene almacenada la red neuronal, tal y como la proporciona <a class="mfun" href="entrena_ident_act.html">entrena_ident_act</a>
-    parametros    - VAriable con datos genericos de la señal, tal y como la proporciona <a class="mfun" href="entrena_ident_act.html">entrena_ident_act</a>
-    datos        - Matriz con los datos del perido en el que se quiere realizar la identificación.
+    parametros    - VAriable con datos genericos de la seï¿½al, tal y como la proporciona <a class="mfun" href="entrena_ident_act.html">entrena_ident_act</a>
+    datos        - Matriz con los datos del perido en el que se quiere realizar la identificaciï¿½n.
                     Tiene que tener 1 fila por muestra y las mismas columnas que las usadas en <a class="mfun" href="entrena_ident_act.html">entrena_ident_act</a>
 
- Parámetros de salida:
+ Parï¿½metros de salida:
     identificacion - Un vector que contien en cada elemento la actividad asociada con cada una de las muestras.
                      (1=Bajar escaleras, 2=Bajar rampa, 3=Andar, 4=Subir rampa, 5=Subir escaleras)
 
@@ -66,11 +66,11 @@
 <pre>
 
 
-<em class="mcom">% Author:   Jesús E. Pérez Villegas </em>
-<em class="mcom">% History:  12.12.2007  Fichero creado.</em>
+<em class="mcom">% Author:   Jesï¿½s E. Pï¿½rez Villegas </em>
+<em class="mcom">% History:  12.12.2007  Fichero creado.</em>
 <em class="mcom">%           21.12.2007  Preparada para la toolbox</em>
 <em class="mcom">%           03.01.2008  Adaptada correctamente a la toolbox.(Diego)</em>
-<em class="mcom">%           21.01.2008  Usa <a class="mfun" href="private/energiawavelet.html">energiawavelet</a> en lugar de s_calcularenergiawavelet            </em>
+<em class="mcom">%           21.01.2008  Usa <a class="mfun" href="private/energiawavelet.html">energiawavelet</a> en lugar de s_calcularenergiawavelet            </em>
 
 function identificacion=ident_act(redneuronal,parametros,matriz)
 
@@ -85,38 +85,23 @@ datos1=parametros{6};
 
 
 
-mov1='/bajarescaleras'; mov2='/bajarrampa'; mov3='/andar'; 
-mov4='/subirrampa'; mov5='/subirescaleras';
-
 R=[3 -2 1];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
 
 
-<em class="mcom">%El tiempo esta en segundos</em>
-tiempo=(matriz(:,1))';
+<em class="mcom">%El tiempo esta en segundos</em>
+<em class="mcom">%tiempo=(matriz(:,1))';</em>
     
-<em class="mcom">%La aceleracion se encuentra en m/(s^2)</em>
+<em class="mcom">%La aceleracion se encuentra en m/(s^2)</em>
 aceleracionx=(matriz(:,2))';
 aceleraciony=(matriz(:,3))';
 aceleracionz=(matriz(:,4))';
     
-<em class="mcom">%La velocidad angular se encuentra en rad/s</em>
-velocidadangularx=(matriz(:,5))';
-velocidadangulary=(matriz(:,6))';
-velocidadangularz=(matriz(:,7))';
-   
-<em class="mcom">%El campo magnético se encuentra en unidades arbitrarias, normalizadas</em>
-<em class="mcom">%con respecto a la fuerza del campo magnético</em>
-<em class="mcom">%campomagneticox=(matriz(:,8))';</em>
-<em class="mcom">%campomagneticoy=(matriz(:,9))';</em>
-<em class="mcom">%campomagneticoz=(matriz(:,10))';</em>
-
-
-<em class="mcom">%Se realizarán modificaciones en los ejes de las aceleraciones con la</em>
-<em class="mcom">%llamada a la función <a class="mfun" href="ejes_anatomicos.html">ejes_anatomicos</a></em>
+<em class="mcom">%Se realizarï¿½n modificaciones en los ejes de las aceleraciones con la</em>
+<em class="mcom">%llamada a la funciï¿½n <a class="mfun" href="ejes_anatomicos.html">ejes_anatomicos</a></em>
 datos2=[aceleracionx;aceleraciony;aceleracionz]';
-[datos_c,RR]=<a class="mfun" href="ejes_anatomicos.html">ejes_anatomicos</a>(datos2,datos1,R);
+datos_c=<a class="mfun" href="ejes_anatomicos.html">ejes_anatomicos</a>(datos2,datos1,R);
     
 datos_c=datos_c';
 acejesmodx=datos_c(1,:);
@@ -126,87 +111,86 @@ acejesmodz=datos_c(3,:);
 aceleracionx=acejesmodx/valormediox;
 aceleraciony=acejesmody/valormedioy;
 aceleracionz=acejesmodz/valormedioz;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Se hallan los datos de los vectores de aceleración</em>
-longitudmedida=length(tiempo);
-Tmuestreo=tiempo(2)-tiempo(1);  <em class="mcom">% Tiempo de muestreo (en segundos)</em>
-Frecmuestreo=1/Tmuestreo;       <em class="mcom">% Frecuencia de muestreo (en Hz)</em>
-L = 128;                        <em class="mcom">% Longitud de la señal a tratar</em>
-t = (0:L-1)*Tmuestreo;          <em class="mcom">% Vector de tiempo</em>
-<em class="mcom">%La Frecuencia de muestreo ha de ser al menos el doble de la frecuencia</em>
-<em class="mcom">%máxima a estudiar</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Se hallan los datos de los vectores de aceleraciï¿½n</em>
+<em class="mcom">%longitudmedida=length(tiempo);</em>
+%Tmuestreo=tiempo(2)-tiempo(1);  <em class="mcom">% Tiempo de muestreo (en segundos)</em>
+%L = 128;                        <em class="mcom">% Longitud de la seï¿½al a tratar</em>
+%t = (0:L-1)*Tmuestreo;          <em class="mcom">% Vector de tiempo</em>
+<em class="mcom">%La Frecuencia de muestreo ha de ser al menos el doble de la frecuencia</em>
+<em class="mcom">%mï¿½xima a estudiar</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Representacion gráfica del movimiento</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">% longitudmedida=length(tiempo);</em>
-<em class="mcom">% disp('El tiempo total de estudio es:')</em>
-<em class="mcom">% disp(tiempo(longitudmedida))</em>
-<em class="mcom">% </em>
-% <em class="mcom">%Representación de los vectores de aceleración</em>
-<em class="mcom">% subplot(3,1,1)</em>
-<em class="mcom">% plot(tiempo,aceleracionx)</em>
-<em class="mcom">% title('Componente x de la aceleración en el dominio del tiempo')</em>
-<em class="mcom">% xlabel('tiempo (segundos)')</em>
-<em class="mcom">% </em>
-<em class="mcom">% subplot(3,1,2)</em>
-<em class="mcom">% plot(tiempo,aceleraciony)</em>
-<em class="mcom">% title('Componente y de la aceleración en el dominio del tiempo')</em>
-<em class="mcom">% xlabel('tiempo (segundos)')</em>
-<em class="mcom">% </em>
-<em class="mcom">% subplot(3,1,3)</em>
-<em class="mcom">% plot(tiempo,aceleracionz)</em>
-<em class="mcom">% title('Componente z de la aceleración en el dominio del tiempo')</em>
-<em class="mcom">% xlabel('tiempo (segundos)')</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Representacion grï¿½fica del movimiento</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">% longitudmedida=length(tiempo);</em>
+<em class="mcom">% disp('El tiempo total de estudio es:')</em>
+<em class="mcom">% disp(tiempo(longitudmedida))</em>
+<em class="mcom">% </em>
+% <em class="mcom">%Representaciï¿½n de los vectores de aceleraciï¿½n</em>
+<em class="mcom">% subplot(3,1,1)</em>
+<em class="mcom">% plot(tiempo,aceleracionx)</em>
+<em class="mcom">% title('Componente x de la aceleraciï¿½n en el dominio del tiempo')</em>
+<em class="mcom">% xlabel('tiempo (segundos)')</em>
+<em class="mcom">% </em>
+<em class="mcom">% subplot(3,1,2)</em>
+<em class="mcom">% plot(tiempo,aceleraciony)</em>
+<em class="mcom">% title('Componente y de la aceleraciï¿½n en el dominio del tiempo')</em>
+<em class="mcom">% xlabel('tiempo (segundos)')</em>
+<em class="mcom">% </em>
+<em class="mcom">% subplot(3,1,3)</em>
+<em class="mcom">% plot(tiempo,aceleracionz)</em>
+<em class="mcom">% title('Componente z de la aceleraciï¿½n en el dominio del tiempo')</em>
+<em class="mcom">% xlabel('tiempo (segundos)')</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Bucle que tratará cada uno de los intervalos </em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Bucle que tratarï¿½ cada uno de los intervalos </em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 matriztotal=[];
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Llamada a la subrutina encargada de la descomposición de paquetes</em>
-<em class="mcom">%wavelet.</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Llamada a la subrutina encargada de la descomposiciï¿½n de paquetes</em>
+<em class="mcom">%wavelet.</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 [energiawaveletx,desvstdwaveletx,valorRMSwaveletx]=<a class="mfun" href="private/energiawavelet.html">energiawavelet</a>(aceleracionx);
-[energiawavelety,desvstdwavelety,valorRMSwavelety]=<a class="mfun" href="private/energiawavelet.html">energiawavelet</a>(aceleraciony);
+[energiawavelety,desvstdwavelety,valorRMSwavelety]=<a class="mfun" href="private/energiawavelet.html">energiawavelet</a>(aceleraciony); <em class="mcom">%#ok&lt;NASGU&gt;</em>
 [energiawaveletz,desvstdwaveletz,valorRMSwaveletz]=<a class="mfun" href="private/energiawavelet.html">energiawavelet</a>(aceleracionz);
 
 matrizdatos=[energiawaveletx energiawavelety energiawaveletz];
 matrizdatos=[matrizdatos desvstdwaveletx desvstdwavelety desvstdwaveletz];
 matrizdatos=[matrizdatos valorRMSwaveletx valorRMSwaveletz];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
    
 matriztotal=[matriztotal;matrizdatos];
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Hay la posibilidad de realizar la dft de las señales de </em>
-<em class="mcom">%aceleración s_realizaciondft(acelxbucle,acelybucle,acelzbucle)</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Hay la posibilidad de realizar la dft de las seï¿½ales de </em>
+<em class="mcom">%aceleraciï¿½n s_realizaciondft(acelxbucle,acelybucle,acelzbucle)</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
-<em class="mcom">%Se hace una normalizacion de los datos</em>
+<em class="mcom">%Se hace una normalizacion de los datos</em>
 matriztotal=[matriztotal; minmtotalnor'; maxmtotalnor'];
 matriztotal=matriztotal';
-[matriztotaln,minmatriztotal,maxmatriztotal]=premnmx(matriztotal); 
+[matriztotaln]=premnmx(matriztotal); 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Aplicación de redes neuronales</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Aplicaciï¿½n de redes neuronales</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 resultado=sim(redneuronal,matriztotaln);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Representación de las actividades estimadas</em>
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%En esta parte del programa se establecerá los intervalos de tiempo en que</em>
-<em class="mcom">%suceden cada uno de los tipos de movimiento, y se mostrará un mensaje del</em>
-<em class="mcom">%tipo : &quot;Bajando escaleras&quot;, &quot;bajando rampa&quot;,...</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%Representaciï¿½n de las actividades estimadas</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+<em class="mcom">%En esta parte del programa se establecerï¿½ los intervalos de tiempo en que</em>
+<em class="mcom">%suceden cada uno de los tipos de movimiento, y se mostrarï¿½ un mensaje del</em>
+<em class="mcom">%tipo : &quot;Bajando escaleras&quot;, &quot;bajando rampa&quot;,...</em>
 
 [fila,col]=size(resultado);
 
@@ -217,20 +201,20 @@ maximosresultado=max(resultado);
 for j=1:col-2
     if resultado(1,j)==maximosresultado(1,j)
         estadoactual=1;
-        movimiento='Bajando escaleras';
+        <em class="mcom">%movimiento='Bajando escaleras';</em>
     elseif resultado(2,j)==maximosresultado(1,j)
         estadoactual=2;
-        movimiento='Bajando rampa';
+        <em class="mcom">%movimiento='Bajando rampa';</em>
     elseif resultado(3,j)==maximosresultado(1,j)
         estadoactual=3;
-        movimiento='Andando';
+        <em class="mcom">%movimiento='Andando';</em>
     elseif resultado(4,j)==maximosresultado(1,j)
         estadoactual=4;
-        movimiento='Subiendo rampa';
+        <em class="mcom">%movimiento='Subiendo rampa';</em>
     else  estadoactual=5;
-        movimiento='Subiendo escaleras';
+        <em class="mcom">%movimiento='Subiendo escaleras';</em>
     end
-    vectorestimacion=[vectorestimacion estadoactual];
+    vectorestimacion=[vectorestimacion estadoactual]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
 end
 identificacion=vectorestimacion;
 </pre>

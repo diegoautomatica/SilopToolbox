@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>leerXBusData(obj,event,XBusMaster)</pre>
+<pre>leerXBusData(obj,event,XBusMaster) %#ok<INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -64,15 +64,15 @@
 
 <em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
 <em class="mcom">% History:  04.12.07    creacion del archivo</em>
-<em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
+<em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
 <em class="mcom">%           21-01.08    comentada la variable global iter que no se usa</em>
 
 
 
 
 
-<em class="mcom">%Lee datos del buffer. Llamada por una callback</em>
-function leerXBusData(obj,event,XBusMaster)
+<em class="mcom">%Lee datos del buffer. Llamada por una callback</em>
+function leerXBusData(obj,event,XBusMaster) <em class="mcom">%#ok&lt;INUSL&gt;</em>
 
 global SILOP_DATA_BUFFER;
 <em class="mcom">%global iter;</em>
@@ -112,12 +112,12 @@ for k=1:XBusMaster.ns
     mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(31:34)));</em>
     my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(35:38)));</em>
     mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); %hex2num(q,sprintf('<em class="mcom">%02X',data(39:42)));</em>
-    if (XBusMaster.modo==2)
+    <em class="mcom">%if (XBusMaster.modo==2)</em>
         <em class="mcom">% corregir la orientacion</em>
-        R=reshape(hex2num(q,reshape(sprintf('%02X',data((43:78)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 9*XBusMaster.nm])'),[9 XBusMaster.nm]); %hex2num(q,sprintf('<em class="mcom">%02X',data(7:10)));</em>
-    end
+        %R=reshape(hex2num(q,reshape(sprintf('%02X',data((43:78)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 9*XBusMaster.nm])'),[9 XBusMaster.nm]); %hex2num(q,sprintf('<em class="mcom">%02X',data(7:10)));</em>
+    <em class="mcom">%end</em>
     <em class="mcom">%SILOP_DATA_BUFFER=[flipud([muestra ax ay az rx ry rz mx my mz]); SILOP_DATA_BUFFER(1:(end-XBusMaster.nm),:)];</em>
-    SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz];
+    SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
 end
 SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
 

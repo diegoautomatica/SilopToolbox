@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[retardo_hs,retardo_to]=eventosRT(ah,av,reset)</pre>
+<pre>[retardo_hs,retardo_to]=eventos_RT(ah,av,reset) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -27,7 +27,7 @@
  el COG
 
  EVENTOSRT Esta funcion permite ser llamada de forma consecutiva para obtener los instantes de eventos de Contacto
- Inicial. Es IMPRESCINDIBLE que la señal esté siendo capturada a 100HZ. Es necesario reinicializar las variables
+ Inicial. Es IMPRESCINDIBLE que la seï¿½al estï¿½ siendo capturada a 100HZ. Es necesario reinicializar las variables
  persistentes para cada experimento nuevo. 
  
  Syntax:  [retardo_hs,retardo_to] = eventos_RT(ah,av,reset)
@@ -35,7 +35,7 @@
  Input parameters:
     ah        - Valor de la ultima muestra de aceleracion antero-posterior
     av        - Valor de la ultima muestra de aceleracion vertical
-    reset     - Si se usa un tercer parámetro, reinicia el proceso de captura y procesamiento.
+    reset     - Si se usa un tercer parï¿½metro, reinicia el proceso de captura y procesamiento.
 
  Output parameters:
     retardo_hs   - 0 si no se ha detectado evento de Initial Contact. N &gt; 0 si se ha detectado
@@ -74,22 +74,22 @@
 
 <em class="mcom">% Author:   Javi</em>
 <em class="mcom">% History:  04.01.2008  file created</em>
-<em class="mcom">%           16.01.2008  Inclusion de End Contact</em>
-<em class="mcom">%                       Añadido parámetro reset</em>
-<em class="mcom">%                       Incorporada a la toolbox(Diego)</em>
+<em class="mcom">%           16.01.2008  Inclusion de End Contact</em>
+<em class="mcom">%                       Aï¿½adido parï¿½metro reset</em>
+<em class="mcom">%                       Incorporada a la toolbox(Diego)</em>
 <em class="mcom">%           18.01.2008  Bug corregido, eliminado el uso de persistent durante el reset.</em>
-<em class="mcom">%           18.01.2008  bug corregido, se cambia la llamada a picos por <a class="mfun" href="private/localmaxima.html">localmaxima</a>, y se comprueba tamaño de pmax</em>
+<em class="mcom">%           18.01.2008  bug corregido, se cambia la llamada a picos por <a class="mfun" href="private/localmaxima.html">localmaxima</a>, y se comprueba tamaï¿½o de pmax</em>
 
-function[retardo_hs,retardo_to]=eventosRT(ah,av,reset)
+function[retardo_hs,retardo_to]=eventos_RT(ah,av,reset) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
 filtro=[0.0365 0.0374 0.0375 0.0382 0.0381 0.0385 0.0381 0.0382 0.0375 0.0374 0.0365]; <em class="mcom">%filtro de fase lineal con frecuancia de corte 2Hz</em>
-TROZO=200; <em class="mcom">%constante que indica el número de muestras que se toman como máximo en RT</em>
-INTERVALO=11; <em class="mcom">%constante que indica el nº de muestras positivas que debe haber anteriormente al zero-crossing</em>
+TROZO=200; <em class="mcom">%constante que indica el nï¿½mero de muestras que se toman como mï¿½ximo en RT</em>
+INTERVALO=11; <em class="mcom">%constante que indica el nï¿½ de muestras positivas que debe haber anteriormente al zero-crossing</em>
 
 <em class="mcom">%Paso 1: Tomar datos de individuo y paseo</em>
-persistent pers_datah; <em class="mcom">%señal de aceleración anteroposterior</em>
-persistent pers_data2; <em class="mcom">%señal filtrada</em>
-persistent pers_datav; <em class="mcom">%señal de aceleración vertical</em>
+persistent pers_datah; <em class="mcom">%seï¿½al de aceleraciï¿½n anteroposterior</em>
+persistent pers_data2; <em class="mcom">%seï¿½al filtrada</em>
+persistent pers_datav; <em class="mcom">%seï¿½al de aceleraciï¿½n vertical</em>
 persistent pers_indice_ultimo_hs; <em class="mcom">%indice del ultimo hs</em>
 
 if (nargin&gt;2)  <em class="mcom">%Implementacion del reset</em>
@@ -110,13 +110,13 @@ end
 pers_datah=[pers_datah(aux:end) ah]; <em class="mcom">%trozo de las ultimas 200 muestras de aceleracion antero-posterior</em>
 pers_datav=[pers_datav(aux:end) av]; <em class="mcom">%trozo de las ultimas 200 muestras de aceleracion vertical</em>
 
-<em class="mcom">%Calculo de la señal filtrada</em>
+<em class="mcom">%Calculo de la seï¿½al filtrada</em>
 L=min([length(pers_datah),length(filtro)]); <em class="mcom">%longitud de la convolucion</em>
-valor=0; <em class="mcom">%variable en la que se guardará la nueva muestra de señal filtrada</em>
+valor=0; <em class="mcom">%variable en la que se guardarï¿½ la nueva muestra de seï¿½al filtrada</em>
 for j=1:L
     valor=valor+filtro(j)*pers_datah(end-j+1); 
 end
-pers_data2=[pers_data2(aux:end) valor]; <em class="mcom">%trozo de las ultimas 200 muestras de la señal filtrada</em>
+pers_data2=[pers_data2(aux:end) valor]; <em class="mcom">%trozo de las ultimas 200 muestras de la seï¿½al filtrada</em>
 
 retardo_hs=0; <em class="mcom">%en principio no hay evento</em>
 retardo_to=0;
@@ -125,7 +125,7 @@ if(length(pers_datah)&gt;INTERVALO)
    if(pers_data2(end)&lt;0 &amp;&amp; pers_data2(end-1)&gt;0)
       <em class="mcom">%se produjo un zero-crossing</em>
       
-      <em class="mcom">%calcular periodo de la señal</em>
+      <em class="mcom">%calcular periodo de la seï¿½al</em>
       if(aux==2) <em class="mcom">%si tenemos un trozo de 200</em>
        auto=xcorr(pers_datah,TROZO,'unbiased');
        auto=auto(TROZO+1:end);
@@ -151,13 +151,13 @@ if(length(pers_datah)&gt;INTERVALO)
           <em class="mcom">%tenemos informacion de periodo</em>
           ultimo=find(pers_data2&lt;0);
           if (length(ultimo)&gt;1) <em class="mcom">%By Diego</em>
-               distancia=ultimo(end)-ultimo(end-1)-1; <em class="mcom">%nº de muestras positivas</em>
+               distancia=ultimo(end)-ultimo(end-1)-1; <em class="mcom">%nï¿½ de muestras positivas</em>
                norma=distancia/T;
                if(norma&gt;0.2)
                   <em class="mcom">%se trata de un ZC</em>
                   flag=1; <em class="mcom">%lo indicamos con un flag</em>
                end
-	  end
+          end
       end
       if(flag==1) <em class="mcom">%hubo un ZC</em>
           <em class="mcom">%Seleccionamos la ventana donde buscamos el pico</em>
@@ -171,13 +171,13 @@ if(length(pers_datah)&gt;INTERVALO)
           aux=pers_datah(peaks)/aux;
           peaks=peaks.*(pers_datah(peaks)&gt;0.95).*(pers_datav(peaks)&gt;=9.8).*(aux&gt;0.3); <em class="mcom">%nos quedamos con los positivos y aplicamos las reglas </em>
           <em class="mcom">% heuristicas encontradas (umbrales)</em>
-          peaks=peaks(find(peaks&gt;=minimo &amp; peaks&lt;=maximo));
+          peaks=peaks(find(peaks&gt;=minimo &amp; peaks&lt;=maximo)); <em class="mcom">%#ok&lt;FNDSB&gt;</em>
           if(~isempty(peaks))
               <em class="mcom">%Seleccionamos el pico</em>
               <em class="mcom">%Criterio: primer pico seguido de ZC</em>
               evento=peaks(end);
               for j=1:length(peaks)-1
-                  if(~isempty(find(pers_datah(peaks(j):peaks(j+1))&lt;0)))
+                  if(~isempty(find(pers_datah(peaks(j):peaks(j+1))&lt;0))) <em class="mcom">%#ok&lt;EFIND&gt;</em>
                       <em class="mcom">%hay un paso por cero entre estos ds maximos</em>
                       evento=peaks(j);
                   end
@@ -189,7 +189,7 @@ if(length(pers_datah)&gt;INTERVALO)
        end
    end
    
-   %Comprobamos si tenemos el 15<em class="mcom">% de la señal para buscar un TO</em>
+   %Comprobamos si tenemos el 15<em class="mcom">% de la seï¿½al para buscar un TO</em>
    flag_to=0;
    if(pers_indice_ultimo_hs&gt;0)
       distancia=length(pers_datah)-pers_indice_ultimo_hs;

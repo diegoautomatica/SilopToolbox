@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ENERGIAWAVELET realizar la descomposición wavelet de una señal " />
+<meta name="description" content=" ENERGIAWAVELET realizar la descomposiciï¿½n wavelet de una seï¿½al " />
 <meta name="keywords" content="  entrena_ident_act ident_act " />
 <title>Documentation of  energiawavelet</title>
 </head>
@@ -23,21 +23,21 @@
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
- ENERGIAWAVELET realizar la descomposición wavelet de una señal
+ ENERGIAWAVELET realizar la descomposiciï¿½n wavelet de una seï¿½al
 
- ENERGIAWAVELET realizar la descomposición wavelet de una señal
+ ENERGIAWAVELET realizar la descomposiciï¿½n wavelet de una seï¿½al
  
  Syntax: [energiatotal,desvstdwavelet,valorRMS]=energiawavelet(aceleracion)
  
  Input parameters:
-   aceleracion-&gt; señal a procesar
+   aceleracion-&gt; seï¿½al a procesar
 
  Output parameters:
-   energiatotal-&gt;Vector que tiene las energías de cada una de las componentes
-		wavelet obtenidas de la descomposición de la señal aceleracion.
-   desvstdwavelet-&gt;Vector que tiene las desviaciones estándar de cada una de
+   energiatotal-&gt;Vector que tiene las energï¿½as de cada una de las componentes
+		wavelet obtenidas de la descomposiciï¿½n de la seï¿½al aceleracion.
+   desvstdwavelet-&gt;Vector que tiene las desviaciones estï¿½ndar de cada una de
               las componentes wavelet.
-   valorRMS-&gt;Vector que contiene los valores RMS de energía para cada wavelet
+   valorRMS-&gt;Vector que contiene los valores RMS de energï¿½a para cada wavelet
    
 
  Examples:
@@ -65,40 +65,40 @@
 
 
 <em class="mcom">% Author:   Jesus Coautor(Antonio)</em>
-<em class="mcom">% History:  xx.yy.zz    crea el archivo</em>
-<em class="mcom">%           03.01.2008  incorporada a la toolbox</em>
-<em class="mcom">%           21.01.2008  documentada y cambiada de nombre</em>
+<em class="mcom">% History:  xx.yy.zz    crea el archivo</em>
+<em class="mcom">%           03.01.2008  incorporada a la toolbox</em>
+<em class="mcom">%           21.01.2008  documentada y cambiada de nombre</em>
 
 
 
-<em class="mcom">%realiza la descomposición wavelet de la señal de aceleración</em>
+<em class="mcom">%realiza la descomposiciï¿½n wavelet de la seï¿½al de aceleraciï¿½n</em>
 function [energiatotal,desvstdwavelet,valorRMS]=energiawavelet(aceleracion) 
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Descomposición wavelet de la señal</em>
+<em class="mcom">%Descomposiciï¿½n wavelet de la seï¿½al</em>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Realización de la descomposición de paquetes wavelet</em>
+<em class="mcom">%Realizaciï¿½n de la descomposiciï¿½n de paquetes wavelet</em>
 
-<em class="mcom">%Como wavelet &quot;madre&quot; se utilizará una Daubechies de orden 5 'db5'</em>
+<em class="mcom">%Como wavelet &quot;madre&quot; se utilizarï¿½ una Daubechies de orden 5 'db5'</em>
 [a1,d1]=dwt(aceleracion,'db5');
 [aA2,aD2]=dwt(a1,'db5');
 [aA3,aD3]=dwt(aA2,'db5');
 [aA4,aD4]=dwt(aA3,'db5');
 [aA5,aD5]=dwt(aA4,'db5');
 [aA6,aD6]=dwt(aA5,'db5');    
-[dA2,dD2]=dwt(d1,'db5');
+[dA2,dD2]=dwt(d1,'db5'); <em class="mcom">%#ok&lt;NASGU&gt;</em>
 [dA3,dD3]=dwt(dA2,'db5');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Cálculo de las energías y valores RMS</em>
+<em class="mcom">%Cï¿½lculo de las energï¿½as y valores RMS</em>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Cálculo de la energía de la wavelet sumando las energías de:</em>
+<em class="mcom">%Cï¿½lculo de la energï¿½a de la wavelet sumando las energï¿½as de:</em>
 <em class="mcom">%aD6, aD5, aD4, aD3, aD2, dA3, dD3</em>
-<em class="mcom">%También se aprovechará para calcular el valor eficaz</em>
+<em class="mcom">%Tambiï¿½n se aprovecharï¿½ para calcular el valor eficaz</em>
 energiaaD6=0; energiaaD5=0; energiaaD4=0; energiaaD3=0;
 energiaaD2=0; energiadA3=0; energiadD3=0;
    
@@ -137,7 +137,7 @@ for j=1:length(dD3)
 end
 RMSdD3=sqrt(energiadD3/length(dD3));
 
-<em class="mcom">%Vector que contiene los valores RMS de cada una de las señales wavelet</em>
+<em class="mcom">%Vector que contiene los valores RMS de cada una de las seï¿½ales wavelet</em>
 valorRMS=[RMSaD5 RMSaD4 RMSaD3 RMSaD2 RMSdA3 RMSdD3];
 
 energiainf=energiaaD6+energiaaD5+energiaaD4+energiaaD3+energiaaD2;
@@ -147,7 +147,7 @@ energiatotal=energiainf+energiasup;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Segunda forma de hallar la enrgía de la señal</em>
+<em class="mcom">%Segunda forma de hallar la enrgï¿½a de la seï¿½al</em>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 <em class="mcom">% energiaa1=0; energiad1=0;</em>
 <em class="mcom">% for j=1:length(energiaa1)</em>
@@ -164,9 +164,9 @@ energiatotal=energiainf+energiasup;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%Calculo de la desviación estándar de la señal</em>
+<em class="mcom">%Calculo de la desviaciï¿½n estï¿½ndar de la seï¿½al</em>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
-<em class="mcom">%El cálculo de la desviación estándar se realizará mediante la función</em>
+<em class="mcom">%El cï¿½lculo de la desviaciï¿½n estï¿½ndar se realizarï¿½ mediante la funciï¿½n</em>
 <em class="mcom">%std(vector)</em>
 desvstdaD5=std(aD5);
 desvstdaD4=std(aD4);
@@ -175,7 +175,7 @@ desvstdaD2=std(aD2);
 desvstddA3=std(dA3);
 desvstddD3=std(dD3);
 desvstdwavelet=[desvstdaD5 desvstdaD4 desvstdaD3 desvstdaD2 desvstddA3 desvstddD3];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<em class="mcom">%</em>
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->
