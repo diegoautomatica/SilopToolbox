@@ -3,7 +3,7 @@
 % SETOBJECTALIGNMENT Envía el mensaje SetObjectAlignment al objeto XBusMaster. El proceso
 %         se queda bloqueado hasta recibir la respuesta
 % 
-% Syntax: [XBusMaster,error]=SetObjectAlignment(XBusMaster,k,matriz)
+% Syntax: XBusMaster=SetObjectAlignment(XBusMaster,k,matriz)
 % 
 % Input parameters:
 %   XBusMaster-> Objeto con la información del dispositivo.
@@ -13,9 +13,6 @@
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
 %               modificado durante la llamada.
-%   error     - 0 si no se produjo ningún error y 1 en caso contrario.
-%               si no se recibe el mensaje con la descripción de los dispositivos
-%               conectados
 %
 % Examples:
 %
@@ -25,7 +22,7 @@
 % History:  
 
 
-function [XBusMaster,error]=SetObjectAlignment(XBusMaster,k,matriz)
+function XBusMaster=SetObjectAlignment(XBusMaster,k,matriz)
 
 % Envia el mensaje ResetOrientation a todos los dispositivos conectados
 % error vale 1 si no se recibe el mensaje de ack
@@ -54,18 +51,15 @@ matriz=matriz';
     % Se supone que el buffer de entrada esta vacio
     %msg=[];
     [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-    error=0;
     if (~isempty(msg))
         disp(msg);
-        error=1;
+        error('no se ha recibido respuesta al comando setobjectalignement');
     else
         if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
+        error('Error de checksum durante el comando setobjectalignment');
         else
             if (ack(3)~=225)
-                disp('Error en la secuencia de mensajes');
-                error=1;
+                error('Error en la secuencia de mensajes durante el comando setobjectalignment');
             end
         end
     end

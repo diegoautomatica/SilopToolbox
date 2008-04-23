@@ -12,7 +12,6 @@
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
 %               modificado durante la llamada.
-%   error     - 0 si no se produjo ningún error y 1 si no se recibe el mensaje de ACK
 %
 % Examples:
 %
@@ -24,7 +23,7 @@
 %           18.12.07    pasada a private por Diego.
 
 
-function [XBusMaster,error]=SetPeriod(XBusMaster,freq)
+function XBusMaster=SetPeriod(XBusMaster,freq)
 
 % Envia el mensaje SetPeriod al objeto XBusMaster
 % error vale 1 si no se recibe el mensaje de ACK
@@ -63,20 +62,15 @@ fwrite(XBusMaster.puerto,msg,'uint8');
 %error=0;
 if (~isempty(msg))
     disp(msg);
-    error=1;
-    return;
+    error('no se ha recibido respuesta al comando setperiod');
 else
     if (mod(sum(ack(2:end)),256)~=0)
-        disp('>>> ERROR -> Error de checksum');
-        error=1;
-        return;
+        error('Error de checksum durante el comando setperiod');
     else
         if (ack(3)~=5)
-            disp('>>> ERROR -> Error en la secuencia de mensajes');
-            error=1;
-            return;
+            error('Error en la secuencia de mensajes durante el comando setperiod');
         end
     end
 end
 % Se actualiza la configuracion
-[XBusMaster,error]=ReqConfiguration(XBusMaster);
+XBusMaster=ReqConfiguration(XBusMaster);

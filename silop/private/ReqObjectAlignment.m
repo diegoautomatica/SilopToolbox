@@ -3,7 +3,7 @@
 % REQOBJECTALIGNMENT Envía el mensaje ReqObjectAlignment al objeto XBusMaster. El proceso
 %         se queda bloqueado hasta recibir la respuesta
 % 
-% Syntax: [XBusMaster,error]=ReqObjectAlignment(XBusMaster,matriz)
+% Syntax: XBusMaster=ReqObjectAlignment(XBusMaster,matriz)
 % 
 % Input parameters:
 %   XBusMaster-> Objeto con la información del dispositivo.
@@ -13,9 +13,6 @@
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
 %               modificado durante la llamada.
 %               La información de las orientaciones queda en XBusMaster.Conf.Dev(k).Orientacion
-%   error     - 0 si no se produjo ningún error y 1 en caso contrario.
-%               si no se recibe el mensaje con la descripción de los dispositivos
-%               conectados
 %
 % Examples:
 %
@@ -24,7 +21,7 @@
 % Author:   Rafael C. Gonzalez de los Reyes
 % History:  
 
-function [XBusMaster,error]=ReqObjectAlignment(XBusMaster,p)
+function XBusMaster=ReqObjectAlignment(XBusMaster,p)
 
 % Envia el mensaje ResetOrientation a todos los dispositivos conectados
 % error vale 1 si no se recibe el mensaje de ack
@@ -55,15 +52,13 @@ k=p;
     error=0;
     if (~isempty(msg))
         disp(msg);
-        error=1;
+        error('no se ha recibido respuesta al comando reqobjectalignment');
     else
         if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
+        error('Error de checksum durante el comando reqobjectalignment');
         else
             if (ack(3)~=225)
-                disp('Error en la secuencia de mensajes');
-                error=1;
+                error('Error en la secuencia de mensajes durante el comando reqobjectaligment');
             end
         end
     end

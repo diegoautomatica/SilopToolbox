@@ -4,7 +4,7 @@
 % conectados al XBusMaster. El proceso se queda bloqueado hasta recibir la informacion
 
 % 
-% Syntax: [XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)
+% Syntax: XBusMaster=SetMTOutputMode(XBusMaster, orientformat)
 % 
 % Input parameters:
 %   XBusMaster-> Objeto con la información del dispositivo.
@@ -17,7 +17,6 @@
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
 %               modificado durante la llamada.
-%   error     - 0 si no se produjo ningún error y 1 si no se recibe el mensaje de ACK
 %
 % Examples:
 %
@@ -29,7 +28,7 @@
 %           18.12.07    pasada a private por Diego.
 
 
-function [XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)
+function XBusMaster=SetMTOutputMode(XBusMaster, orientformat)
 
 
 if (nargin<2)
@@ -75,19 +74,13 @@ for k=1:XBusMaster.Conf.DevNum
     [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
     %error=0;
     if (~isempty(msg))
-        disp(msg);
-        error=1;
-        return;
+        error('no se ha recibido respuesta al comando setmtoutputmode');
     else
         if (mod(sum(ack(2:end)),256)~=0)
-            disp('>>> ERROR -> Error de checksum');
-            error=1;
-            return;
+            error('Error de checksum durante el comando setmtoutputmode');
         else
             if (ack(3)~=209)
-                disp('>>> ERROR -> Error en la secuencia de mensajes');
-                error=1;
-                return;
+                error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
             end
         end
     end
@@ -116,22 +109,17 @@ for k=1:XBusMaster.Conf.DevNum
     %error=0;
     if (~isempty(msg))
         disp(msg);
-        error=1;
-        return;
+        error('no se ha recibido respuesta durante el comando setmtoutputmode');
     else
         if (mod(sum(ack(2:end)),256)~=0)
-            disp('>>> ERROR -> Error de checksum');
-            error=1;
-            return;
+            error('Error de checksum durante el comando setmtoutputmode');
         else
             if (ack(3)~=211)
-                disp('>>> ERROR -> Error en la secuencia de mensajes');
-                error=1;
-                return;
+                error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
             end
         end
     end
 end
 
 % Se actualiza la configuracion
-[XBusMaster,error]=ReqConfiguration(XBusMaster);
+XBusMaster=ReqConfiguration(XBusMaster);

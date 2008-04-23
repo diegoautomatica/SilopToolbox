@@ -4,17 +4,16 @@
 % pasar al modo config. Pueden perderse datos que existan en el buffer de
 % entrada.
 % 
-% Syntax: error=gotoconfig(XBusMaster)
+% Syntax: gotoconfig(XBusMaster)
 % 
 % Input parameters:
 %   XBusMaster->  Objeto con la informaci�n del dispositivo.
 %
-% Output parameters:
-%   error  - 0 si no se produjo ning�n error y 1 en caso contrario.
+% Output parameters: Ninguno
 %
 % Examples:
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2);
-% >> error=gotoconfig(xb);
+% >> gotoconfig(xb);
 %
 % See also: creaxbusmaster, gotomeasurement, pararcaptura, continuarcaptura,
 %           destruyexbusmaster
@@ -23,7 +22,7 @@
 % History:  04.12.07    creacion del archivo
 %           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc
 
-function error=gotoconfig(XBusMaster)
+function gotoconfig(XBusMaster)
 
 % Envia el mensaje GoToConfig al objeto XBusMaster
 % error vale 1 si no se recibe el mensaje de ack
@@ -50,18 +49,14 @@ fwrite(XBusMaster.puerto,msg,'uint8');
 % Se supone que el buffer de entrada esta vacio
 %msg=[];
 [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-error=0;
 if (~isempty(msg))
-    disp(msg);
-    error=1;
+    error('no se ha recibido la respuesta al comando gotoconfig');
 else
     if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
+        error('Error de checksum durante gotoconfig');
     else
         if (ack(3)~=49)
-            disp('Error en la secuencia de mensajes');
-            error=1;
+            error ('mensaje incorrecto recibido durante gotoconfig');
         end
     end
 end

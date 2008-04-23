@@ -3,7 +3,7 @@
 % REQCONFIGURATION Envía el mensaje RequestConfiguration al objeto XBusMaster. El proceso
 %         se queda bloqueado hasta recibir la información
 % 
-% Syntax: [XBusMaster,error]=ReqConfiguration(XBusMaster)
+% Syntax: [XBusMaster]=ReqConfiguration(XBusMaster)
 % 
 % Input parameters:
 %   XBusMaster-> Objeto con la información del dispositivo.
@@ -11,12 +11,9 @@
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
 %               modificado durante la llamada.
-%   error     - 0 si no se produjo ningún error y 1 en caso contrario.
-%               si no se recibe el mensaje con la descripción de los dispositivos
-%               conectados
 %
 % Examples:
-% >> [xb,error]=ReqConfiguration(xb);
+% >> [xb]=ReqConfiguration(xb);
 %
 % See also: creaxbusmaster, gotoconfig, pararcaptura, continuarcaptura,
 %           destruyexbusmaster
@@ -26,7 +23,7 @@
 %           18.12.07    pasada a private por Diego.
 
 
-function [XBusMaster,error]=ReqConfiguration(XBusMaster)
+function [XBusMaster]=ReqConfiguration(XBusMaster)
 
 % Envia el mensaje InitBus al objeto XBusMaster
 % error vale 1 si no se recibe el mensaje con la descripcion
@@ -57,30 +54,23 @@ fwrite(XBusMaster.puerto,msg,'uint8');
 % el tout.
 [ack1,cnt1,msg]=fread(XBusMaster.puerto,4,'uint8');
 if (cnt1<4 || ~isempty(msg))
-    error=1;
     disp(msg);
-    return;
+    error('no se ha recibido la respuesta en ReqConfiguration');
 else
     if (ack1(3)~=13)
-        disp('Error en la secuencia de mensajes');
-        error=1;
-        return;
+        error('Error en la secuencia de mensajes duranta ReqConfiguration');
     end
 end
-error=0;
 % de momento no se ha detectado ningun error y se continua con la lectura
 % del resto del mensaje ack1(end)+1 bytes
 [ack2,cnt2,msg]=fread(XBusMaster.puerto,ack1(end)+1,'uint8');
 ack=[ack1; ack2];
 if (~isempty(msg))
     disp(msg);
-    error=1;
-    return;
+    error('no se ha recibido la respuesta en ReqConfiguration');
 else
     if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
-        return;
+        error('Error de checksum durante ReqConfiguration');
     end
     % XBusMaster.Configuracion=ack(5:(end-1));
     XBusMaster.Conf.MDID=ack(5:8);

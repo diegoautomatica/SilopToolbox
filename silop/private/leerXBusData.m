@@ -48,11 +48,11 @@ data=fread(obj,[XBusMaster.DataLength XBusMaster.nm],'uint8');
 
 %checksum
 if (any(mod(sum(data(2:end,:)),256)) )
-    disp('>>>> ERROR de checksum');
+    disp('>>>> ERROR de checksum durante la captura de datos');
 end
 % tipo de mensaje
 if (any(data(3,:)-50))
-    disp('>>>> ERROR de tipo de mensaje');
+    disp('>>>> ERROR de tipo de mensaje durante la captura de datos');
 end
 % procesar la informacion
 muestra=([256 1]*data(5:6,:))';

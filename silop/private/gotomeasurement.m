@@ -3,7 +3,7 @@
 % GOTOMEASUREMENT Env�a al dispositivo Xbus Master un mensaje que le obliga
 % a pasar al modo measurement
 % 
-% Syntax: [XBusMaster,error]=gotomeasurement(XBusMaster)
+% Syntax: XBusMaster=gotomeasurement(XBusMaster)
 % 
 % Input parameters:
 %   XBusMaster-> Objeto con la informaci�n del dispositivo.
@@ -11,12 +11,10 @@
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
 %               modificado durante la llamada.
-%   error     - 0 si no se produjo ning�n error y 1 en caso contrario.
-%               (nop hubo mensaje de ack)
 %
 % Examples:
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2);
-% >> [xb,error]=gotomeasurement(xb);
+% >> xb=gotomeasurement(xb);
 %
 % See also: creaxbusmaster, gotoconfig, pararcaptura, continuarcaptura,
 %           destruyexbusmaster
@@ -25,7 +23,7 @@
 % History:  04.12.07    creacion del archivo
 %           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc
 
-function [XBusMaster,error]=gotomeasurement(XBusMaster)
+function XBusMaster=gotomeasurement(XBusMaster)
 
 global SILOP_DATA_BUFFER;
 
@@ -56,18 +54,15 @@ fwrite(XBusMaster.puerto,msg,'uint8');
 % Se supone que el buffer de entrada esta vacio
 %msg=[];
 [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-error=0;
 if (~isempty(msg))
     disp(msg);
-    error=1;
+    error('no se ha recibido respuesta al mensaje gotomeasurement');
 else
     if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
+        error('Error de checksum durante el comando gotomeasurement');
     else
         if (ack(3)~=17)
-            disp('Error en la secuencia de mensajes');
-            error=1;
+            error('Error en la secuencia de mensajes durante el comando gotomeasurement');
         end
     end
 end
