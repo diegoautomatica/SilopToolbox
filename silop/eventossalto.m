@@ -46,7 +46,7 @@ end
 
 % En primer lugar se busca el numero de minimos que se producen durante 
 % las  mediciones y que sean inferiores a -3
-minimos=buscamaximosth(-AccVert,3);
+minimos=buscamaximosth(-AccVert,1.5);
 ind_min=find(minimos==1);
 num=length(ind_min);
 
@@ -57,7 +57,7 @@ num=length(ind_min);
 inicio=ind_min(1);
 for i= 2:num
         if ind_min(i)- inicio <= frecuencia
-            minimos(ind_min(i))= 0; %Se descarta el punto
+               minimos(ind_min(i))= 0; %Se descarta el punto
         else
             inicio=ind_min(i); %Se acepta el punto y se comprueba el resto
         end

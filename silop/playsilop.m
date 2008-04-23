@@ -52,10 +52,7 @@ Comandos = creacomandos(SILOP_CONFIG);
 if (SILOP_CONFIG.BUS.Temporizador~=-1)
     start(SILOP_CONFIG.BUS.Temporizador);
 elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
-    [SILOP_CONFIG.BUS.Xbus,hayerror]=iniciacaptura(SILOP_CONFIG.BUS.Xbus);
-    if (hayerror)
-        error('No se puede iniciar la captura desde el Xbus');
-    end
+    [SILOP_CONFIG.BUS.Xbus]=iniciacaptura(SILOP_CONFIG.BUS.Xbus);
 end
 
 while(getkey()~=27) %tecla ESC

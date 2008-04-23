@@ -98,7 +98,7 @@ end
 %sentadillas, para lo cual se invertira el vector de posiciones y se
 %calcularan los m�ximos
 posicion_aux=-posicion;
-minimos=buscamaximosth(posicion_aux,0.01);
+minimos=buscamaximosth(posicion_aux,0.05);%Menos de 2.5cm no se considera sentadilla
 ind_dist=find(minimos==1)+1;
 tam=length(ind_dist);
 dist=zeros(tam,1);

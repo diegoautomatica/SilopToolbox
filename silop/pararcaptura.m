@@ -15,7 +15,7 @@
 %
 % Examples:
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2);
-% >> [xb,error]=iniciacaptura(xb);
+% >> [xb]=iniciacaptura(xb);
 % >> xb=pararcaptura(xb);
 %
 % See also: creaxbusmaster, iniciacaptura, continuarcaptura,

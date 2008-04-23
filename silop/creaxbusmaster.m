@@ -127,9 +127,9 @@ fopen(XBusMaster.puerto);
 
 % Ir a modo configuracion
 gotoconfig(XBusMaster);
-[XBusMaster,error]=InitBus(XBusMaster);
+XBusMaster=InitBus(XBusMaster);
 if (XBusMaster.ndisp~=ns)
-    error('SilopToolbox:creaxbusmaster','El n�mero de sensores conectados es distinto del numero de sensores declarados');
+    error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
 end
 XBusMaster=ReqConfiguration(XBusMaster);
 XBusMaster=SetPeriod(XBusMaster,XBusMaster.freq);

@@ -2,14 +2,14 @@
 % creaxbusmaster
 %
 % DESTRUYEXBUSMASTER Destruye el objeto XBusMaster creado por una llamada a
-% creaxbusmaster. Cerrando por tanto la conexión con el dispositivo  y 
+% creaxbusmaster. Cerrando por tanto la conexiï¿½n con el dispositivo  y 
 % liberando los puertos serie. No elimina los datos capturados, que se 
 % siguen manteniendo en SILOP_DATA_BUFFER
 % 
 % Syntax: XBusMaster=destruyexbusmaster(XBusMaster)
 % 
 % Input parameters:
-%   XBusMaster-> Objeto con la información del dispositivo.
+%   XBusMaster-> Objeto con la informaciï¿½n del dispositivo.
 %
 % Output parameters:
 %   XBusMaster- Es el mismo objeto de entrada que puede haber sido
@@ -17,7 +17,7 @@
 %
 % Examples:
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2);
-% >> [xb,error]=iniciacaptura(xb);
+% >> xb=iniciacaptura(xb);
 % >> xb=destruyexbusmaster(xb);
 %
 % See also: creaxbusmaster, iniciacaptura, pararcaptura, continuarcaptura,

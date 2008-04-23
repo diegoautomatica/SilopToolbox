@@ -45,12 +45,14 @@ end
 
 %filtro esos datos de aceleracion para evitar excesivos pico y facilitar el
 %cálculo del número de sentadillas
-acel_filt=filtro0(AccVert,60,2*2.5/frecuencia);
+acel_filt=filtro0(AccVert,100,1*2.5/frecuencia);
 
 % Busca el número de máximos que se producen durante las  mediciones y que
 % sean superiores a 11
-maximos=buscamaximosth(acel_filt,11);
+maximos=buscamaximosth(acel_filt,10.85);
 ind_max=find(maximos==1)+1;
+ind_max=ind_max([1,find(diff(ind_max)>frecuencia/2)+1]);
+
 % Obtiene el número definitivo de saltos
 num_sentadillas=length(ind_max);
 
@@ -58,7 +60,7 @@ num_sentadillas=length(ind_max);
 %de la sentadilla, eliminando los menores si hay mas de uno
 for i=1:num_sentadillas
     datos_exc=-acel_filt(ind_max(i)-100:ind_max(i));
-    min_ini=buscamaximosth(datos_exc,-9.5);
+    min_ini=buscamaximosth(datos_exc,-10.5);
     ind_min_ini=find(min_ini==1)+ind_max(i)-100;
     if length(ind_min_ini)>1
         ind_minimo=ind_min_ini(1);
@@ -70,13 +72,20 @@ for i=1:num_sentadillas
         ind_min_ini=ind_minimo;
     end
     ind_inicio(i)=2*ind_min_ini - ind_max(i); %#ok<AGROW>
-end
-            
-
-
+end 
+    
 %Obtiene los puntos correspondientes a fin de santadilla atrasando un
 %tiempo determinado desde el maximo identificador de sentadilla
-ind_fin=ind_max +40;
+    ind_fin=zeros(num_sentadillas,1);
+for i=1:num_sentadillas
+    if (i==num_sentadillas)
+       [mini,ind_fin(i)]=min(acel_filt(ind_max(i):end)); 
+    else
+       [mini,ind_fin(i)]=min(acel_filt(ind_max(i):ind_inicio(i+1)));
+    end
+    ind_fin(i)=ind_fin(i)+ind_max(i)+25*frecuencia/100;
+end
+      
 
 % Ahora creo una matriz de eventos colocando las aceleraciones en la primera columna,
 % los minimos hallados al principio en una columna, los pasos por g en otra,

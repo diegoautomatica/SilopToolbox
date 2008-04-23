@@ -29,7 +29,7 @@ addalgoritmo('alg_det_event', 2, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
 % y representación de la posición en 2d
 addalgoritmo('alg_est_dist_pendulo' , 1, {'COG.Acc_Z'}, [], {'alg_det_event'});
 addalgoritmo('alg_est_orient_gyro', 1, {'COG.G_Z'}, [], {});
-addalgoritmo('alg_est_2d', 2, [], [], {'alg_est_dist_pendulo'  'alg_est_orient_gyro'});
+addalgoritmo('alg_est_2d', 2, [], [], {'alg_est_dist_pendulo',  'alg_est_orient_gyro'});
 addalgoritmo('alg_plot_pos2d', 0, [], [], {'alg_est_2d'});
 
     

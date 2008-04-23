@@ -59,6 +59,6 @@ if (isstruct(SILOP_CONFIG.BUS.File))
         end		
         delete ('config.mat');
         delete ('datos.log');
-        movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], CONFIG.BUS.File.Name);
+        movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], SILOP_CONFIG.BUS.File.Name, 'f');
     end
 end
