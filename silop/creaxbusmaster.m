@@ -123,16 +123,26 @@ XBusMaster.puerto.RecordName = 'record.txt';
 XBusMaster.puerto.Tag = 'XBus_Master';
 XBusMaster.puerto.Timeout = 1;
 % Abrir el puerto de comunicaciones
-fopen(XBusMaster.puerto);
+%Tenemos que tener cuidado no dejar el serial en mal estado, porque aún no 
+%estamos en condiciones de detener el proceso a alto nivel
+try
+   fopen(XBusMaster.puerto);
 
-% Ir a modo configuracion
-gotoconfig(XBusMaster);
-XBusMaster=InitBus(XBusMaster);
-if (XBusMaster.ndisp~=ns)
-    error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
+   % Ir a modo configuracion
+   gotoconfig(XBusMaster);
+   XBusMaster=InitBus(XBusMaster);
+   if (XBusMaster.ndisp~=ns)
+      error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
+   end
+
+	XBusMaster=ReqConfiguration(XBusMaster);
+	XBusMaster=SetPeriod(XBusMaster,XBusMaster.freq);
+catch
+  s=lasterror();
+  disp(s.message);
+	delete XBusMaster.puerto
 end
-XBusMaster=ReqConfiguration(XBusMaster);
-XBusMaster=SetPeriod(XBusMaster,XBusMaster.freq);
+
 switch (modo)
     case 0,
         XBusMaster=SetMTOutputMode(XBusMaster,0);

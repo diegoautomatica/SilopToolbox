@@ -27,37 +27,39 @@
 
 function playsilop(salvar,fichero)
 
+
 global SILOP_CONFIG
 global SILOP_DATA_BUFFER;
 	
-VENTANA=zeros(1, SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE-1);
+try
+    VENTANA=zeros(1, SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE-1);
 
-if (nargin<1)
-	salvar=0;
-end
+    if (nargin<1)
+        salvar=0;
+    end
 
-if (salvar>0)
-	SILOP_CONFIG.BUS.File=struct('Salvar',salvar);
-	if (nargin<2)
-		SILOP_CONFIG.BUS.File.Name='datos.sl';
-	else
-		SILOP_CONFIG.BUS.File.Name=fichero;			
-	end
-	save('config.mat','SILOP_CONFIG');
-end
+    if (salvar>0)
+        SILOP_CONFIG.BUS.File=struct('Salvar',salvar);
+        if (nargin<2)
+            SILOP_CONFIG.BUS.File.Name='datos.sl';
+        else
+            SILOP_CONFIG.BUS.File.Name=fichero;			
+        end
+        save('config.mat','SILOP_CONFIG');
+    end
 
-Comandos = creacomandos(SILOP_CONFIG);
+    Comandos = creacomandos(SILOP_CONFIG);
 %Se encarga de crear los comandos para la llamada a las funciones a partir de la informaci�n de algoritmos a procesar
 
-if (SILOP_CONFIG.BUS.Temporizador~=-1)
-    start(SILOP_CONFIG.BUS.Temporizador);
-elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
-    [SILOP_CONFIG.BUS.Xbus]=iniciacaptura(SILOP_CONFIG.BUS.Xbus);
-end
+    if (SILOP_CONFIG.BUS.Temporizador~=-1)
+        start(SILOP_CONFIG.BUS.Temporizador);
+    elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
+        [SILOP_CONFIG.BUS.Xbus]=iniciacaptura(SILOP_CONFIG.BUS.Xbus);
+    end
 
-while(getkey()~=27) %tecla ESC
-	hay_datos = ~isempty(SILOP_DATA_BUFFER);
-	if(hay_datos)
+    while(getkey()~=27) %tecla ESC
+        hay_datos = ~isempty(SILOP_DATA_BUFFER);
+        if(hay_datos)
        		if(isnan(SILOP_DATA_BUFFER)) 
 			%En caso de emulación, el proceso simulado de muestro hace NaN la variable
 			%cuando se acaban los datos
@@ -84,16 +86,22 @@ while(getkey()~=27) %tecla ESC
        	    		comando = Comandos{k};
        	    		eval(comando);
        		end;
-		if (salvar>0)
-			save('datos.log','datos_nuevos','-ASCII','-APPEND');
-		end
-		if (salvar>1)
-			newalgo=VENTANA(fv-fdn+1:end, cdn+1:end); %#ok<NASGU>
-			save('datos_alg.log','newalgo','-ASCII','-APPEND');		
-		end        
+            if (salvar>0)
+                save('datos.log','datos_nuevos','-ASCII','-APPEND');
+            end
+            if (salvar>1)
+                newalgo=VENTANA(fv-fdn+1:end, cdn+1:end); %#ok<NASGU>
+                save('datos_alg.log','newalgo','-ASCII','-APPEND');		
+            end        
 
-	end
-end;
+        end
+    end;
+
+catch
+    s=lasterror();
+    disp(s.message);
+end
+
 stopsilop();
 
 

@@ -47,7 +47,6 @@ if (isstruct(SILOP_CONFIG.BUS.Xbus))
         destruyexbusmaster(SILOP_CONFIG.BUS.Xbus);
         SILOP_CONFIG.BUS.Xbus=-1;
     end
-    clear alg_ejes_anatomicos
 end;
 if (isstruct(SILOP_CONFIG.BUS.File))
     if (SILOP_CONFIG.BUS.File.Salvar>0)
@@ -61,4 +60,8 @@ if (isstruct(SILOP_CONFIG.BUS.File))
         delete ('datos.log');
         movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], SILOP_CONFIG.BUS.File.Name, 'f');
     end
+end
+%Se limpian todos los algoritmos.
+for indice=1:length(SILOP_CONFIG.ALGORITMOS)
+clear SILOP_CONFIG.ALGORITMOS(indice).nombre
 end

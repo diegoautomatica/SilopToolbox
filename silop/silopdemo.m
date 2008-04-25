@@ -36,7 +36,3 @@ addalgoritmo('alg_plot_pos2d', 1, [], [], {'alg_est_2d'});
 %% Se pone en marcha el proceso
 % Se detiene mediante la pulsación de la tecla ESC
 playsilop();
-
-
-
-

@@ -30,7 +30,10 @@
 function XBusMaster=destruyexbusmaster(xb)
 
 XBusMaster=xb;
-fclose(xb.puerto);
+try 
+	fclose(xb.puerto);
+catch
+end
 delete(XBusMaster.puerto);
 clear XBusMaster
 XBusMaster=[];

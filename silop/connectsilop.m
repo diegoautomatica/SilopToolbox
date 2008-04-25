@@ -161,7 +161,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         end
         
         % Crear el objeto xbusmaster
-	    xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
+	      xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
         SILOP_CONFIG.BUS.Xbus=xbus;
         SILOP_CONFIG.BUS.Temporizador=-1;
         
@@ -182,8 +182,8 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
             id_disp(k)=eval(xbus.sensores.Cadena(:,k));
         end
         
-        
-        for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
+        try
+        	for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
             %Buscamos el dispositivo en cada punto
             if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
                p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
@@ -210,5 +210,10 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
                   end    
                end
             end
-        end
+        	end
+				catch
+					s=lasterror();
+    			disp(s.message);
+					stopsilop();
+				end
     end % fin de modo xbusmaster

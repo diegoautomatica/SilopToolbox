@@ -1,22 +1,32 @@
 ToDo:
-Para el 0.9
+Para el 1.0
 	Documentar la función eventosPiernaG. 
 		el parametro sin documentar fh no se respeta.
 	eventospierectoff tiene documentacion que no coincide con lo que hace la funcion.
 		el parámetro frecuencia no se respeta.
 	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
-	
+	Ajustar las funciones de identificacion de actividades de Jesus para trabajar a 100Hz 
+
 Para el futuro:
 	Añadir dependencia de alg_est_mov a alg_det_event
 	Implementar el resto de algoritmos posibles (v?): actividad, saltos, sentadillas, biceps, piraguas, 
 		paso desde pie/pierna... 
-	Ajustar las funciones de identificacion de actividades de Jesus para trabajar a 100Hz 
-	Reimplementar connectsilop para recorrer los sensores con un bucle, y no multiplicar el código por n
 	Que funcione en Linux
+	Implementar removeimu
+	Implementar removealgoritmo
+	Implementar siloptool
 
 -------------------------------------------------------------------------------------------
 
 Done:
+v1.0	destruyexbusmaster está algo mas protegido para que garantice mejor la destruccion.
+connecsilop captura los errores posteriores creaxbusmaster y destruye el bus mediante stopsilop    
+		creaxbusmaster destruye el puerto si se produjo un error. No se podía hacer a alto nivel porque el puerto aún no estan el SILOP_CONFIG.
+		playsilop() captura cualquier error lanzado y llama a stopsilop() para salir limpiamente
+		Se limpian todos los algoritmos al salir.
+    Modificado alg_plot_pos2d para recordar toda la señal.
+	eliminar todas las devoluciones de valores de error. Ahora se arrojan mediante error. Se pueden pillar con un try catch.
+
 v0.9    auditoria de codigo. Pillados muchos bugs.
 	stopsilop() por defecto deja todo listo para rellamar a playsilop(). Puede detenerlo todo opcionalmente.
 	ReImplementar la calibracion en un alg_ejes_anatomicos, por medio de SILOP_CONFIG y SetObjectAlignment
