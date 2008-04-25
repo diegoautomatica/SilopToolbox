@@ -63,5 +63,5 @@ if (isstruct(SILOP_CONFIG.BUS.File))
 end
 %Se limpian todos los algoritmos.
 for indice=1:length(SILOP_CONFIG.ALGORITMOS)
-clear SILOP_CONFIG.ALGORITMOS(indice).nombre
+     clear (SILOP_CONFIG.ALGORITMOS(indice).nombre)
 end
