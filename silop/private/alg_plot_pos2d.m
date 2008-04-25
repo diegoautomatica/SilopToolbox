@@ -19,12 +19,7 @@ function yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) %
     		mifigura=figure;
             midata=[0,0];
     end
-    try
-        basura=get(mifigura);   %#ok<NASGU> %Intentamos pillar la figura
-    catch                % si no existe
-        midata=[0,0];    % los datos antiguos no tienen sentido
-    end
- 
+   
     figure(mifigura);
     ultimodibujado=find(~isnan(resultados),1,'last');
     if (isempty(ultimodibujado))
