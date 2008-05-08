@@ -33,7 +33,8 @@ msg=[250,255,48,0];
 % Se calcula el cheksum y se coloca al final
 msg=[msg 256-mod(sum(msg(2:end)),256)];
 % Se envia por el puerto serie 
-XBusMaster.puerto.RequestToSend='off';
+XBusMaster.puerto.RequestToSend='on';
+XBusMaster.puerto.Timeout=10;
 while (XBusMaster.puerto.BytesAvailable>0)
     % Vaciar el puerto 
     % OJO!!! Los datos se perderan
@@ -43,7 +44,6 @@ while (XBusMaster.puerto.BytesAvailable>0)
 end
 % El valor del TimeOut se fija a 1 segundo
 %tout=XBusMaster.puerto.TimeOut;
-XBusMaster.puerto.TimeOut=1;
 fwrite(XBusMaster.puerto,msg,'uint8');
 % Se espera a recibir la contestacion
 % Se supone que el buffer de entrada esta vacio

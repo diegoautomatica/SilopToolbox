@@ -19,7 +19,7 @@ function yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) %
     		mifigura=figure;
             midata=[0,0];
     end
-   
+    
     figure(mifigura);
     ultimodibujado=find(~isnan(resultados),1,'last');
     if (isempty(ultimodibujado))

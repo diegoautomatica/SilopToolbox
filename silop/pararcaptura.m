@@ -27,5 +27,5 @@
 
 function XBusMaster=pararcaptura(XBusMaster)
 
-stopasync(XBusMaster.puerto)
+stopasync(XBusMaster.puerto) %Esto no tendría que deshacerse en continuarcaptura?
 XBusMaster.puerto.RequestToSend='off';

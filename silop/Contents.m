@@ -1,5 +1,5 @@
 % Silop Toolbox
-% Version 0.9 03-Mar-2008
+% Version 0.9.1 07-May-2008
 % SiLoP Toolbox, files in directory  silop/
 %
 %

@@ -96,6 +96,8 @@ try
 
         end
     end;
+    getkey(1);
+    clear ('getkey');
 
 catch
     s=lasterror();

@@ -105,7 +105,7 @@ XBusMaster.puerto.BaudRate=bps;
 XBusMaster.puerto.DataBits=8;
 XBusMaster.puerto.FlowControl='none';
 XBusMaster.puerto.Parity='none';
-XBusMaster.puerto.StopBits=1;
+XBusMaster.puerto.StopBits=2;
 XBusMaster.puerto.ReadAsyncMode = 'continuous';
 
 XBusMaster.puerto.DataTerminalReady = 'on';
@@ -121,7 +121,7 @@ XBusMaster.puerto.RecordDetail = 'verbose';
 XBusMaster.puerto.RecordMode = 'overwrite';
 XBusMaster.puerto.RecordName = 'record.txt';
 XBusMaster.puerto.Tag = 'XBus_Master';
-XBusMaster.puerto.Timeout = 1;
+XBusMaster.puerto.Timeout = 10;
 % Abrir el puerto de comunicaciones
 %Tenemos que tener cuidado no dejar el serial en mal estado, porque aún no 
 %estamos en condiciones de detener el proceso a alto nivel
@@ -140,7 +140,8 @@ try
 catch
   s=lasterror();
   disp(s.message);
-	delete XBusMaster.puerto
+  delete (XBusMaster.puerto);
+  rethrow(lasterr()); 
 end
 
 switch (modo)

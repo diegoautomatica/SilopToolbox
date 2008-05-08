@@ -161,7 +161,11 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         end
         
         % Crear el objeto xbusmaster
-	      xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
+        try 
+            xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
+        catch
+            return
+        end
         SILOP_CONFIG.BUS.Xbus=xbus;
         SILOP_CONFIG.BUS.Temporizador=-1;
         
@@ -181,39 +185,39 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         for k=1:xbus.ndisp
             id_disp(k)=eval(xbus.sensores.Cadena(:,k));
         end
-        
+
         try
-        	for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
+            for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
             %Buscamos el dispositivo en cada punto
-            if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-               p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
-               if (isempty(p))
-                  error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',donde{1},' no ha sido encontrado']);
-               else
-                  orden=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.R']);
-                  Rot=zeros(3,3);
-                     for k=1:3
-                        Rot(k,abs(orden(k)))=sign(orden(k));
-                     end;
-                  SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Z = factor*(p-1)+4;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Y = factor*(p-1)+3;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_X = factor*(p-1)+2;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Z = factor*(p-1)+7;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Y = factor*(p-1)+6;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_X = factor*(p-1)+5;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z = factor*(p-1)+10;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Y = factor*(p-1)+9;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_X = factor*(p-1)+8;']);
-                  if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z'])>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                     SILOP_CONFIG.SENHALES.NUMEROSENHALES=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z']);
-                  end    
-               end
+                if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
+                    p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
+                    if (isempty(p))
+                        error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',donde{1},' no ha sido encontrado']);
+                    else
+                        orden=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.R']);
+                        Rot=zeros(3,3);
+                        for k=1:3
+                            Rot(k,abs(orden(k)))=sign(orden(k));
+                        end;
+                        SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Z = factor*(p-1)+4;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Y = factor*(p-1)+3;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_X = factor*(p-1)+2;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Z = factor*(p-1)+7;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Y = factor*(p-1)+6;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_X = factor*(p-1)+5;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z = factor*(p-1)+10;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Y = factor*(p-1)+9;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_X = factor*(p-1)+8;']);
+                        if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z'])>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
+                            SILOP_CONFIG.SENHALES.NUMEROSENHALES=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z']);
+                        end    
+                    end
+                end
             end
-        	end
-				catch
-					s=lasterror();
-    			disp(s.message);
-					stopsilop();
-				end
+        catch
+			s=lasterror();
+    		disp(s.message);
+			stopsilop();
+        end
     end % fin de modo xbusmaster

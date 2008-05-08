@@ -1,33 +1,17 @@
-function ch = getkey(m) 
+function ch = getkey(clear) 
 
 % GETKEY - get a single keypress
 %   CH = GETKEY waits for a keypress and returns the ASCII code. Accepts
 %   all ascii characters, including backspace (8), space (32), enter (13),
 %   etc, that can be typed on the keyboard. Non-ascii keys (ctrl, alt, ..)
 %   return a NaN. CH is a double. 
-%
-%   CH = GETKEY('non-ascii') uses non-documented matlab 6.5 features to
-%   return a string describing the key pressed. In this way keys like ctrl, alt, tab
-%   etc. can also distinguished. CH is a string.
+%   Si recibe un parámetro destruye la ventana que tiene.
 %
 %   This function is kind of a workaround for getch in C. It uses a modal, but
 %   non-visible window, which does show up in the taskbar.
 %   C-language keywords: KBHIT, KEYPRESS, GETKEY, GETCH
 %
 %   Examples:
-%
-%    fprintf('\nPress any key: ') ;
-%    ch = getkey ;
-%    fprintf('%c\n',ch) ;
-%
-%    fprintf('\nPress the Ctrl-key: ') ;
-%    if strcmp(getkey('non-ascii'),'control'),
-%      fprintf('OK\n') ;
-%    else
-%      fprintf(' ... wrong key ...\n') ;
-%    end
-%
-%  See also INPUT, CHAR
 
 % for Matlab 6.5
 % version 1.1 (dec 2006)
@@ -38,25 +22,28 @@ function ch = getkey(m)
 % 2005 - creation
 % dec 2006 - modified lay-out and help
 % 13-02-2008- modificada para esperar un tiempo máximo y no bloquear el proceso.    
+% modificada para no perder tiempo creando y destruyendo figuras dentro del
+% bucle principal de playsilop()
 
 % Determine the callback string to use
-if nargin == 1,
-    if strcmpi(m,'non-ascii'),
-        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ; %#ok<NBRAK>
-    else       
-        error('Argument should be the string ''non-ascii''') ;
-    end
-else
-    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ; %#ok<NBRAK>
+persistent fh
+
+if nargin > 0
+    delete(fh)
+    return
 end
+
+callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ; %#ok<NBRAK>
 
 % Set up the figure
 % May be the position property  should be individually tweaked to avoid visibility
-fh = figure('keypressfcn',callstr, ...
-    'windowstyle','modal',...    
-    'position',[0 0 1 1],...
-    'Name','GETKEY', ...
-    'userdata','timeout') ; 
+if (isempty(fh))
+    fh = figure('keypressfcn',callstr, ...
+        'windowstyle','modal',...    
+        'position',[0 0 1 1],...
+        'Name','GETKEY', ...
+        'userdata','timeout') ;
+end
 try
     % Wait for something to happen
     uiwait(fh,0.1);
@@ -69,4 +56,4 @@ catch
     ch = [] ;
 end
 
-delete(fh) ;
+%delete(fh) ;

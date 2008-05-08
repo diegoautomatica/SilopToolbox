@@ -19,8 +19,9 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v1.0	destruyexbusmaster está algo mas protegido para que garantice mejor la destruccion.
-connecsilop captura los errores posteriores creaxbusmaster y destruye el bus mediante stopsilop    
+v1.0	modificadas las comunicaciones a 2 bits de stop. corrige el problema del bluettoh y de linux?
+		destruyexbusmaster está algo mas protegido para que garantice mejor la destruccion.
+		connecsilop captura los errores posteriores creaxbusmaster y destruye el bus mediante stopsilop    
 		creaxbusmaster destruye el puerto si se produjo un error. No se podía hacer a alto nivel porque el puerto aún no estan el SILOP_CONFIG.
 		playsilop() captura cualquier error lanzado y llama a stopsilop() para salir limpiamente
 		Se limpian todos los algoritmos al salir.

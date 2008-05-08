@@ -48,7 +48,7 @@ if (XBusMaster.puerto.BytesAvailable>0)
 end
 % El valor del TimeOut se fija a 1 segundo
 %tout=XBusMaster.puerto.TimeOut;
-XBusMaster.puerto.TimeOut=1;
+XBusMaster.puerto.Timeout=1;
 fwrite(XBusMaster.puerto,msg,'uint8');
 % Se espera a recibir la contestacion
 % Se supone que el buffer de entrada esta vacio
