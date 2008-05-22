@@ -8,18 +8,49 @@ Para el 1.0
 	Ajustar las funciones de identificacion de actividades de Jesus para trabajar a 100Hz 
 
 Para el futuro:
-	Añadir dependencia de alg_est_mov a alg_det_event
-	Implementar el resto de algoritmos posibles (v?): actividad, saltos, sentadillas, biceps, piraguas, 
-		paso desde pie/pierna... 
-	Que funcione en Linux
-	Implementar removeimu
-	Implementar removealgoritmo
-	Implementar siloptool
+	Algoritmos
+		Añadir dependencia de alg_est_mov a alg_det_event
+		Implementar el resto de algoritmos posibles (v?): actividad, saltos, sentadillas, biceps, piraguas, 
+			paso desde pie/pierna... 
+
+	SO:
+		Que funcione en osx
+
+	Funcionalidad:	
+		Implementar removeimu, para eliminar imus añadidos por addimu
+		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
+		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
+		Initsilop debe soportar añadir sensores en mas puntos.
+  	Initsilop debe soportar que los sensores tengan más señales
+  		Los dos puntos se resumen en dejar empty 'SILOP_CONFIG.SENHALES' y delegar trabajo en addimu
+		Los cambios en initsilop hace que addimu deba rellenar SILOP_CONFIG_SENHALES para ese sensor
+		los cambios en initsilop implican que connectsilop debe revisar la forma de detectar que sensores están presentes, 
+		los cambios  en initsilop obligan a que stopsilop(1) resetee a cero la lista de sensores?
+
+	Nuevos sensores
+  	Initsilop debe soportar otros tipos de sensores (sparkfun),
+			Esto implica nuevos campos en SILOP_CONFIG.BUS
+		Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
+		connectsilop debe permitir conectar a otros sensores
+			implica hacer la fontanería de comunicaciones
+		playsilop debe soportar los nuevos sensores
+		stopsilop debe soportar los nuevos sensores.
+		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
+
+
 
 -------------------------------------------------------------------------------------------
 
 Done:
-v1.0	modificadas las comunicaciones a 2 bits de stop. corrige el problema del bluettoh y de linux?
+v1.0  	???
+v0.9.2	Unificado el funcionamienot para Xsens BT y USB. Ahora se usan gotoconfig y gotomeasurement directamente.
+	Pasadas a private todas las funciones de manejo directo de los Xsens.
+	Todos los fwrite al puerto serie se hacen 'async'ronos.  Ahora funciona en Linux	
+	Se vuelven a lanzar los errores en connectsilop y playsilop desde los try, para romper scripts externos que
+			encuentren el error
+		
+v0.9.1	modificadas las comunicaciones para usar correctamente el RTS. Cporregido problema con bluetooth.
+		modificadas las comunicaciones a 2 bits de stop. corrige el problema del bluettoh y de linux?
 		destruyexbusmaster está algo mas protegido para que garantice mejor la destruccion.
 		connecsilop captura los errores posteriores creaxbusmaster y destruye el bus mediante stopsilop    
 		creaxbusmaster destruye el puerto si se produjo un error. No se podía hacer a alto nivel porque el puerto aún no estan el SILOP_CONFIG.
@@ -127,25 +158,25 @@ v0.5.   Documentar las funciones privadas del Xsens.
 	picos.m eliminada. tiene bugs graves. Rafa tiene su propia versión
 	Terminado de ordenar las funciones en la documentación.
 	Bug corregido. Se usa SILOP_DATA_BUFFER en gotomeasurement. No parece que tuviese efectos negativos.
-        Bug corregido. Se usan las variables persistentes sin redefinirlas en eventos_RT y evento_IC_RT
+  Bug corregido. Se usan las variables persistentes sin redefinirlas en eventos_RT y evento_IC_RT
 	Bug corregido. Se limpia SILOP_DATA_BUFFER al salir de crearXbusMaster
 	bug corregido, en la función evento_IC_RT se cambia la llamada a picos por localmaxima, 
 		y se comprueba tamaño de pmax
 	bug corregido. Igual que el anterior en eventos_RT.
-        Incrementar el número de versión a 0.5(nuevas caracteristicas)
+  Incrementar el número de versión a 0.5(nuevas caracteristicas)
 	El número de versión se actualiza ahora desde las propiedades del documento. Campo Tema.
 	Añadida eventos_RT para detectar tanto el IC como el TO
-        Puestos warning de obsoleta en evento_IC_RT
+  Puestos warning de obsoleta en evento_IC_RT
 
 v0.4.	Incrementado el número de versión
 	Eliminada la función EventosCOG
-        Bug corregido.fijada a 100Hz la frecuencia por defecto en distanciapendulo y distancia pendulo parcial, 
+  Bug corregido.fijada a 100Hz la frecuencia por defecto en distanciapendulo y distancia pendulo parcial, 
 		en lugar de 0Hz 
-        Añadida la carpeta archive. Contiene funciones que en su momento fueron parte de private, pero ahora no se usan.
+  Añadida la carpeta archive. Contiene funciones que en su momento fueron parte de private, pero ahora no se usan.
              No se pueden llamar sin reincluir en private, pero se conserva su código y quedan documentadas en el html
 	Incluidas las funciones privadas de jesus para identificación de actividades. Coautor Antonio
-        Incluidas las funciones ident_act y entrena_ident_act desarrolladas por jesus para la deteccion de actividades.
-        Incluida evaluasentadillas que se había quedado sin actualizar en v0.3. eliminada desplazamientosentadillas.
+  Incluidas las funciones ident_act y entrena_ident_act desarrolladas por jesus para la deteccion de actividades.
+  Incluida evaluasentadillas que se había quedado sin actualizar en v0.3. eliminada desplazamientosentadillas.
 	Bug corregido. Se llama a leerXBusData a traves de un functionhandle, que es válido para las funciones private
  	Documentar las funciones de jesus para la detecciond de actividades
 	Funciones privadas picos y localmaxima necesarias para deteccion en TR de Javi

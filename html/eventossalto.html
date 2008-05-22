@@ -91,7 +91,7 @@ end
 
 <em class="mcom">% En primer lugar se busca el numero de minimos que se producen durante </em>
 <em class="mcom">% las  mediciones y que sean inferiores a -3</em>
-minimos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(-AccVert,3);
+minimos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(-AccVert,1.5);
 ind_min=find(minimos==1);
 num=length(ind_min);
 
@@ -102,7 +102,7 @@ num=length(ind_min);
 inicio=ind_min(1);
 for i= 2:num
         if ind_min(i)- inicio &lt;= frecuencia
-            minimos(ind_min(i))= 0; <em class="mcom">%Se descarta el punto</em>
+               minimos(ind_min(i))= 0; <em class="mcom">%Se descarta el punto</em>
         else
             inicio=ind_min(i); <em class="mcom">%Se acepta el punto y se comprueba el resto</em>
         end

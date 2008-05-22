@@ -79,17 +79,13 @@ addalgoritmo('<a class="mfun" href="private/alg_det_event.html">alg_det_event</a
 <em class="mcom">% y representación de la posición en 2d</em>
 addalgoritmo('<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>' , 1, {'COG.Acc_Z'}, [], {'<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>'});
 addalgoritmo('<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>', 1, {'COG.G_Z'}, [], {});
-addalgoritmo('<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>', 2, [], [], {'<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>'  '<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>'});
-addalgoritmo('<a class="mfun" href="private/alg_plot_pos2d.html">alg_plot_pos2d</a>', 0, [], [], {'<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>'});
+addalgoritmo('<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>', 2, [], [], {'<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>',  '<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>'});
+addalgoritmo('<a class="mfun" href="private/alg_plot_pos2d.html">alg_plot_pos2d</a>', 1, [], [], {'<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>'});
 
     
 %<em class="mcom">% Se pone en marcha el proceso</em>
 <em class="mcom">% Se detiene mediante la pulsación de la tecla ESC</em>
 playsilop();
-
-
-
-
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

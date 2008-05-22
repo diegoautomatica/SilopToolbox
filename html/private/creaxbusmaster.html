@@ -12,9 +12,9 @@
 <h1 >Documentation of  creaxbusmaster</h1>
 <hr size="3" noshade="noshade" />
 
-<p align="center">Global Index (<a href = "indexsgf.html">short</a> | <a href = "indexlgf.html">long</a>)
- | <a href="Contentssilop.html">Local contents</a>
- | Local Index (<a href = "indexslfsilop.html">short</a> | <a href = "indexllfsilop.html">long</a>)
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
 </p>
 
 <hr size="3" noshade="noshade" />
@@ -53,8 +53,8 @@
  Examples:
  &gt;&gt; xb=creaxbusmaster('COM24',115200,50,0,1,2)
 
- See also: <a class="mfun" href="iniciacaptura.html">iniciacaptura</a>, <a class="mfun" href="pararcaptura.html">pararcaptura</a>, <a class="mfun" href="continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: <a class="mfun" href="../private/iniciacaptura.html">iniciacaptura</a>, <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,
+           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -65,15 +65,15 @@
 </tr>
 <tr valign="top"><td>
 <ul>
-<li><a class="mfun" href="private/gotoconfig.html">gotoconfig</a></li>
-<li><a class="mfun" href="private/InitBus.html">InitBus</a></li>
-<li><a class="mfun" href="private/ReqConfiguration.html">ReqConfiguration</a></li>
-<li><a class="mfun" href="private/SetMTOutputMode.html">SetMTOutputMode</a></li>
-<li><a class="mfun" href="private/SetPeriod.html">SetPeriod</a></li>
+<li><a class="mfun" href="../private/gotoconfig.html">gotoconfig</a></li>
+<li><a class="mfun" href="../private/InitBus.html">InitBus</a></li>
+<li><a class="mfun" href="../private/ReqConfiguration.html">ReqConfiguration</a></li>
+<li><a class="mfun" href="../private/SetMTOutputMode.html">SetMTOutputMode</a></li>
+<li><a class="mfun" href="../private/SetPeriod.html">SetPeriod</a></li>
 </ul>
 </td><td>
 <ul>
-<li><a class="mfun" href="connectsilop.html">connectsilop</a></li>
+<li><a class="mfun" href="../connectsilop.html">connectsilop</a></li>
 </ul>
 </td>
 </tr>
@@ -157,11 +157,9 @@ XBusMaster.puerto.BaudRate=bps;
 XBusMaster.puerto.DataBits=8;
 XBusMaster.puerto.FlowControl='none';
 XBusMaster.puerto.Parity='none';
-XBusMaster.puerto.StopBits=1;
+XBusMaster.puerto.StopBits=2;
 XBusMaster.puerto.ReadAsyncMode = 'continuous';
 
-XBusMaster.puerto.DataTerminalReady = 'on';
-XBusMaster.puerto.RequestToSend = 'off';
     
 XBusMaster.puerto.ByteOrder = 'littleEndian';
 XBusMaster.puerto.BytesAvailableFcnCount = XBusMaster.DataLength*XBusMaster.nm;
@@ -169,29 +167,37 @@ SILOP_DATA_BUFFER=zeros(XBusMaster.puerto.BytesAvailableFcnCount,XBusMaster.buff
 XBusMaster.puerto.BytesAvailableFcnMode = 'byte';
 XBusMaster.puerto.InputBufferSize = XBusMaster.DataLength*100;
 XBusMaster.puerto.OutputBufferSize = 512;
-XBusMaster.puerto.RecordDetail = 'verbose';
-XBusMaster.puerto.RecordMode = 'overwrite';
-XBusMaster.puerto.RecordName = 'record.txt';
 XBusMaster.puerto.Tag = 'XBus_Master';
-XBusMaster.puerto.Timeout = 1;
+XBusMaster.puerto.Timeout = 10;
 <em class="mcom">% Abrir el puerto de comunicaciones</em>
-fopen(XBusMaster.puerto);
+<em class="mcom">%Tenemos que tener cuidado no dejar el serial en mal estado, porque aún no </em>
+<em class="mcom">%estamos en condiciones de detener el proceso a alto nivel</em>
+try
+   fopen(XBusMaster.puerto);
 
-<em class="mcom">% Ir a modo configuracion</em>
-gotoconfig(XBusMaster);
-[XBusMaster,error]=<a class="mfun" href="private/initbus.html">InitBus</a>(XBusMaster);
-if (XBusMaster.ndisp~=ns)
-    error('SilopToolbox:creaxbusmaster','El n�mero de sensores conectados es distinto del numero de sensores declarados');
+   <em class="mcom">% Ir a modo configuracion</em>
+   <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>(XBusMaster);
+   XBusMaster=<a class="mfun" href="../private/initbus.html">InitBus</a>(XBusMaster);
+   if (XBusMaster.ndisp~=ns)
+      error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
+   end
+
+	XBusMaster=<a class="mfun" href="../private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
+	XBusMaster=<a class="mfun" href="../private/setperiod.html">SetPeriod</a>(XBusMaster,XBusMaster.freq);
+catch
+  s=lasterror();
+  disp(s.message);
+  delete (XBusMaster.puerto);
+  rethrow(s); 
 end
-XBusMaster=<a class="mfun" href="private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
-XBusMaster=<a class="mfun" href="private/setperiod.html">SetPeriod</a>(XBusMaster,XBusMaster.freq);
+
 switch (modo)
     case 0,
-        XBusMaster=<a class="mfun" href="private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,0);
+        XBusMaster=<a class="mfun" href="../private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,0);
     case 1,
-        XBusMaster=<a class="mfun" href="private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,1);
+        XBusMaster=<a class="mfun" href="../private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,1);
     case 2,
-        XBusMaster=<a class="mfun" href="private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,3);
+        XBusMaster=<a class="mfun" href="../private/setmtoutputmode.html">SetMTOutputMode</a>(XBusMaster,3);
 end
 SILOP_DATA_BUFFER=[];
 </pre>

@@ -17,13 +17,18 @@
 % alg_plot_dependencias - ALG_PLOT_DEPENDENCIAS Algoritmo para la representacion de resultados de otros algoritmos
 % alg_plot_pos2d - ALG_PLOT_POS2D Algoritmo para la representacion de la posicion en 2d
 % alg_plot_senhales - ALG_PLOT_SENHALES Algoritmo para la representacion de señales
+% continuarcaptura - CONTINUARCAPTURA Reanuda la adquisici�n de datos tras una llamada a
+% creaxbusmaster - CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
+% destruyexbusmaster - DESTRUYEXBUSMASTER Destruye el objeto XBusMaster creado por una llamada a
 % energiawavelet - ENERGIAWAVELET realizar la descomposici�n wavelet de una se�al
 % getkey        - GETKEY - get a single keypress
 % gotoconfig    - GOTOCONFIG Pasa el dispositivo Xbus Master al estado config
 % gotomeasurement - GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement
+% iniciacaptura - INICIACAPTURA Comienza la captura de datos
 % InitBus       - INITBUS Envía el mensaje InitBus al objeto XBusMaster
 % leerXBusData  - LEERXBUSDATA Lee datos desde el dispositivo Xbus Master
 % localmaxima   - LOCALMAXIMA Determina los puntos que son m�ximos locales de una funci�n en un entorno 
+% pararcaptura  - PARARCAPTURA Detiene la adquisici�n de datos, pero mantiene el equipo
 % ReqConfiguration - REQCONFIGURATION Envía el mensaje RequestConfiguration al objeto XBusMaster
 % ReqObjectAlignment - REQOBJECTALIGNMENT Envía el mensaje ReqObjectAlignment al objeto XBusMaster
 % SetMTOutputMode - SETMTOUTPUTMODE Envía el mensaje SetOutputMode a todos los dispositivos

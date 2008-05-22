@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[XBusMaster,error]=SetPeriod(XBusMaster,freq)</pre>
+<pre>XBusMaster=SetPeriod(XBusMaster,freq)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -37,12 +37,11 @@
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
                modificado durante la llamada.
-   error     - 0 si no se produjo ningún error y 1 si no se recibe el mensaje de ACK
 
  Examples:
 
- See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,
+           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -57,7 +56,7 @@
 </ul>
 </td><td>
 <ul>
-<li><a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a></li>
+<li><a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a></li>
 </ul>
 </td>
 </tr>
@@ -72,7 +71,7 @@
 <em class="mcom">%           18.12.07    pasada a private por Diego.</em>
 
 
-function [XBusMaster,error]=SetPeriod(XBusMaster,freq)
+function XBusMaster=SetPeriod(XBusMaster,freq)
 
 <em class="mcom">% Envia el mensaje SetPeriod al objeto XBusMaster</em>
 <em class="mcom">% error vale 1 si no se recibe el mensaje de ACK</em>
@@ -100,10 +99,8 @@ if (XBusMaster.puerto.BytesAvailable&gt;0)
 end
 <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
 <em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
-XBusMaster.puerto.TimeOut=1;
-fwrite(XBusMaster.puerto,msg,'uint8');
-<em class="mcom">% Se espera a recibir la contestacion</em>
-<em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
+XBusMaster.puerto.timeOut=1;
+fwrite(XBusMaster.puerto,msg,'uint8','async');
 <em class="mcom">% Se espera a recibir la contestacion</em>
 <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
 <em class="mcom">%msg=[];</em>
@@ -111,23 +108,18 @@ fwrite(XBusMaster.puerto,msg,'uint8');
 <em class="mcom">%error=0;</em>
 if (~isempty(msg))
     disp(msg);
-    error=1;
-    return;
+    error('no se ha recibido respuesta al comando setperiod');
 else
     if (mod(sum(ack(2:end)),256)~=0)
-        disp('&gt;&gt;&gt; ERROR -&gt; Error de checksum');
-        error=1;
-        return;
+        error('Error de checksum durante el comando setperiod');
     else
         if (ack(3)~=5)
-            disp('&gt;&gt;&gt; ERROR -&gt; Error en la secuencia de mensajes');
-            error=1;
-            return;
+            error('Error en la secuencia de mensajes durante el comando setperiod');
         end
     end
 end
 <em class="mcom">% Se actualiza la configuracion</em>
-[XBusMaster,error]=<a class="mfun" href="../private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
+XBusMaster=<a class="mfun" href="../private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

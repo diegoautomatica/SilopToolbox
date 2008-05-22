@@ -142,7 +142,7 @@ end
 <em class="mcom">%sentadillas, para lo cual se invertira el vector de posiciones y se</em>
 <em class="mcom">%calcularan los m�ximos</em>
 posicion_aux=-posicion;
-minimos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(posicion_aux,0.01);
+minimos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(posicion_aux,0.05);<em class="mcom">%Menos de 2.5cm no se considera sentadilla</em>
 ind_dist=find(minimos==1)+1;
 tam=length(ind_dist);
 dist=zeros(tam,1);

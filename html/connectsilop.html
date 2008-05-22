@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados " />
-<meta name="keywords" content=" creaxbusmaster setobjectalignment simula_muestreo silopdemo " />
+<meta name="keywords" content=" creaxbusmaster setobjectalignment simula_muestreo stopsilop silopdemo " />
 <title>Documentation of  connectsilop</title>
 </head>
 <body >
@@ -51,7 +51,7 @@
  Examples: 
    
 
- See also: <a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>
+ See also: <a class="mfun" href="private/creaxbusmaster.html">creaxbusmaster</a>
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -62,9 +62,10 @@
 </tr>
 <tr valign="top"><td>
 <ul>
-<li><a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a></li>
+<li><a class="mfun" href="private/creaxbusmaster.html">creaxbusmaster</a></li>
 <li><a class="mfun" href="private/SetObjectAlignment.html">SetObjectAlignment</a></li>
 <li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
+<li><a class="mfun" href="stopsilop.html">stopsilop</a></li>
 </ul>
 </td><td>
 <ul>
@@ -178,7 +179,6 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 	else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
 	end
         
-    <em class="mcom">%global t Para que era global???</em>
     t = timer('TimerFcn', {@<a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
     SILOP_CONFIG.BUS.Temporizador = t;
     SILOP_CONFIG.BUS.Xbus=-1;
@@ -211,7 +211,11 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         end
         
         <em class="mcom">% Crear el objeto xbusmaster</em>
-	    xbus=<a class="mfun" href="creaxbusmaster.html">creaxbusmaster</a>(puerto,bps,freq,modo,buffer,ns);
+        try 
+            xbus=<a class="mfun" href="private/creaxbusmaster.html">creaxbusmaster</a>(puerto,bps,freq,modo,buffer,ns);
+        catch
+            rethrow (lasterror());
+        end
         SILOP_CONFIG.BUS.Xbus=xbus;
         SILOP_CONFIG.BUS.Temporizador=-1;
         
@@ -231,35 +235,41 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         for k=1:xbus.ndisp
             id_disp(k)=eval(xbus.sensores.Cadena(:,k));
         end
-        
-        
-        for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
+
+        try
+            for donde={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
             <em class="mcom">%Buscamos el dispositivo en cada punto</em>
-            if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-               p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
-               if (isempty(p))
-                  error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',donde{1},' no ha sido encontrado']);
-               else
-                  orden=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.R']);
-                  Rot=zeros(3,3);
-                     for k=1:3
-                        Rot(k,abs(orden(k)))=sign(orden(k));
-                     end;
-                  <a class="mfun" href="private/setobjectalignment.html">SetObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p,Rot);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Z = factor*(p-1)+4;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Y = factor*(p-1)+3;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_X = factor*(p-1)+2;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Z = factor*(p-1)+7;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Y = factor*(p-1)+6;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_X = factor*(p-1)+5;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z = factor*(p-1)+10;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Y = factor*(p-1)+9;']);
-                  eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_X = factor*(p-1)+8;']);
-                  if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z'])&gt;SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                     SILOP_CONFIG.SENHALES.NUMEROSENHALES=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z']);
-                  end    
-               end
+                if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
+                    p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
+                    if (isempty(p))
+                        error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',donde{1},' no ha sido encontrado']);
+                    else
+                        orden=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.R']);
+                        Rot=zeros(3,3);
+                        for k=1:3
+                            Rot(k,abs(orden(k)))=sign(orden(k));
+                        end;
+                        <a class="mfun" href="private/setobjectalignment.html">SetObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p,Rot);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Z = factor*(p-1)+4;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_Y = factor*(p-1)+3;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Acc_X = factor*(p-1)+2;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Z = factor*(p-1)+7;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_Y = factor*(p-1)+6;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.G_X = factor*(p-1)+5;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z = factor*(p-1)+10;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Y = factor*(p-1)+9;']);
+                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_X = factor*(p-1)+8;']);
+                        if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z'])&gt;SILOP_CONFIG.SENHALES.NUMEROSENHALES)
+                            SILOP_CONFIG.SENHALES.NUMEROSENHALES=eval(['SILOP_CONFIG.SENHALES.',donde{1},'.MG_Z']);
+                        end    
+                    end
+                end
             end
+        catch
+			s=lasterror();
+    		disp(s.message);
+			<a class="mfun" href="stopsilop.html">stopsilop</a>();
+            rethrow(s);
         end
     end <em class="mcom">% fin de modo xbusmaster</em>
 </pre>

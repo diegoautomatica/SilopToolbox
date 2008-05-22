@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>ch = getkey(m) </pre>
+<pre>ch = getkey(clear) </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -28,29 +28,13 @@
    all ascii characters, including backspace (8), space (32), enter (13),
    etc, that can be typed on the keyboard. Non-ascii keys (ctrl, alt, ..)
    return a NaN. CH is a double. 
-
-   CH = GETKEY('non-ascii') uses non-documented matlab 6.5 features to
-   return a string describing the key pressed. In this way keys like ctrl, alt, tab
-   etc. can also distinguished. CH is a string.
+   Si recibe un parámetro destruye la ventana que tiene.
 
    This function is kind of a workaround for getch in C. It uses a modal, but
    non-visible window, which does show up in the taskbar.
    C-language keywords: KBHIT, KEYPRESS, GETKEY, GETCH
 
    Examples:
-
-    fprintf('\nPress any key: ') ;
-    ch = getkey ;
-    fprintf('%c\n',ch) ;
-
-    fprintf('\nPress the Ctrl-key: ') ;
-    if strcmp(getkey('non-ascii'),'control'),
-      fprintf('OK\n') ;
-    else
-      fprintf(' ... wrong key ...\n') ;
-    end
-
-  See also INPUT, CHAR
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -69,7 +53,7 @@
 <hr size="3" noshade="noshade" />
 <h2 >Listing of function getkey</h2>
 <pre>
-function ch = getkey(m) 
+function ch = getkey(clear) 
 
 <em class="mcom">% for Matlab 6.5</em>
 <em class="mcom">% version 1.1 (dec 2006)</em>
@@ -80,25 +64,28 @@ function ch = getkey(m)
 <em class="mcom">% 2005 - creation</em>
 <em class="mcom">% dec 2006 - modified lay-out and help</em>
 <em class="mcom">% 13-02-2008- modificada para esperar un tiempo máximo y no bloquear el proceso.    </em>
+<em class="mcom">% modificada para no perder tiempo creando y destruyendo figuras dentro del</em>
+<em class="mcom">% bucle principal de <a class="mfun" href="../playsilop.html">playsilop</a>()</em>
 
 <em class="mcom">% Determine the callback string to use</em>
-if nargin == 1,
-    if strcmpi(m,'non-ascii'),
-        callstr = ['set(gcbf,''Userdata'',get(gcbf,''Currentkey'')) ; uiresume '] ; <em class="mcom">%#ok&lt;NBRAK&gt;</em>
-    else       
-        error('Argument should be the string ''non-ascii''') ;
-    end
-else
-    callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ; <em class="mcom">%#ok&lt;NBRAK&gt;</em>
+persistent fh
+
+if nargin &gt; 0
+    delete(fh)
+    return
 end
+
+callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '] ; <em class="mcom">%#ok&lt;NBRAK&gt;</em>
 
 <em class="mcom">% Set up the figure</em>
 <em class="mcom">% May be the position property  should be individually tweaked to avoid visibility</em>
-fh = figure('keypressfcn',callstr, ...
-    'windowstyle','modal',...    
-    'position',[0 0 1 1],...
-    'Name','GETKEY', ...
-    'userdata','timeout') ; 
+if (isempty(fh))
+    fh = figure('keypressfcn',callstr, ...
+        'windowstyle','modal',...    
+        'position',[0 0 1 1],...
+        'Name','GETKEY', ...
+        'userdata','timeout') ;
+end
 try
     <em class="mcom">% Wait for something to happen</em>
     uiwait(fh,0.1);
@@ -111,7 +98,7 @@ catch
     ch = [] ;
 end
 
-delete(fh) ;
+<em class="mcom">%delete(fh) ;</em>
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

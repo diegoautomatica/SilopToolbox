@@ -41,7 +41,7 @@
 
  Examples:
 
- See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -92,11 +92,11 @@ data=fread(obj,[XBusMaster.DataLength XBusMaster.nm],'uint8');
 
 <em class="mcom">%checksum</em>
 if (any(mod(sum(data(2:end,:)),256)) )
-    disp('&gt;&gt;&gt;&gt; ERROR de checksum');
+    disp('&gt;&gt;&gt;&gt; ERROR de checksum durante la captura de datos');
 end
 <em class="mcom">% tipo de mensaje</em>
 if (any(data(3,:)-50))
-    disp('&gt;&gt;&gt;&gt; ERROR de tipo de mensaje');
+    disp('&gt;&gt;&gt;&gt; ERROR de tipo de mensaje durante la captura de datos');
 end
 <em class="mcom">% procesar la informacion</em>
 muestra=([256 1]*data(5:6,:))';

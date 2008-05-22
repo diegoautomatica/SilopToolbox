@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)</pre>
+<pre>XBusMaster=SetMTOutputMode(XBusMaster, orientformat)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -41,7 +41,7 @@
 </ul>
 </td><td>
 <ul>
-<li><a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a></li>
+<li><a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a></li>
 </ul>
 </td>
 </tr>
@@ -52,7 +52,7 @@
 
 
 <em class="mcom">% </em>
-<em class="mcom">% Syntax: [XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)</em>
+<em class="mcom">% Syntax: XBusMaster=SetMTOutputMode(XBusMaster, orientformat)</em>
 <em class="mcom">% </em>
 <em class="mcom">% Input parameters:</em>
 <em class="mcom">%   XBusMaster-&gt; Objeto con la información del dispositivo.</em>
@@ -65,19 +65,18 @@
 <em class="mcom">% Output parameters:</em>
 <em class="mcom">%   XBusMaster- Es el mismo objeto de entrada que puede haber sido</em>
 <em class="mcom">%               modificado durante la llamada.</em>
-<em class="mcom">%   error     - 0 si no se produjo ningún error y 1 si no se recibe el mensaje de ACK</em>
 <em class="mcom">%</em>
 <em class="mcom">% Examples:</em>
 <em class="mcom">%</em>
-<em class="mcom">% See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../continuarcaptura.html">continuarcaptura</a>,</em>
-<em class="mcom">%           <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a></em>
+<em class="mcom">% See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,</em>
+<em class="mcom">%           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a></em>
 
 <em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
 <em class="mcom">% History:  04.12.07    creacion del archivo</em>
 <em class="mcom">%           18.12.07    pasada a private por Diego.</em>
 
 
-function [XBusMaster,error]=SetMTOutputMode(XBusMaster, orientformat)
+function XBusMaster=SetMTOutputMode(XBusMaster, orientformat)
 
 
 if (nargin&lt;2)
@@ -113,8 +112,8 @@ for k=1:XBusMaster.Conf.DevNum
     end
     <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
     <em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
-    XBusMaster.puerto.TimeOut=1;
-    fwrite(XBusMaster.puerto,msg,'uint8');
+    XBusMaster.puerto.Timeout=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
     <em class="mcom">% Se espera a recibir la contestacion</em>
     <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
     <em class="mcom">% Se espera a recibir la contestacion</em>
@@ -123,19 +122,13 @@ for k=1:XBusMaster.Conf.DevNum
     [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
     <em class="mcom">%error=0;</em>
     if (~isempty(msg))
-        disp(msg);
-        error=1;
-        return;
+        error('no se ha recibido respuesta al comando setmtoutputmode');
     else
         if (mod(sum(ack(2:end)),256)~=0)
-            disp('&gt;&gt;&gt; ERROR -&gt; Error de checksum');
-            error=1;
-            return;
+            error('Error de checksum durante el comando setmtoutputmode');
         else
             if (ack(3)~=209)
-                disp('&gt;&gt;&gt; ERROR -&gt; Error en la secuencia de mensajes');
-                error=1;
-                return;
+                error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
             end
         end
     end
@@ -153,8 +146,8 @@ for k=1:XBusMaster.Conf.DevNum
     end
     <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
     <em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
-    XBusMaster.puerto.TimeOut=1;
-    fwrite(XBusMaster.puerto,msg,'uint8');
+    XBusMaster.puerto.Timeout=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
     <em class="mcom">% Se espera a recibir la contestacion</em>
     <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
     <em class="mcom">% Se espera a recibir la contestacion</em>
@@ -164,25 +157,20 @@ for k=1:XBusMaster.Conf.DevNum
     <em class="mcom">%error=0;</em>
     if (~isempty(msg))
         disp(msg);
-        error=1;
-        return;
+        error('no se ha recibido respuesta durante el comando setmtoutputmode');
     else
         if (mod(sum(ack(2:end)),256)~=0)
-            disp('&gt;&gt;&gt; ERROR -&gt; Error de checksum');
-            error=1;
-            return;
+            error('Error de checksum durante el comando setmtoutputmode');
         else
             if (ack(3)~=211)
-                disp('&gt;&gt;&gt; ERROR -&gt; Error en la secuencia de mensajes');
-                error=1;
-                return;
+                error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
             end
         end
     end
 end
 
 <em class="mcom">% Se actualiza la configuracion</em>
-[XBusMaster,error]=<a class="mfun" href="../private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
+XBusMaster=<a class="mfun" href="../private/reqconfiguration.html">ReqConfiguration</a>(XBusMaster);
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

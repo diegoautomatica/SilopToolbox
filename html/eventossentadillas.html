@@ -90,12 +90,14 @@ end
 
 <em class="mcom">%filtro esos datos de aceleracion para evitar excesivos pico y facilitar el</em>
 <em class="mcom">%cálculo del número de sentadillas</em>
-acel_filt=<a class="mfun" href="filtro0.html">filtro0</a>(AccVert,60,2*2.5/frecuencia);
+acel_filt=<a class="mfun" href="filtro0.html">filtro0</a>(AccVert,100,1*2.5/frecuencia);
 
 <em class="mcom">% Busca el número de máximos que se producen durante las  mediciones y que</em>
 <em class="mcom">% sean superiores a 11</em>
-maximos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(acel_filt,11);
+maximos=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(acel_filt,10.85);
 ind_max=find(maximos==1)+1;
+ind_max=ind_max([1,find(diff(ind_max)&gt;frecuencia/2)+1]);
+
 <em class="mcom">% Obtiene el número definitivo de saltos</em>
 num_sentadillas=length(ind_max);
 
@@ -103,7 +105,7 @@ num_sentadillas=length(ind_max);
 <em class="mcom">%de la sentadilla, eliminando los menores si hay mas de uno</em>
 for i=1:num_sentadillas
     datos_exc=-acel_filt(ind_max(i)-100:ind_max(i));
-    min_ini=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(datos_exc,-9.5);
+    min_ini=<a class="mfun" href="buscamaximosth.html">buscamaximosth</a>(datos_exc,-10.5);
     ind_min_ini=find(min_ini==1)+ind_max(i)-100;
     if length(ind_min_ini)&gt;1
         ind_minimo=ind_min_ini(1);
@@ -115,13 +117,20 @@ for i=1:num_sentadillas
         ind_min_ini=ind_minimo;
     end
     ind_inicio(i)=2*ind_min_ini - ind_max(i); <em class="mcom">%#ok&lt;AGROW&gt;</em>
-end
-            
-
-
+end 
+    
 <em class="mcom">%Obtiene los puntos correspondientes a fin de santadilla atrasando un</em>
 <em class="mcom">%tiempo determinado desde el maximo identificador de sentadilla</em>
-ind_fin=ind_max +40;
+    ind_fin=zeros(num_sentadillas,1);
+for i=1:num_sentadillas
+    if (i==num_sentadillas)
+       [mini,ind_fin(i)]=min(acel_filt(ind_max(i):end)); 
+    else
+       [mini,ind_fin(i)]=min(acel_filt(ind_max(i):ind_inicio(i+1)));
+    end
+    ind_fin(i)=ind_fin(i)+ind_max(i)+25*frecuencia/100;
+end
+      
 
 <em class="mcom">% Ahora creo una matriz de eventos colocando las aceleraciones en la primera columna,</em>
 <em class="mcom">% los minimos hallados al principio en una columna, los pasos por g en otra,</em>

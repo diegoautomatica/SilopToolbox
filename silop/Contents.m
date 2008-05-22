@@ -1,5 +1,5 @@
 % Silop Toolbox
-% Version 0.9.1 07-May-2008
+% Version 0.9.2 07-May-2008
 % SiLoP Toolbox, files in directory  silop/
 %
 %
@@ -9,10 +9,7 @@
 % buscamaximos  - BUSCAMAXIMOS Detecta todos los m�ximos de una se�al
 % buscamaximosth - BUSCAMAXIMOS Detecta todos los m�ximos de una se�al despu�s de aplicar un threshold
 % connectsilop  - CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados
-% continuarcaptura - CONTINUARCAPTURA Reanuda la adquisici�n de datos tras una llamada a
-% creaxbusmaster - CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
 % datacrop      - DATACROP Elimina manualmente un rango de datos de un archivo de xsens.
-% destruyexbusmaster - DESTRUYEXBUSMASTER Destruye el objeto XBusMaster creado por una llamada a
 % distancia_arco - DISTANCIA_ARCO Calcula la distancia recorrida en un paso basandose en el modelo de movimiento angular 
 % distancia_pendulo - DISTANCIA_PENDULO Calcula la distancia recorrida en un paso mediante el modelo del pendulo invertido desde el COG
 % distancia_penduloparcial - DISTANCIA_PENDULOPARCIAL Calcula la distancia recorrida en un paso mediante el modelo del pendulo invertido 
@@ -31,7 +28,6 @@
 % filtro0       - FILTRO0 Filtro paso bajo de fase cero
 % frecuenciapaladas - FRECUENCIAPALADAS Devuelve una señal con la frecuencia de palada. 
 % ident_act     - IDENT_ACT Identifica la actividad que se est� realizando
-% iniciacaptura - INICIACAPTURA Comienza la captura de datos
 % initsilop     - INITSILOP Inicializa el sistema de procesamiento de las aplicaciones estandar de la toolbox
 % integrasig    - INTEGRASIG Integra una senyal hasta un instante, incluyendo reseteo
 % limpia_estatico - LIMPIA_ESTATICO Detecta fases estaticas (sin desplazamiento).
@@ -39,7 +35,6 @@
 % orientacioncompas - ORIENTACIONCOMPAS Calcula la orientación en base a los datos de una brújula/compás situada en el COG
 % orientaciongiroscopo - ORIENTACIONGIROSCOPO Calcula la orientación en base a los datos de un giróscopo situado en el COG
 % orientacionkalman - ORIENTACIONKALMAN Calcula la orientación en base a los datos de un giróscopo y un compás situados en el COG
-% pararcaptura  - PARARCAPTURA Detiene la adquisici�n de datos, pero mantiene el equipo
 % playsilop     - PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados
 % silopdemo     - % SILOPDEMO Demostración de las capacidades de la toolbox
 % stopsilop     - STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses 

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement " />
-<meta name="keywords" content=" leerxbusdata alg_ejes_anatomicos iniciacaptura " />
+<meta name="keywords" content=" leerxbusdata alg_ejes_anatomicos iniciacaptura playsilop " />
 <title>Documentation of  gotomeasurement</title>
 </head>
 <body >
@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[XBusMaster,error]=gotomeasurement(XBusMaster)</pre>
+<pre>XBusMaster=gotomeasurement(XBusMaster)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -28,7 +28,7 @@
  GOTOMEASUREMENT Env�a al dispositivo Xbus Master un mensaje que le obliga
  a pasar al modo measurement
  
- Syntax: [XBusMaster,error]=gotomeasurement(XBusMaster)
+ Syntax: XBusMaster=gotomeasurement(XBusMaster)
  
  Input parameters:
    XBusMaster-&gt; Objeto con la informaci�n del dispositivo.
@@ -36,15 +36,13 @@
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
                modificado durante la llamada.
-   error     - 0 si no se produjo ning�n error y 1 en caso contrario.
-               (nop hubo mensaje de ack)
 
  Examples:
- &gt;&gt; xb=<a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
- &gt;&gt; [xb,error]=gotomeasurement(xb);
+ &gt;&gt; xb=<a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
+ &gt;&gt; xb=gotomeasurement(xb);
 
- See also: <a class="mfun" href="../creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="../destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>, <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,
+           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -60,7 +58,8 @@
 </td><td>
 <ul>
 <li><a class="mfun" href="../private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a></li>
-<li><a class="mfun" href="../iniciacaptura.html">iniciacaptura</a></li>
+<li><a class="mfun" href="../private/iniciacaptura.html">iniciacaptura</a></li>
+<li><a class="mfun" href="../playsilop.html">playsilop</a></li>
 </ul>
 </td>
 </tr>
@@ -74,7 +73,7 @@
 <em class="mcom">% History:  04.12.07    creacion del archivo</em>
 <em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
 
-function [XBusMaster,error]=gotomeasurement(XBusMaster)
+function XBusMaster=gotomeasurement(XBusMaster)
 
 global SILOP_DATA_BUFFER;
 
@@ -99,24 +98,21 @@ if (XBusMaster.puerto.BytesAvailable&gt;0)
 end
 <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
 <em class="mcom">%tout=XBusMaster.puerto.TimeOut;</em>
-XBusMaster.puerto.TimeOut=1;
-fwrite(XBusMaster.puerto,msg,'uint8');
+XBusMaster.puerto.Timeout=1;
+fwrite(XBusMaster.puerto,msg,'uint8','async');
 <em class="mcom">% Se espera a recibir la contestacion</em>
 <em class="mcom">% Se supone que el buffer de entrada esta vacio</em>
 <em class="mcom">%msg=[];</em>
 [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-error=0;
 if (~isempty(msg))
     disp(msg);
-    error=1;
+    error('no se ha recibido respuesta al mensaje gotomeasurement');
 else
     if (mod(sum(ack(2:end)),256)~=0)
-        disp('Error de checksum');
-        error=1;
+        error('Error de checksum durante el comando gotomeasurement');
     else
         if (ack(3)~=17)
-            disp('Error en la secuencia de mensajes');
-            error=1;
+            error('Error en la secuencia de mensajes durante el comando gotomeasurement');
         end
     end
 end
@@ -129,7 +125,6 @@ end
 <em class="mcom">% XBusMaster.puerto.BytesAvailableFcnCount=bytes;</em>
 leerXBusDatahandle=@<a class="mfun" href="../private/leerxbusdata.html">leerXBusData</a>;
 XBusMaster.puerto.BytesAvailableFcn={leerXBusDatahandle, XBusMaster};
-XBusMaster.puerto.RequestToSend='on';
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->
