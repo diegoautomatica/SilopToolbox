@@ -54,7 +54,11 @@ try
     if (SILOP_CONFIG.BUS.Temporizador~=-1)
         start(SILOP_CONFIG.BUS.Temporizador);
     elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
-        [SILOP_CONFIG.BUS.Xbus]=iniciacaptura(SILOP_CONFIG.BUS.Xbus);
+        if (strcmp(SILOP_CONFIG.BUS.Xbus.measurement,'on'))
+            [SILOP_CONFIG.BUS.Xbus]=continuarcaptura(SILOP_CONFIG.BUS.Xbus);
+        else
+            [SILOP_CONFIG.BUS.Xbus]=iniciacaptura(SILOP_CONFIG.BUS.Xbus);
+        end
     end
 
     while(getkey()~=27) %tecla ESC
@@ -102,6 +106,8 @@ try
 catch
     s=lasterror();
     disp(s.message);
+    stopsilop();
+    rethrow(s);
 end
 
 stopsilop();
