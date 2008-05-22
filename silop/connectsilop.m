@@ -128,7 +128,6 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 	else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
 	end
         
-    %global t Para que era global???
     t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
     SILOP_CONFIG.BUS.Temporizador = t;
     SILOP_CONFIG.BUS.Xbus=-1;
@@ -164,7 +163,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         try 
             xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
         catch
-            return
+            rethrow (lasterror());
         end
         SILOP_CONFIG.BUS.Xbus=xbus;
         SILOP_CONFIG.BUS.Temporizador=-1;
@@ -219,5 +218,6 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 			s=lasterror();
     		disp(s.message);
 			stopsilop();
+            rethrow(s);
         end
     end % fin de modo xbusmaster
