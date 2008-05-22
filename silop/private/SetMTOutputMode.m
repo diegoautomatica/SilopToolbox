@@ -65,7 +65,7 @@ for k=1:XBusMaster.Conf.DevNum
     % El valor del TimeOut se fija a 1 segundo
     %tout=XBusMaster.puerto.TimeOut;
     XBusMaster.puerto.Timeout=1;
-    fwrite(XBusMaster.puerto,msg,'uint8');
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
     % Se espera a recibir la contestacion
@@ -99,7 +99,7 @@ for k=1:XBusMaster.Conf.DevNum
     % El valor del TimeOut se fija a 1 segundo
     %tout=XBusMaster.puerto.TimeOut;
     XBusMaster.puerto.Timeout=1;
-    fwrite(XBusMaster.puerto,msg,'uint8');
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
     % Se espera a recibir la contestacion
     % Se supone que el buffer de entrada esta vacio
     % Se espera a recibir la contestacion
