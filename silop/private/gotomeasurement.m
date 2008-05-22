@@ -49,7 +49,7 @@ end
 % El valor del TimeOut se fija a 1 segundo
 %tout=XBusMaster.puerto.TimeOut;
 XBusMaster.puerto.Timeout=1;
-fwrite(XBusMaster.puerto,msg,'uint8');
+fwrite(XBusMaster.puerto,msg,'uint8','async');
 % Se espera a recibir la contestacion
 % Se supone que el buffer de entrada esta vacio
 %msg=[];
@@ -75,4 +75,3 @@ end
 % XBusMaster.puerto.BytesAvailableFcnCount=bytes;
 leerXBusDatahandle=@leerXBusData;
 XBusMaster.puerto.BytesAvailableFcn={leerXBusDatahandle, XBusMaster};
-XBusMaster.puerto.RequestToSend='on';
