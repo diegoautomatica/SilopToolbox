@@ -108,8 +108,8 @@ XBusMaster.puerto.Parity='none';
 XBusMaster.puerto.StopBits=2;
 XBusMaster.puerto.ReadAsyncMode = 'continuous';
 
-XBusMaster.puerto.DataTerminalReady = 'on';
-XBusMaster.puerto.RequestToSend = 'off';
+%XBusMaster.puerto.DataTerminalReady = 'on';
+%XBusMaster.puerto.RequestToSend = 'off';
     
 XBusMaster.puerto.ByteOrder = 'littleEndian';
 XBusMaster.puerto.BytesAvailableFcnCount = XBusMaster.DataLength*XBusMaster.nm;
@@ -117,9 +117,9 @@ SILOP_DATA_BUFFER=zeros(XBusMaster.puerto.BytesAvailableFcnCount,XBusMaster.buff
 XBusMaster.puerto.BytesAvailableFcnMode = 'byte';
 XBusMaster.puerto.InputBufferSize = XBusMaster.DataLength*100;
 XBusMaster.puerto.OutputBufferSize = 512;
-XBusMaster.puerto.RecordDetail = 'verbose';
-XBusMaster.puerto.RecordMode = 'overwrite';
-XBusMaster.puerto.RecordName = 'record.txt';
+%XBusMaster.puerto.RecordDetail = 'verbose';
+%XBusMaster.puerto.RecordMode = 'overwrite';
+%XBusMaster.puerto.RecordName = 'record.txt';
 XBusMaster.puerto.Tag = 'XBus_Master';
 XBusMaster.puerto.Timeout = 10;
 % Abrir el puerto de comunicaciones
@@ -130,6 +130,7 @@ try
 
    % Ir a modo configuracion
    gotoconfig(XBusMaster);
+   XBusMaster.measurement='off';
    XBusMaster=InitBus(XBusMaster);
    if (XBusMaster.ndisp~=ns)
       error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
@@ -141,7 +142,7 @@ catch
   s=lasterror();
   disp(s.message);
   delete (XBusMaster.puerto);
-  rethrow(lasterr()); 
+  rethrow(s); 
 end
 
 switch (modo)
