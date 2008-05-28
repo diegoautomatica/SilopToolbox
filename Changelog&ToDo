@@ -5,7 +5,7 @@ Para el 1.0
 	eventospierectoff tiene documentacion que no coincide con lo que hace la funcion.
 		el parámetro frecuencia no se respeta.
 	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
-	Ajustar las funciones de identificacion de actividades de Jesus para trabajar a 100Hz 
+	Ponerle una licencia
 
 Para el futuro:
 	Algoritmos
@@ -24,12 +24,10 @@ Para el futuro:
   	Initsilop debe soportar que los sensores tengan más señales
   		Los dos puntos se resumen en dejar empty 'SILOP_CONFIG.SENHALES' y delegar trabajo en addimu
 		Los cambios en initsilop hace que addimu deba rellenar SILOP_CONFIG_SENHALES para ese sensor
-		los cambios en initsilop implican que connectsilop debe revisar la forma de detectar que sensores están presentes, 
-		los cambios  en initsilop obligan a que stopsilop(1) resetee a cero la lista de sensores?
+		los cambios en initsilop implican que connectsilop debe revisar la forma de detectar que sensores están presentes
 
 	Nuevos sensores
-  	Initsilop debe soportar otros tipos de sensores (sparkfun),
-			Esto implica nuevos campos en SILOP_CONFIG.BUS
+  	Initsilop debe soportar todos los campos del SparkFun 5dof ? 
 		Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
 		connectsilop debe permitir conectar a otros sensores
 			implica hacer la fontanería de comunicaciones
@@ -42,7 +40,15 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v1.0  	???
+v1.0	conectar_a_tana lista para nombres de posiciones variables.
+    Incluida la licencia y los autores en un fichero README y ShotLicense para que se incluya en la ayuda online
+    conectar_a_log lista para nombres de posiciones variables.
+    Reemplazados los eval por referenciacion indirecta .() en diversas funciones.
+    Factorizada connectsilop en conecta_a_log conecta_a_tana conecta_a_sl y conecta_a_xbus para más fácil comprension
+    Initsilop inicializa a [] SILOP_CONFIG.BUS.SENHALES, necesario para que la lista sea dinámica, antes de rellenarla. 
+	Initsilop inicializa SILOP_CONFIG.BUS.{SF_3D y SF_6DOF} = -1; para manejar los SparkFun serial 3d accelerometers
+		y bluettoth 5 degree of freedom.
+
 v0.9.2	Unificado el funcionamienot para Xsens BT y USB. Ahora se usan gotoconfig y gotomeasurement directamente.
 	Pasadas a private todas las funciones de manejo directo de los Xsens.
 	Todos los fwrite al puerto serie se hacen 'async'ronos.  Ahora funciona en Linux	
@@ -50,12 +56,12 @@ v0.9.2	Unificado el funcionamienot para Xsens BT y USB. Ahora se usan gotoconfig
 			encuentren el error
 		
 v0.9.1	modificadas las comunicaciones para usar correctamente el RTS. Cporregido problema con bluetooth.
-		modificadas las comunicaciones a 2 bits de stop. corrige el problema del bluettoh y de linux?
-		destruyexbusmaster está algo mas protegido para que garantice mejor la destruccion.
-		connecsilop captura los errores posteriores creaxbusmaster y destruye el bus mediante stopsilop    
-		creaxbusmaster destruye el puerto si se produjo un error. No se podía hacer a alto nivel porque el puerto aún no estan el SILOP_CONFIG.
-		playsilop() captura cualquier error lanzado y llama a stopsilop() para salir limpiamente
-		Se limpian todos los algoritmos al salir.
+	modificadas las comunicaciones a 2 bits de stop. corrige el problema del bluettoh y de linux?
+	destruyexbusmaster está algo mas protegido para que garantice mejor la destruccion.
+	connecsilop captura los errores posteriores creaxbusmaster y destruye el bus mediante stopsilop    
+	creaxbusmaster destruye el puerto si se produjo un error. No se podía hacer a alto nivel porque el puerto aún no estan el SILOP_CONFIG.
+	playsilop() captura cualquier error lanzado y llama a stopsilop() para salir limpiamente
+	Se limpian todos los algoritmos al salir.
     Modificado alg_plot_pos2d para recordar toda la señal.
 	eliminar todas las devoluciones de valores de error. Ahora se arrojan mediante error. Se pueden pillar con un try catch.
 
