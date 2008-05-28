@@ -44,7 +44,7 @@ function addimu(donde, serie, R) %#ok<INUSD>
 	if (isempty(strmatch(donde, {'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'},'exact')))
         error('posicion de IMU no reconocida')
 	else 
-		eval(['SILOP_CONFIG.SENHALES.',donde,'.Serie=serie;']);
-		eval(['SILOP_CONFIG.SENHALES.',donde,'.R=R;']);
+		SILOP_CONFIG.SENHALES.(donde).Serie=serie;
+		SILOP_CONFIG.SENHALES.(donde).R=R;
 	end
 
