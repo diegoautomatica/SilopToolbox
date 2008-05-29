@@ -83,6 +83,7 @@ end
 SILOP_CONFIG.GLOBAL.LONGITUDVENTANA = 1000;
 
 <em class="mcom">%Números de serie y señales iniciales de todos los posibles sensores que se pueden usar</em>
+SILOP_CONFIG.SENHALES=[];
 for sensor={'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'}
 for campo={'Serie','Acc_Z','Acc_Y','Acc_X','G_Z','G_Y','G_X','MG_Z','MG_Y','MG_X'}
     eval(['SILOP_CONFIG.SENHALES.',sensor{1},'.',campo{1},'=-1;']);
@@ -93,6 +94,8 @@ SILOP_CONFIG.SENHALES.NUMEROSENHALES = 0;
 
 <em class="mcom">%Datos generales del bus</em>
 SILOP_CONFIG.BUS.Xbus = -1;
+SILOP_CONFIG.BUS.SF_3D = -1;
+SILOP_CONFIG.BUS.SF_6DOF = -1;
 SILOP_CONFIG.BUS.Temporizador = -1;
 SILOP_CONFIG.BUS.File = -1;
 

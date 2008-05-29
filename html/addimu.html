@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" ADDIMU A�ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox " />
-<meta name="keywords" content="  silopdemo " />
+<meta name="keywords" content="  connectsilop silopdemo " />
 <title>Documentation of  addimu</title>
 </head>
 <body >
@@ -58,6 +58,7 @@
 </tr>
 <tr valign="top"><td></td><td>
 <ul>
+<li><a class="mfun" href="connectsilop.html">connectsilop</a></li>
 <li><a class="mfun" href="silopdemo.html">silopdemo</a></li>
 </ul>
 </td>
@@ -88,8 +89,8 @@ function addimu(donde, serie, R) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 	if (isempty(strmatch(donde, {'COG','PIE_IZDO','PIE_DCHO','MUSLO_IZDO','MUSLO_DCHO','TIBIA_IZDA','TIBIA_DCHA'},'exact')))
         error('posicion de IMU no reconocida')
 	else 
-		eval(['SILOP_CONFIG.SENHALES.',donde,'.Serie=serie;']);
-		eval(['SILOP_CONFIG.SENHALES.',donde,'.R=R;']);
+		SILOP_CONFIG.SENHALES.(donde).Serie=serie;
+		SILOP_CONFIG.SENHALES.(donde).R=R;
 	end
 
 </pre>

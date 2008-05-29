@@ -5,7 +5,6 @@ Para el 1.0
 	eventospierectoff tiene documentacion que no coincide con lo que hace la funcion.
 		el parámetro frecuencia no se respeta.
 	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
-	Ponerle una licencia
 
 Para el futuro:
 	Algoritmos
@@ -21,13 +20,13 @@ Para el futuro:
 		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
 		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
 		Initsilop debe soportar añadir sensores en mas puntos.
-  	Initsilop debe soportar que los sensores tengan más señales
-  		Los dos puntos se resumen en dejar empty 'SILOP_CONFIG.SENHALES' y delegar trabajo en addimu
-		Los cambios en initsilop hace que addimu deba rellenar SILOP_CONFIG_SENHALES para ese sensor
+        Initsilop debe soportar que los sensores tengan más señales
+            Los dos puntos se resumen en dejar empty 'SILOP_CONFIG.SENHALES' y delegar trabajo en addimu
+        Los cambios en initsilop hace que addimu deba rellenar SILOP_CONFIG_SENHALES para ese sensor
 		los cambios en initsilop implican que connectsilop debe revisar la forma de detectar que sensores están presentes
 
 	Nuevos sensores
-  	Initsilop debe soportar todos los campos del SparkFun 5dof ? 
+        Initsilop debe soportar todos los campos del SparkFun 5dof ? 
 		Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
 		connectsilop debe permitir conectar a otros sensores
 			implica hacer la fontanería de comunicaciones
@@ -40,7 +39,8 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done:
-v1.0	conectar_a_tana lista para nombres de posiciones variables.
+v0.9.3 Cambiado el nombre a Inersens
+		1.0	conectar_a_tana lista para nombres de posiciones variables.
     Incluida la licencia y los autores en un fichero README y ShotLicense para que se incluya en la ayuda online
     conectar_a_log lista para nombres de posiciones variables.
     Reemplazados los eval por referenciacion indirecta .() en diversas funciones.

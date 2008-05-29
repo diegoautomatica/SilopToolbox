@@ -90,10 +90,10 @@ function addalgoritmo(nombre, n_valores_retorno, senhales, params, dependencias)
             if (~isfield(SILOP_CONFIG.SENHALES,punto))
                 error('No existe el punto <em class="mcom">%s especificado',punto);</em>
             end
-            if (~isfield(eval(['SILOP_CONFIG.SENHALES.',punto]),dato))
+            if (~isfield(SILOP_CONFIG.SENHALES.(punto),dato))
                 error('No existe el dato %s solicitado en <em class="mcom">%s',dato,punto);</em>
             end
-            alg.senhales=[alg.senhales eval(['SILOP_CONFIG.SENHALES.',punto,'.',dato])];
+            alg.senhales=[alg.senhales SILOP_CONFIG.SENHALES.(punto).(dato)];
         end
     end
     

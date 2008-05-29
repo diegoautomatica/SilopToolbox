@@ -1,5 +1,9 @@
-% Silop Toolbox
-% Version 0.9.2 07-May-2008
+% InerSens Toolbox
+% Version 0.9.3 29-May-2008
+%Copyright (C) 2007-2008 Universidad de Oviedo
+%Todos los derechos reservados
+%
+%Esta toolbox se distribuye de acuerdo con la licencia públic general GNU (GPL v3).
 % SiLoP Toolbox, files in directory  silop/
 %
 %
