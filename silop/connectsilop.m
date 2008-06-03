@@ -181,7 +181,7 @@ function  []=conectar_a_sl(log)
     for numero=1:numerodeimus
          if  (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
              if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
-                 error(['no se encuentra el sensor del ',donde{1}]);
+                 error(['no se encuentra el sensor del ',posiciones{numero}]);
              end
          end
     end    
@@ -201,7 +201,6 @@ end
 
 function conectar_a_xbus(puerto, bps, freq, modo, buffer)
     global SILOP_CONFIG
-    global SILOP_DATA_LOG
         
         % Calcular el numero de dispositivos por defecto
         posiciones=fieldnames(SILOP_CONFIG.SENHALES);
