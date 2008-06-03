@@ -94,6 +94,7 @@ if (SILOP_CONFIG.BUS.Temporizador ~= -1)
     clear SILOP_DATA_LOG; <em class="mcom">%Liberamos la memoria del enorme fichero de log.</em>
 end;
 if (isstruct(SILOP_CONFIG.BUS.Xbus))
+    <em class="mcom">%stopasync(SILOP_CONFIG.BUS.Xbus.puerto);</em>
     SILOP_CONFIG.BUS.Xbus=<a class="mfun" href="private/gotoconfig.html">gotoconfig</a>(SILOP_CONFIG.BUS.Xbus);
     if (modo&gt;0)
         <a class="mfun" href="private/destruyexbusmaster.html">destruyexbusmaster</a>(SILOP_CONFIG.BUS.Xbus);

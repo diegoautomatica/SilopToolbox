@@ -23,7 +23,6 @@ Para el futuro:
         Initsilop debe soportar que los sensores tengan más señales
             Los dos puntos se resumen en dejar empty 'SILOP_CONFIG.SENHALES' y delegar trabajo en addimu
         Los cambios en initsilop hace que addimu deba rellenar SILOP_CONFIG_SENHALES para ese sensor
-		los cambios en initsilop implican que connectsilop debe revisar la forma de detectar que sensores están presentes
 
 	Nuevos sensores
         Initsilop debe soportar todos los campos del SparkFun 5dof ? 
@@ -38,9 +37,19 @@ Para el futuro:
 
 -------------------------------------------------------------------------------------------
 
-Done:
-v0.9.3 Cambiado el nombre a Inersens
-		1.0	conectar_a_tana lista para nombres de posiciones variables.
+Done: 
+v0.9.4   eliminadas referencias al COG en conecta_a_log y conecta_a_tana   
+		connectsilop lista para nombres de posiciones variables
+    conecta_a_xbus lista para nombres de posiciones variables.
+    alg_est_dist_simur ignora los TO, hasta que tengamos un metodo de deteccion fiable. Documentado.
+    Bugs es alg_est_dist_simur. parametros por defecto mal comprobados
+    Bugs en distanciapenduloparcial to instead of TO
+    Bugs en distanciapenduloparcial SILOP_penduloparcial.KSP mal referenciado como KSP
+    connectsilop, conectar_a_sl corregigo bug de CONFIG instead of SILOP_CONFIG
+    conectar_a_sl lista para nombres de posiciones variables.
+
+v0.9.3  Cambiado el nombre a Inersens
+	1.0	conectar_a_tana lista para nombres de posiciones variables.
     Incluida la licencia y los autores en un fichero README y ShotLicense para que se incluya en la ayuda online
     conectar_a_log lista para nombres de posiciones variables.
     Reemplazados los eval por referenciacion indirecta .() en diversas funciones.

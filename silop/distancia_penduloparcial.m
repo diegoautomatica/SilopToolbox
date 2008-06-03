@@ -50,20 +50,20 @@ if (isempty(SILOP_penduloparcial))
 end
 
 %Longitud de la pierna por defecto si no se proporciona el par�metro 
-if (nargin>1)
+if (nargin>2)
     SILOP_penduloparcial.freq=freq;
-    if (nargin>2)
+    if (nargin>3)
         SILOP_penduloparcial.hsensor=hsensor;
-        if (nargin>3)
+        if (nargin>4)
             SILOP_penduloparcial.pie=pie;
-            if (nargin>4)
+            if (nargin>5)
                 SILOP_penduloparcial.KSP=KSP;
             end
         end
     end
 end
 
-if (length(to)==1)
+if (length(TO)==1)
     %Paso a paso. Doble integral
     %aceleracion=AccVert(TO:end)-mean(AccVert);
     % Eliminamos el valor medio para imponer la condicion de que los valores
@@ -84,7 +84,7 @@ if (length(to)==1)
     vertical=max(verticaltiempo(TO:end))-min(verticaltiempo(TO:end));
 
     if SILOP_penduloparcial.hsensor~=0
-        sl=KSP*2*sqrt(2*SILOP_penduloparcial.hsensor*vertical-vertical.^2)+SILOP_penduloparcial.pie;%Tama�o de pie medio
+        sl=SILOP_penduloparcial.KSP*2*sqrt(2*SILOP_penduloparcial.hsensor*vertical-vertical.^2)+SILOP_penduloparcial.pie;%Tama�o de pie medio
         %   if (~isreal(sl))
         %       sl
         %       keyboard
@@ -115,7 +115,7 @@ else
     vertical=[max(verticaltiempo(TO(1):TO(2)))-min(verticaltiempo(TO(1):TO(2))), ...
               max(verticaltiempo(TO(3):end))-min(verticaltiempo(TO(3):end))];
     if SILOP_penduloparcial.hsensor~=0
-        sl=KSP*2*sqrt(2*SILOP_penduloparcial.hsensor*vertical-vertical.^2)+SILOP_penduloparcial.pie;%Tama�o de pie medio
+        sl=SILOP_penduloparcial.KSP*2*sqrt(2*SILOP_penduloparcial.hsensor*vertical-vertical.^2)+SILOP_penduloparcial.pie;%Tama�o de pie medio
     else
         sl=SILOP_penduloparcial.pie*ones(size(vertical));
     end

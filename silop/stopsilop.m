@@ -42,6 +42,7 @@ if (SILOP_CONFIG.BUS.Temporizador ~= -1)
     clear SILOP_DATA_LOG; %Liberamos la memoria del enorme fichero de log.
 end;
 if (isstruct(SILOP_CONFIG.BUS.Xbus))
+    %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
     SILOP_CONFIG.BUS.Xbus=gotoconfig(SILOP_CONFIG.BUS.Xbus);
     if (modo>0)
         destruyexbusmaster(SILOP_CONFIG.BUS.Xbus);
