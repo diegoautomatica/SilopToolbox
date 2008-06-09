@@ -46,9 +46,7 @@ function addimu(donde, serie, R) %#ok<INUSD>
             SILOP_CONFIG.SENHALES.(donde).(campo{1})=-1;
         end
     else
-        if (SILOP_CONFIG.SENHALES.(donde).Serie~=-1)
-            error('el sensor ya estaba declarado')
-        end
+         error('el sensor ya estaba declarado')
     end
 
     SILOP_CONFIG.SENHALES.(donde).Serie=serie;

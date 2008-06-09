@@ -72,7 +72,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
             conectar_a_sl(log);
         else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
         end        
-        t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
+        t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 1.0, 'ExecutionMode', 'fixedRate');
         SILOP_CONFIG.BUS.Temporizador = t;
         SILOP_CONFIG.BUS.Xbus=-1;
          
@@ -105,19 +105,10 @@ function []=conectar_a_log(log)
     
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
-    sensor=2;
     if (numerodeimus>1)
-        numeroreal=0;
-        for numero=2:numerodeimus+1
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                sensor=numero;
-                numeroreal=numeroreal+1;
-            end
-        end
-        if (numeroreal>1)
-            error('Solo se puede tener un IMU en la simulacion desde un .log');
-        end
+        error('Solo se puede tener un IMU en la simulacion desde un .log');
     end
+    sensor=2;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 4;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 3;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 2;
@@ -145,19 +136,10 @@ function  []=conectar_a_tana(log)
     global SILOP_DATA_LOG
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
-    sensor=2;
     if (numerodeimus>1)
-        numeroreal=0;
-        for numero=2:numerodeimus+1
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                sensor=numero;
-                numeroreal=numeroreal+1;
-            end
-        end
-        if (numeroreal>1)
-            error('Solo se puede tener un IMU en la simulacion desde un .tana');
-        end
+        error('Solo se puede tener un IMU en la simulacion desde un .tana');
     end
+    sensor=2;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 3;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 2;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 1;
@@ -180,15 +162,16 @@ function  []=conectar_a_sl(log)
      %Comprobamos que el log tenga los sensores solicitados
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
+    
+    SILOP_CONFIG.SENHALES.NUMEROSENHALES = tmp.SILOP_CONFIG.SENHALES.NUMEROSENHALES;
     for numero=2:numerodeimus+1
-         if  (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-             if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
+        %la segunda condicion es para mantener compatibilidad con ficheros
+        %viejos, que tenían -1 en las señales no usadas.
+         if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
                  error(['no se encuentra el sensor del ',posiciones{numero}]);
-             end
          end
+             SILOP_CONFIG.SENHALES.(posiciones{numero})= tmp.SILOP_CONFIG.SENHALES.(posiciones{numero});
     end    
-     %Incluimos toda la informaci�n de las se�ales. Puede haber de m�s, pero no molesta.
-     SILOP_CONFIG.SENHALES=tmp.SILOP_CONFIG.SENHALES;
      %Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.
      delete ('config.mat');
      existe=dir('datos_alg.log');
@@ -202,18 +185,12 @@ end
 
 
 function conectar_a_xbus(puerto, bps, freq, modo, buffer)
-    global SILOP_CONFIG
+        global SILOP_CONFIG
         
         % Calcular el numero de dispositivos por defecto
         posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-        numerodeimus=length(posiciones)-1;
-        ns=0;
-        for numero=2:numerodeimus+1
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                ns=ns+1;
-            end
-        end
-        
+        ns=length(posiciones)-1;
+                        
         % Crear el objeto xbusmaster
         try 
            xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
@@ -241,32 +218,30 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
         end
     
         try
-            for numero=2:numerodeimus+1
+            for numero=2:ns+1
                 %Buscamos el dispositivo en cada punto
-                if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                    p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
-                    if (isempty(p))
-                        error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
-                    else
-                        orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
-                        Rot=zeros(3,3);
-                        for k=1:3
-                            Rot(k,abs(orden(k)))=sign(orden(k));
-                        end;
-                        SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
-                        if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                            SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
-                        end    
-                    end
+                p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
+                if (isempty(p))
+                    error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
+                else
+                    orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
+                    Rot=zeros(3,3);
+                    for k=1:3
+                        Rot(k,abs(orden(k)))=sign(orden(k));
+                    end;
+                    SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
+                    if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
+                        SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
+                    end    
                 end
             end
         catch
