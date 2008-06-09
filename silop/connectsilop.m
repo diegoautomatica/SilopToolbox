@@ -107,7 +107,7 @@ function []=conectar_a_log(log)
     numerodeimus=length(posiciones)-1;
     if (numerodeimus>1)
         numeroreal=0;
-        for numero=1:numerodeimus
+        for numero=2:numerodeimus+1
             if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
                 sensor=numero;
                 numeroreal=numeroreal+1;
@@ -146,7 +146,7 @@ function  []=conectar_a_tana(log)
     numerodeimus=length(posiciones)-1;
     if (numerodeimus>1)
         numeroreal=0;
-        for numero=1:numerodeimus
+        for numero=2:numerodeimus+1
             if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
                 sensor=numero;
                 numeroreal=numeroreal+1;
@@ -178,7 +178,7 @@ function  []=conectar_a_sl(log)
      %Comprobamos que el log tenga los sensores solicitados
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
-    for numero=1:numerodeimus
+    for numero=2:numerodeimus+1
          if  (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
              if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
                  error(['no se encuentra el sensor del ',posiciones{numero}]);
@@ -206,7 +206,7 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
         posiciones=fieldnames(SILOP_CONFIG.SENHALES);
         numerodeimus=length(posiciones)-1;
         ns=0;
-        for numero=1:numerodeimus
+        for numero=2:numerodeimus+1
             if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
                 ns=ns+1;
             end
@@ -239,7 +239,7 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
         end
     
         try
-            for numero=1:numerodeimus
+            for numero=2:numerodeimus+1
                 %Buscamos el dispositivo en cada punto
                 if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
                     p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));

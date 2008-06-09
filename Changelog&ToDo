@@ -19,14 +19,12 @@ Para el futuro:
 		Implementar removeimu, para eliminar imus añadidos por addimu
 		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
 		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
-		Initsilop debe soportar añadir sensores en mas puntos.
-        Initsilop debe soportar que los sensores tengan más señales
-            Los dos puntos se resumen en dejar empty 'SILOP_CONFIG.SENHALES' y delegar trabajo en addimu
-        Los cambios en initsilop hace que addimu deba rellenar SILOP_CONFIG_SENHALES para ese sensor
+		addimu debe soportar que los sensores tengan más señales que un Xsens
+    limpiar todo el código obsoleto de inicializacion de señales y compatibilidad con ya iniciadas en:
+			initsilop, addimu, connectsilop, addalgoritmo, playsilop, stopsilop
 
 	Nuevos sensores
-        Initsilop debe soportar todos los campos del SparkFun 5dof ? 
-		Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
+    Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
 		connectsilop debe permitir conectar a otros sensores
 			implica hacer la fontanería de comunicaciones
 		playsilop debe soportar los nuevos sensores
@@ -38,6 +36,8 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done: 
+v0.10 addimu permite añadir sensores en posiciones arbitrarias.
+
 v0.9.4   eliminadas referencias al COG en conecta_a_log y conecta_a_tana   
 		connectsilop lista para nombres de posiciones variables
     conecta_a_xbus lista para nombres de posiciones variables.

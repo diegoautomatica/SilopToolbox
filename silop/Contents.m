@@ -9,7 +9,7 @@
 %
 % AutoAdd
 % addalgoritmo  - ADDALGORITMO AÃ±ade un algoritmo al sistema de procesamiento de las aplicaciones estandar de la toolbox
-% addimu        - ADDIMU Aï¿½ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
+% addimu        - ADDIMU AÃ±ade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox
 % buscamaximos  - BUSCAMAXIMOS Detecta todos los máximos de una señal
 % buscamaximosth - BUSCAMAXIMOS Detecta todos los mï¿½ximos de una seï¿½al despuï¿½s de aplicar un threshold
 % connectsilop  - CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados
