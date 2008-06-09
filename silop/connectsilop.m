@@ -105,6 +105,7 @@ function []=conectar_a_log(log)
     
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
+    sensor=2;
     if (numerodeimus>1)
         numeroreal=0;
         for numero=2:numerodeimus+1
@@ -144,6 +145,7 @@ function  []=conectar_a_tana(log)
     global SILOP_DATA_LOG
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
+    sensor=2;
     if (numerodeimus>1)
         numeroreal=0;
         for numero=2:numerodeimus+1
