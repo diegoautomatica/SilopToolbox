@@ -20,23 +20,32 @@ Para el futuro:
 		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
 		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
 		addimu debe soportar que los sensores tengan más señales que un Xsens
-    limpiar todo el código obsoleto de inicializacion de señales y compatibilidad con ya iniciadas en:
-			initsilop, addimu, connectsilop, addalgoritmo, playsilop, stopsilop
 
 	Nuevos sensores
     Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
-		connectsilop debe permitir conectar a otros sensores
+		connectsilop debe permitir conectar a Wii, Nie+ipod, SF_3D, SF_6DOF
 			implica hacer la fontanería de comunicaciones
 		playsilop debe soportar los nuevos sensores
 		stopsilop debe soportar los nuevos sensores.
 		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
 
-
-
 -------------------------------------------------------------------------------------------
 
 Done: 
-v0.10 addimu permite añadir sensores en posiciones arbitrarias.
+v0.10 modificada stopsilop para llamar a sf3dgotoconfig y destruyesf3d
+	añadida private/leersf3dData.m
+	añadida private/sf3dgotomeasurement.m
+	playsilop incorpora la posibilidad de llamar a sf3dgotomeasurement
+	se añade private/sf3dsetperiod.m
+	se añade private/sf3dgotoconfig.m
+	se añade private/creasf3d.m
+	connectsilop añade conectar_a_SF_3D
+	connectsilop añade un nuevo modo de funcionamiento (el modo=2) para manejar los SF_3D
+	addimu y connectsilop ya no comprueban puntos preinicializados.
+	arreglado bug en addimu, no añadia orientacion a dispositivos que no estuviesen preinicializados.
+	arreglado bug en connectsilop "sensor" sin inicializar cuando solo se añade uno
+	initsilop ya no inicializa puntos que luego no se van a usar.
+	addimu permite añadir sensores en posiciones arbitrarias.
 
 v0.9.4   eliminadas referencias al COG en conecta_a_log y conecta_a_tana   
 		connectsilop lista para nombres de posiciones variables
@@ -56,7 +65,7 @@ v0.9.3  Cambiado el nombre a Inersens
     Factorizada connectsilop en conecta_a_log conecta_a_tana conecta_a_sl y conecta_a_xbus para más fácil comprension
     Initsilop inicializa a [] SILOP_CONFIG.BUS.SENHALES, necesario para que la lista sea dinámica, antes de rellenarla. 
 	Initsilop inicializa SILOP_CONFIG.BUS.{SF_3D y SF_6DOF} = -1; para manejar los SparkFun serial 3d accelerometers
-		y bluettoth 6 degree of freedom.
+		y bluettoth 6 degree of freedom. SF_3D:initsilop ready
 
 v0.9.2	Unificado el funcionamienot para Xsens BT y USB. Ahora se usan gotoconfig y gotomeasurement directamente.
 	Pasadas a private todas las funciones de manejo directo de los Xsens.

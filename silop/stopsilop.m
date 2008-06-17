@@ -49,6 +49,15 @@ if (isstruct(SILOP_CONFIG.BUS.Xbus))
         SILOP_CONFIG.BUS.Xbus=-1;
     end
 end;
+if (isstruct(SILOP_CONFIG.BUS.SF_3D))
+    %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
+    SILOP_CONFIG.BUS.SF_3D=sf3dgotoconfig(SILOP_CONFIG.BUS.SF_3D);
+    if (modo>0)
+        destruyesf3d(SILOP_CONFIG.BUS.SF_3D);
+        SILOP_CONFIG.BUS.SF_3D=-1;
+    end
+end;
+
 if (isstruct(SILOP_CONFIG.BUS.File))
     if (SILOP_CONFIG.BUS.File.Salvar>0)
         if (SILOP_CONFIG.BUS.File.Salvar==2)

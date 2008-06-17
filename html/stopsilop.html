@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses  " />
-<meta name="keywords" content=" destruyexbusmaster gotoconfig simula_muestreo connectsilop initsilop playsilop " />
+<meta name="keywords" content=" destruyesf3d destruyexbusmaster gotoconfig sf3dgotoconfig simula_muestreo connectsilop initsilop playsilop " />
 <title>Documentation of  stopsilop</title>
 </head>
 <body >
@@ -53,8 +53,10 @@
 </tr>
 <tr valign="top"><td>
 <ul>
+<li><a class="mfun" href="private/destruyesf3d.html">destruyesf3d</a></li>
 <li><a class="mfun" href="private/destruyexbusmaster.html">destruyexbusmaster</a></li>
 <li><a class="mfun" href="private/gotoconfig.html">gotoconfig</a></li>
+<li><a class="mfun" href="private/sf3dgotoconfig.html">sf3dgotoconfig</a></li>
 <li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
 </ul>
 </td><td>
@@ -101,6 +103,15 @@ if (isstruct(SILOP_CONFIG.BUS.Xbus))
         SILOP_CONFIG.BUS.Xbus=-1;
     end
 end;
+if (isstruct(SILOP_CONFIG.BUS.SF_3D))
+    <em class="mcom">%stopasync(SILOP_CONFIG.BUS.Xbus.puerto);</em>
+    SILOP_CONFIG.BUS.SF_3D=<a class="mfun" href="private/sf3dgotoconfig.html">sf3dgotoconfig</a>(SILOP_CONFIG.BUS.SF_3D);
+    if (modo&gt;0)
+        <a class="mfun" href="private/destruyesf3d.html">destruyesf3d</a>(SILOP_CONFIG.BUS.SF_3D);
+        SILOP_CONFIG.BUS.SF_3D=-1;
+    end
+end;
+
 if (isstruct(SILOP_CONFIG.BUS.File))
     if (SILOP_CONFIG.BUS.File.Salvar&gt;0)
         if (SILOP_CONFIG.BUS.File.Salvar==2)

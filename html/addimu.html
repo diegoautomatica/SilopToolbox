@@ -76,7 +76,7 @@
 function addimu(donde, serie, R) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 	global SILOP_CONFIG; <em class="mcom">%#ok&lt;NUSED&gt;</em>
 	
-	if (nargin&lt;2)
+    if (nargin&lt;2)
 		error('es necesario especificar los dos primeros par�metros');
 	elseif (nargin&lt;3)
 		if (strcmp(donde,'COG'))
@@ -86,17 +86,16 @@ function addimu(donde, serie, R) <em class="mcom">%#ok&lt;INUSD&gt;</em>
     end
 
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-	if (isempty(strmatch(donde, posiciones,'exact')))
+    if (isempty(strmatch(donde, posiciones,'exact')))
         for campo={'Serie','Acc_Z','Acc_Y','Acc_X','G_Z','G_Y','G_X','MG_Z','MG_Y','MG_X'}
             SILOP_CONFIG.SENHALES.(donde).(campo{1})=-1;
         end
     else
-        if (SILOP_CONFIG.SENHALES.(donde).Serie~=-1)
-            error('el sensor ya estaba declarado')
-        end
-		SILOP_CONFIG.SENHALES.(donde).Serie=serie;
-		SILOP_CONFIG.SENHALES.(donde).R=R;
-	end
+         error('el sensor ya estaba declarado')
+    end
+
+    SILOP_CONFIG.SENHALES.(donde).Serie=serie;
+	SILOP_CONFIG.SENHALES.(donde).R=R;
 
 </pre>
 <hr size="3" noshade="noshade" />

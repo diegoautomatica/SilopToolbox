@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" CREASF3D Crea un objeto SF3D para controlar la captura de " />
+<meta name="keywords" content=" sf3dgotoconfig sf3dsetperiod connectsilop " />
+<title>Documentation of  creasf3d</title>
+</head>
+<body >
+<h1 >Documentation of  creasf3d</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>sf3d=creasf3d(puerto,bps,freq,modo,buffer)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ CREASF3D Crea un objeto SF3D para controlar la captura de
+ datos desde el dispositivo Sparkfun 3D
+
+ CREASF3D Crea un objeto SF3D para controlar la captura de
+ datos desde el dispositivo Sparkfun 3D. El objeto es una
+ estructura que contiene informacion sobre el puerto serie utilizado para
+ la comunicacion con el dispositivo, asi como de la configuracion del
+ propio dispositivo.
+ 
+ Syntax: sf3d=creaxsf3d(puerto,bps,freq,modo,buffer)
+ 
+ Input parameters:
+   puerto-&gt;  Cadena con el nombre del puerto al que esta conectado el
+             (por defecto '/dev/ttyUSB0')
+   bps-&gt;     Velocidad de transferencia (por defecto 9600 bps)
+   freq-&gt;    Frecuencia de muestreo (por defecto 100Hz)
+   modo-&gt;    Conjunto de datos que va a capturar (por defecto 0)
+             0-&gt; Calibrated (Gravity Data)
+             1-&gt; Raw Data (No soportado luego por la toolbox)
+             2-&gt; Binary (No soportado luego por la toolbox)
+   buffer-&gt;  Tamanio del bloque de catpura de datos en segundos (por
+                   defecto 1 seg)
+
+ Output parameters:
+   sf3d  - Estructura que almacena toda la informacion relacionada con la
+                 captura de datos desde el dispositivo.
+
+ Examples:
+ &gt;&gt; sf=creasf3d('/dev/ttyUSB0',9600)
+
+ See also: <a class="mfun" href="../private/destruyesf3d.html">destruyesf3d</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="../private/sf3dgotoconfig.html">sf3dgotoconfig</a></li>
+<li><a class="mfun" href="../private/sf3dsetperiod.html">sf3dsetperiod</a></li>
+</ul>
+</td><td>
+<ul>
+<li><a class="mfun" href="../connectsilop.html">connectsilop</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function creasf3d</h2>
+<pre>
+
+
+<em class="mcom">% Author:   Diego Álvarez</em>
+
+function sf3d=creasf3d(puerto,bps,freq,modo,buffer)
+
+global SILOP_DATA_BUFFER;
+
+<em class="mcom">% asignamos los valores por defecto de las variables</em>
+if (nargin&lt;1)
+    puerto='/dev/ttyUSB0';
+end
+if (nargin&lt;2)
+    bps=9600; 
+end
+if (nargin&lt;3)
+    freq=100;
+end
+if (nargin&lt;4)
+    modo=0;
+end
+if (nargin&lt;5)
+    buffer=1;
+end
+
+sf3d.puerto=serial(puerto);
+<em class="mcom">% Calculamos el numero de muestras almacenadas en el buffer</em>
+sf3d.freq=freq;
+sf3d.buffer=buffer*freq;
+
+sf3d.modo=modo;
+switch (sf3d.modo)
+    case 0,
+        sf3d.Data=3;
+        sf3d.DataLength=29;<em class="mcom">%bytes de cada mensaje</em>
+    case 1,
+        error('Modo aun no soportado');
+    case 2,
+        error('Modo aun no soportado');
+    otherwise,
+        error('Modo invalido');
+end;
+
+sf3d.bps=bps;
+
+<em class="mcom">% Configurar el objeto serie</em>
+sf3d.puerto.BaudRate=bps;
+sf3d.puerto.DataBits=8;
+sf3d.puerto.FlowControl='none';
+sf3d.puerto.Parity='none';
+sf3d.puerto.StopBits=1;
+sf3d.puerto.ReadAsyncMode = 'continuous';
+   
+sf3d.puerto.ByteOrder = 'littleEndian';
+sf3d.puerto.BytesAvailableFcnCount = sf3d.DataLength*sf3d.buffer;
+%SILOP_DATA_BUFFER=zeros(sf3d.puerto.BytesAvailableFcnCount, sf3d.buffer); <em class="mcom">%#ok&lt;NASGU&gt;</em>
+sf3d.puerto.BytesAvailableFcnMode = 'byte';
+sf3d.puerto.InputBufferSize = 2*sf3d.DataLength*sf3d.buffer;
+sf3d.puerto.OutputBufferSize = 512;
+sf3d.puerto.Tag = 'SparkFun_3D';
+sf3d.puerto.Timeout = 10;
+<em class="mcom">% Abrir el puerto de comunicaciones</em>
+<em class="mcom">%Tenemos que tener cuidado no dejar el serial en mal estado, porque aún no </em>
+<em class="mcom">%estamos en condiciones de detener el proceso a alto nivel</em>
+try
+   fopen(sf3d.puerto);
+
+   <em class="mcom">% Ir a modo configuracion</em>
+   sf3d=<a class="mfun" href="../private/sf3dgotoconfig.html">sf3dgotoconfig</a>(sf3d);
+   sf3d=<a class="mfun" href="../private/sf3dsetperiod.html">sf3dsetperiod</a>(sf3d);
+catch
+  s=lasterror();
+  disp(s.message);
+  delete (sf3d.puerto);
+  rethrow(s); 
+end
+
+SILOP_DATA_BUFFER=[];
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

@@ -21,44 +21,28 @@
 
 function sf3d=sf3dgotoconfig(sf3d)
 
-% Envia el mensaje GoToConfig al objeto XBusMaster
-% error vale 1 si no se recibe el mensaje de ack
-% El proceso se queda bloqueado hasta recibir el ack
-
-% Cuerpo del mensaje (excepto el byte de checksum)
-msg=[250,255,48,0];
-% Se calcula el cheksum y se coloca al final
-msg=[msg 256-mod(sum(msg(2:end)),256)];
-% Se envia por el puerto serie 
-fwrite(XBusMaster.puerto,msg,'uint8','async');
-
-%Ya deberiamos estar en modo config.
-%Permitimos comunicaciones
-XBusMaster.puerto.RequestToSend='on';
-%y damos tiempo a que se termine cualquier trasmision en curso
-pause(1);
-
 %Limpiamos todo lo que puede quedar en el buffer de medidas anteriores
-XBusMaster.puerto.Timeout=10;
-while (XBusMaster.puerto.BytesAvailable>0)
+sf3d.puerto.Timeout=1;
+while (sf3d.puerto.BytesAvailable>0)
     % Vaciar el puerto 
     % OJO!!! Los datos se perderan
-    disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
-    fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    disp(['>>> AVISO: Se descartaran ' int2str(sf3d.puerto.BytesAvailable) ' datos']);
+    fread(sf3d.puerto, sf3d.puerto.BytesAvailable,'uint8');
 end
 
-%Reenviamos el mensaje y esta vez comprobamos la respuesta.
-fwrite(XBusMaster.puerto,msg,'uint8','async');
-% Se espera a recibir la contestacion
-[ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
+% Envia el mensaje de paso a config. Codigo hexadecimal 13
+% Cuerpo del mensaje
+msg=[hex2dec('13')]; %#ok<NBRAK>
+% Se envia por el puerto serie 
+fwrite(sf3d.puerto,msg,'uint8','async');
+pause(1);
+%Ya deberiamos estar en modo config.
+%comprobamos la respuesta.
+[ack,cnt,msg]=fread(sf3d.puerto, sf3d.puerto.BytesAvailable, 'uint8');
 if (~isempty(msg))
     error('no se ha recibido la respuesta al comando gotoconfig');
 else
-    if (mod(sum(ack(2:end)),256)~=0)
+    if (sum(ack(end-11:end))~=859)
         error('Error de checksum durante gotoconfig');
-    else
-        if (ack(3)~=49)
-            error ('mensaje incorrecto recibido durante gotoconfig');
-        end
     end
 end

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados " />
-<meta name="keywords" content=" addimu creaxbusmaster setobjectalignment simula_muestreo stopsilop silopdemo " />
+<meta name="keywords" content=" addimu creasf3d creaxbusmaster setobjectalignment simula_muestreo stopsilop silopdemo " />
 <title>Documentation of  connectsilop</title>
 </head>
 <body >
@@ -30,28 +30,28 @@
  en modo simulacion con el fichero en el que esta guardado un log capturado por los XSens
  
  Syntax: 
-   connectsilop(modo_simulacion, source, bps, freq, modo, buffer)
+   connectsilop(modo, source, bps, freq, modo, buffer)
 
    Parametros de entrada:
-		modo_simulacion  Parametro que indica si se realiza la simulacion o no. 
-			   Por defecto vale 0 (no se simula)
-               source     Fichero del que leer los datos(en simulacion)
-                          o puerto serie al que conectar(en RT)
-			   'test.log' o 'COM24' por defecto(respectivamente). 
-                          El fichero para la simulacion 
-			   puede se un .log de Xsens, un .tana de Xsens
-			   calibrado, o un .sl de la propia toolbox
-               bps        Velocidad a la que conectarse 460800bps por defecto
+		modo:  Parametro que indica el modo de funcionamiento
+               0:   sensor xbus (por defecto)
+               1:   simulacion
+               2:   SparkFun 3D
+       source     Fichero del que leer los datos(en simulacion) o puerto serie al que conectar(en RT)
+                        valor por defecto: 'test.log' o 'COM24' por defecto(respectivamente). 
+                        El fichero para la simulacion  puede se un .log de Xsens, un .tana de Xsens
+			             calibrado, o un .sl de la propia toolbox
+       bps        Velocidad a la que conectarse 460800bps por defecto
 		freq       Frecuencia de muestreo. 100Hz por defecto
-               modo	   Conjunto de datos a capturar (por defecto callibrated) 
-               buffer     Tamanho (en segundos) del buffer de datos
+       modo	   Conjunto de datos a capturar si se usa el xbus o el sf3d (por defecto callibrated) 
+       buffer     Tamanho (en segundos) del buffer de datos
 
    Parametros de salida: Ninguno 
  
  Examples: 
    
 
- See also: <a class="mfun" href="private/creaxbusmaster.html">creaxbusmaster</a>
+ See also: 
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -63,6 +63,7 @@
 <tr valign="top"><td>
 <ul>
 <li><a class="mfun" href="addimu.html">addimu</a></li>
+<li><a class="mfun" href="private/creasf3d.html">creasf3d</a></li>
 <li><a class="mfun" href="private/creaxbusmaster.html">creaxbusmaster</a></li>
 <li><a class="mfun" href="private/SetObjectAlignment.html">SetObjectAlignment</a></li>
 <li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
@@ -90,7 +91,7 @@
 function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
     
     if (nargin&lt;1)
-	modo_simulacion=0; 
+        modo_simulacion=0; 
     end	
     
     global SILOP_DATA_BUFFER;
@@ -104,7 +105,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         error('no se ha indicado ningún IMU mediante <a class="mfun" href="addimu.html">addimu</a>');
     end
     
-    if(modo_simulacion)
+    if(modo_simulacion==1)
         if (nargin&lt;2)
             log='test.log';
         else 
@@ -124,11 +125,11 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
             conectar_a_sl(log);
         else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
         end        
-        t = timer('TimerFcn', {@<a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>, log}, 'Period', 3.0, 'ExecutionMode', 'fixedRate');
+        t = timer('TimerFcn', {@<a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>, log}, 'Period', 1.0, 'ExecutionMode', 'fixedRate');
         SILOP_CONFIG.BUS.Temporizador = t;
         SILOP_CONFIG.BUS.Xbus=-1;
          
-    else
+    elseif (modo_simulacion==0)
         if (nargin&lt;2)
             puerto='COM24';
         else
@@ -148,8 +149,33 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         end
 
         conectar_a_xbus(puerto, bps, freq, modo, buffer);
+    elseif (modo_simulacion==2)
+        disp('El dispositivo Sparkfun 3D aun no funciona correctamente con la toolbox. Preparese para lo peor');
+        if (nargin&lt;2)
+            puerto='COM24';
+        else
+            puerto=log;
+        end
+        if (nargin&lt;3)
+            bps=9600;
+        end
+        if (nargin&lt;4)
+            freq=100;
+        end
+        if (nargin&lt;5)
+            modo=0;
+        end
+        if (nargin&lt;6)
+            buffer=1;
+        end
+        conectar_a_SF_3D(puerto, bps, freq, modo, buffer);
+    else
+        error('modo de funcionamiento no soportado');
     end
 end
+
+
+
 
 function []=conectar_a_log(log)
     global SILOP_CONFIG
@@ -158,17 +184,9 @@ function []=conectar_a_log(log)
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
     if (numerodeimus&gt;1)
-        numeroreal=0;
-        for numero=2:numerodeimus+1
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                sensor=numero;
-                numeroreal=numeroreal+1;
-            end
-        end
-        if (numeroreal&gt;1)
-            error('Solo se puede tener un IMU en la simulacion desde un .log');
-        end
+        error('Solo se puede tener un IMU en la simulacion desde un .log');
     end
+    sensor=2;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 4;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 3;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 2;
@@ -197,17 +215,9 @@ function  []=conectar_a_tana(log)
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
     if (numerodeimus&gt;1)
-        numeroreal=0;
-        for numero=2:numerodeimus+1
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                sensor=numero;
-                numeroreal=numeroreal+1;
-            end
-        end
-        if (numeroreal&gt;1)
-            error('Solo se puede tener un IMU en la simulacion desde un .tana');
-        end
+        error('Solo se puede tener un IMU en la simulacion desde un .tana');
     end
+    sensor=2;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 3;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 2;
     SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 1;
@@ -230,15 +240,16 @@ function  []=conectar_a_sl(log)
      <em class="mcom">%Comprobamos que el log tenga los sensores solicitados</em>
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     numerodeimus=length(posiciones)-1;
+    
+    SILOP_CONFIG.SENHALES.NUMEROSENHALES = tmp.SILOP_CONFIG.SENHALES.NUMEROSENHALES;
     for numero=2:numerodeimus+1
-         if  (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-             if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
+        <em class="mcom">%la segunda condicion es para mantener compatibilidad con ficheros</em>
+        <em class="mcom">%viejos, que tenían -1 en las señales no usadas.</em>
+         if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
                  error(['no se encuentra el sensor del ',posiciones{numero}]);
-             end
          end
+             SILOP_CONFIG.SENHALES.(posiciones{numero})= tmp.SILOP_CONFIG.SENHALES.(posiciones{numero});
     end    
-     <em class="mcom">%Incluimos toda la informaci�n de las se�ales. Puede haber de m�s, pero no molesta.</em>
-     SILOP_CONFIG.SENHALES=tmp.SILOP_CONFIG.SENHALES;
      <em class="mcom">%Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.</em>
      delete ('config.mat');
      existe=dir('datos_alg.log');
@@ -252,18 +263,12 @@ end
 
 
 function conectar_a_xbus(puerto, bps, freq, modo, buffer)
-    global SILOP_CONFIG
+        global SILOP_CONFIG
         
         <em class="mcom">% Calcular el numero de dispositivos por defecto</em>
         posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-        numerodeimus=length(posiciones)-1;
-        ns=0;
-        for numero=2:numerodeimus+1
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                ns=ns+1;
-            end
-        end
-        
+        ns=length(posiciones)-1;
+                        
         <em class="mcom">% Crear el objeto xbusmaster</em>
         try 
            xbus=<a class="mfun" href="private/creaxbusmaster.html">creaxbusmaster</a>(puerto,bps,freq,modo,buffer,ns);
@@ -291,32 +296,30 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
         end
     
         try
-            for numero=2:numerodeimus+1
+            for numero=2:ns+1
                 <em class="mcom">%Buscamos el dispositivo en cada punto</em>
-                if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie~=-1)
-                    p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
-                    if (isempty(p))
-                        error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
-                    else
-                        orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
-                        Rot=zeros(3,3);
-                        for k=1:3
-                            Rot(k,abs(orden(k)))=sign(orden(k));
-                        end;
-                        <a class="mfun" href="private/setobjectalignment.html">SetObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p,Rot);
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
-                        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
-                        if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z&gt;SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                            SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
-                        end    
-                    end
+                p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
+                if (isempty(p))
+                    error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
+                else
+                    orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
+                    Rot=zeros(3,3);
+                    for k=1:3
+                        Rot(k,abs(orden(k)))=sign(orden(k));
+                    end;
+                    <a class="mfun" href="private/setobjectalignment.html">SetObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p,Rot);
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
+                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
+                    if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z&gt;SILOP_CONFIG.SENHALES.NUMEROSENHALES)
+                        SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
+                    end    
                 end
             end
         catch
@@ -326,6 +329,41 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
             rethrow(s);
         end
     end <em class="mcom">% fin de modo xbusmaster</em>
+
+    
+    
+            
+function conectar_a_SF_3D(puerto, bps, freq, modo, buffer)
+        global SILOP_CONFIG
+        
+        <em class="mcom">% Calcular el numero de dispositivos por defecto</em>
+        posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+        ns=length(posiciones)-1;
+        if (ns&gt;1)
+            error('Los sparkfun 3D sólo tienen un sensor, se han especificado demasiados IMUS')
+        end
+        <em class="mcom">% Crear el objeto xbusmaster</em>
+        try 
+           sf3d=<a class="mfun" href="private/creasf3d.html">creasf3d</a>(puerto,bps,freq,modo,buffer);
+        catch
+            rethrow (lasterror());
+        end
+        SILOP_CONFIG.BUS.SF_3D=sf3d;               
+        numero=2;
+        disp('Los sparkfun 3d no soportan reorientacion por hardware');
+        disp('el driver podria implementarla por software en el futuro');
+        disp('se ignora la orientacion especificada mediante <a class="mfun" href="addimu.html">addimu</a>');
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
+        SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
+    end <em class="mcom">% fin de modo SF_3D</em>
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

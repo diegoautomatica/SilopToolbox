@@ -18,7 +18,9 @@
 % alg_plot_pos2d - ALG_PLOT_POS2D Algoritmo para la representacion de la posicion en 2d
 % alg_plot_senhales - ALG_PLOT_SENHALES Algoritmo para la representacion de señales
 % continuarcaptura - CONTINUARCAPTURA Reanuda la adquisici�n de datos tras una llamada a
+% creasf3d      - CREASF3D Crea un objeto SF3D para controlar la captura de
 % creaxbusmaster - CREAXBUSMASTER Crea un objeto XbusMaster para controlar la captura de
+% destruyesf3d  - DESTRUYESF3D Destruye el objeto Sparkfun 3D creado por una llamada a
 % destruyexbusmaster - DESTRUYEXBUSMASTER Destruye el objeto XBusMaster creado por una llamada a
 % energiawavelet - ENERGIAWAVELET realizar la descomposici�n wavelet de una se�al
 % getkey        - GETKEY - get a single keypress
@@ -26,6 +28,7 @@
 % gotomeasurement - GOTOMEASUREMENT Pasa el dispositivo Xbus Master al estado measurement
 % iniciacaptura - INICIACAPTURA Comienza la captura de datos
 % InitBus       - INITBUS Envía el mensaje InitBus al objeto XBusMaster
+% leersf3dData  - LEERSF3DDATA Lee datos desde el dispositivo Sparkfun 3D
 % leerXBusData  - LEERXBUSDATA Lee datos desde el dispositivo Xbus Master
 % localmaxima   - LOCALMAXIMA Determina los puntos que son m�ximos locales de una funci�n en un entorno 
 % pararcaptura  - PARARCAPTURA Detiene la adquisici�n de datos, pero mantiene el equipo
@@ -34,5 +37,8 @@
 % SetMTOutputMode - SETMTOUTPUTMODE Envía el mensaje SetOutputMode a todos los dispositivos
 % SetObjectAlignment - SETOBJECTALIGNMENT Envía el mensaje SetObjectAlignment al objeto XBusMaster
 % SetPeriod     - SETPERIOD Envía el mensaje SetPeriod al objeto XBusMaster
+% sf3dgotoconfig - SF3DGOTOCONFIG Pasa el dispositivo al estado de configuracion
+% sf3dgotomeasurement - SF3DGOTOMEASUREMENT Pasa el dispositivo Sparkfun 3D al estado measurement
+% sf3dsetperiod - SF3DSETPERIOD Fija la frecuencia del dispositivo SF-3D
 % simula_muestreo - SIMULA_MUESTREO Callback que simula la realizaci�n de un muestreo desde los Xsens
 

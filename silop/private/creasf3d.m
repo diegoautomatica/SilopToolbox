@@ -62,7 +62,7 @@ sf3d.modo=modo;
 switch (sf3d.modo)
     case 0,
         sf3d.Data=3;
-        sf3d.DataLength=4*sf3d.Data;%bytes*datos  si es en el mensaje es mucho mas largo?
+        sf3d.DataLength=29;%bytes de cada mensaje
     case 1,
         error('Modo aun no soportado');
     case 2,
@@ -70,8 +70,6 @@ switch (sf3d.modo)
     otherwise,
         error('Modo invalido');
 end;
-
-SILOP_DATA_BUFFER=zeros(sf3d.buffer,sf3d.Data); %#ok<NASGU>
 
 sf3d.bps=bps;
 
@@ -84,10 +82,10 @@ sf3d.puerto.StopBits=1;
 sf3d.puerto.ReadAsyncMode = 'continuous';
    
 sf3d.puerto.ByteOrder = 'littleEndian';
-%sf3d.puerto.BytesAvailableFcnCount = sf3d.DataLength*sf3d.buffer;
+sf3d.puerto.BytesAvailableFcnCount = sf3d.DataLength*sf3d.buffer;
 %SILOP_DATA_BUFFER=zeros(sf3d.puerto.BytesAvailableFcnCount, sf3d.buffer); %#ok<NASGU>
 sf3d.puerto.BytesAvailableFcnMode = 'byte';
-sf3d.puerto.InputBufferSize = sf3d.DataLength*100;
+sf3d.puerto.InputBufferSize = 2*sf3d.DataLength*sf3d.buffer;
 sf3d.puerto.OutputBufferSize = 512;
 sf3d.puerto.Tag = 'SparkFun_3D';
 sf3d.puerto.Timeout = 10;
@@ -98,27 +96,13 @@ try
    fopen(sf3d.puerto);
 
    % Ir a modo configuracion
-   sf3dgotoconfig(sf3d);
-   XBusMaster=InitBus(XBusMaster);
-   if (XBusMaster.ndisp~=ns)
-      error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
-   end
-
-	XBusMaster=ReqConfiguration(XBusMaster);
-	XBusMaster=SetPeriod(XBusMaster,XBusMaster.freq);
+   sf3d=sf3dgotoconfig(sf3d);
+   sf3d=sf3dsetperiod(sf3d);
 catch
   s=lasterror();
   disp(s.message);
-  delete (XBusMaster.puerto);
+  delete (sf3d.puerto);
   rethrow(s); 
 end
 
-switch (modo)
-    case 0,
-        XBusMaster=SetMTOutputMode(XBusMaster,0);
-    case 1,
-        XBusMaster=SetMTOutputMode(XBusMaster,1);
-    case 2,
-        XBusMaster=SetMTOutputMode(XBusMaster,3);
-end
 SILOP_DATA_BUFFER=[];

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados " />
-<meta name="keywords" content=" getkey gotomeasurement stopsilop silopdemo " />
+<meta name="keywords" content=" getkey gotomeasurement sf3dgotomeasurement stopsilop silopdemo " />
 <title>Documentation of  playsilop</title>
 </head>
 <body >
@@ -56,6 +56,7 @@
 <ul>
 <li><a class="mfun" href="private/getkey.html">getkey</a></li>
 <li><a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a></li>
+<li><a class="mfun" href="private/sf3dgotomeasurement.html">sf3dgotomeasurement</a></li>
 <li><a class="mfun" href="stopsilop.html">stopsilop</a></li>
 </ul>
 </td><td>
@@ -105,6 +106,8 @@ try
         start(SILOP_CONFIG.BUS.Temporizador);
     elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
         SILOP_CONFIG.BUS.Xbus=<a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a>(SILOP_CONFIG.BUS.Xbus);
+    elseif (isstruct(SILOP_CONFIG.BUS.SF_3D))
+        SILOP_CONFIG.BUS.SF_3D=<a class="mfun" href="private/sf3dgotomeasurement.html">sf3dgotomeasurement</a>(SILOP_CONFIG.BUS.SF_3D);
     end
 
     while(<a class="mfun" href="private/getkey.html">getkey</a>()~=27) <em class="mcom">%tecla ESC</em>

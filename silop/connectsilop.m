@@ -97,7 +97,6 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
 
         conectar_a_xbus(puerto, bps, freq, modo, buffer);
     elseif (modo_simulacion==2)
-        disp('El dispositivo Sparkfun 3D aun no funciona correctamente con la toolbox. Preparese para lo peor');
         if (nargin<2)
             puerto='COM24';
         else
@@ -291,46 +290,23 @@ function conectar_a_SF_3D(puerto, bps, freq, modo, buffer)
         end
         % Crear el objeto xbusmaster
         try 
-           xbus=creasf3d(puerto,bps,freq,modo,buffer);
+           sf3d=creasf3d(puerto,bps,freq,modo,buffer);
         catch
             rethrow (lasterror());
         end
-        SILOP_CONFIG.BUS.SF_3D=xbus;
-        
-        % Actualizar los valores de las se�ales
-        switch (xbus.modo)
-            case 0,
-                factor=9; %#ok<NASGU>
-            case 1,
-                factor=9+4; %#ok<NASGU>
-            case 2,
-                factor=9+9; %#ok<NASGU>
-        end;
-        
-        try
-            numero=2;
-            orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
-            Rot=zeros(3,3);
-            for k=1:3
-                  Rot(k,abs(orden(k)))=sign(orden(k));
-            end;
-            SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).Ac_Z>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                 SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z;
-            end
-        catch
-			s=lasterror();
-    		disp(s.message);
-			stopsilop();
-            rethrow(s);
-        end
+        SILOP_CONFIG.BUS.SF_3D=sf3d;               
+        numero=2;
+        disp('Los sparkfun 3d no soportan reorientacion por hardware');
+        disp('el driver podria implementarla por software en el futuro');
+        disp('se ignora la orientacion especificada mediante addimu');
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
+        SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
     end % fin de modo SF_3D

@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" LEERSF3DDATA Lee datos desde el dispositivo Sparkfun 3D " />
+<meta name="keywords" content="  sf3dgotomeasurement " />
+<title>Documentation of  leersf3dData</title>
+</head>
+<body >
+<h1 >Documentation of  leersf3dData</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>leersf3dData(obj,event,sf3d)  %#ok<INUSL></pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ LEERSF3DDATA Lee datos desde el dispositivo Sparkfun 3D
+
+ LEERSF3DDATA Lee datos desde el dispositivo Sparkfun 3D. Esta función
+ está pensada para ser usada desde una callback, y no directamente desde
+ una función/script
+ 
+ Syntax: leersf3dData(obj,event,sf3d)
+ 
+ Input parameters:
+     obj 	-&gt; Parámetro 1 de la callback
+     event     -&gt; Parámetro 2 de la callback
+     sf3d-&gt; Objeto con la información del dispositivo.
+
+ Output parameters:
+   Ninguno, los datos obtenidos quedan en la variable global SILOP_DATA_BUFFER
+
+ Examples:
+
+ See also: <a class="mfun" href="../private/creasf3d.html">creasf3d</a>, <a class="mfun" href="../private/destruyesf3d.html">destruyesf3d</a>, <a class="mfun" href="../private/sf3dgotomeasurement.html">sf3dgotomeasurement</a>
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%"></th>
+<th width="50%">This function is called by</th>
+</tr>
+<tr valign="top"><td></td><td>
+<ul>
+<li><a class="mfun" href="../private/sf3dgotomeasurement.html">sf3dgotomeasurement</a></li>
+</ul>
+</td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function leersf3dData</h2>
+<pre>
+
+
+<em class="mcom">%Lee datos del buffer. Llamada por una callback</em>
+function leersf3dData(obj,event,sf3d)  <em class="mcom">%#ok&lt;INUSL&gt;</em>
+
+global SILOP_DATA_BUFFER;
+
+[data,cnt,msg]=fread(obj,[sf3d.DataLength sf3d.buffer],'uint8');
+if (~isempty(msg))
+    disp(msg);
+    error('error en la lectura de datos');
+end
+<em class="mcom">% Procesar los datos de 1 mensaje</em>
+if (any(data(2,:)-'X'))
+    disp('&gt;&gt;&gt;&gt; ERROR durante la captura de datos');
+end
+if (any(data(11,:)-'Y'))
+    disp('&gt;&gt;&gt;&gt; ERROR durante la captura de datos');
+end
+if (any(data(20,:)-'Z'))
+    disp('&gt;&gt;&gt;&gt; ERROR durante la captura de datos');
+end
+<em class="mcom">% procesar la informacion</em>
+for k=1:sf3d.buffer
+    ax=str2double(char(data(  4:  9,k)));
+    ay=str2double(char(data(13:18,k)));
+    az=str2double(char(data(22:27,k)));
+    SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER; ax ay az]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+end
+
+disp('leido un segundo de datos');
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

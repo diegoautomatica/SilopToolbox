@@ -55,6 +55,8 @@ try
         start(SILOP_CONFIG.BUS.Temporizador);
     elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
         SILOP_CONFIG.BUS.Xbus=gotomeasurement(SILOP_CONFIG.BUS.Xbus);
+    elseif (isstruct(SILOP_CONFIG.BUS.SF_3D))
+        SILOP_CONFIG.BUS.SF_3D=sf3dgotomeasurement(SILOP_CONFIG.BUS.SF_3D);
     end
 
     while(getkey()~=27) %tecla ESC
