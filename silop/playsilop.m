@@ -51,12 +51,18 @@ try
     Comandos = creacomandos(SILOP_CONFIG);
 %Se encarga de crear los comandos para la llamada a las funciones a partir de la informaci�n de algoritmos a procesar
 
-    if (SILOP_CONFIG.BUS.Temporizador~=-1)
-        start(SILOP_CONFIG.BUS.Temporizador);
-    elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
-        SILOP_CONFIG.BUS.Xbus=gotomeasurement(SILOP_CONFIG.BUS.Xbus);
-    elseif (isstruct(SILOP_CONFIG.BUS.SF_3D))
-        SILOP_CONFIG.BUS.SF_3D=sf3dgotomeasurement(SILOP_CONFIG.BUS.SF_3D);
+    if (isfield(SILOP_CONFIG.BUS,'Temporizador'))
+        if (SILOP_CONFIG.BUS.Temporizador~=-1)
+            start(SILOP_CONFIG.BUS.Temporizador);
+        end
+    elseif (isfield(SILOP_CONFIG.BUS,'Xbus'))
+        if (isstruct(SILOP_CONFIG.BUS.Xbus))
+            SILOP_CONFIG.BUS.Xbus=gotomeasurement(SILOP_CONFIG.BUS.Xbus);
+        end
+    elseif (isfield(SILOP_CONFIG.BUS,'SF_3D'))
+        if (isstruct(SILOP_CONFIG.BUS.SF_3D))
+            SILOP_CONFIG.BUS.SF_3D=driver_SF_3D('gotomeasurement',SILOP_CONFIG.BUS.SF_3D);
+        end
     end
 
     while(getkey()~=27) %tecla ESC
@@ -104,6 +110,8 @@ try
 catch
     s=lasterror();
     disp(s.message);
+    getkey(1);
+    clear('getkey');
     stopsilop();
     rethrow(s);
 end
