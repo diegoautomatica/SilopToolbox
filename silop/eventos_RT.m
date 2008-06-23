@@ -24,14 +24,6 @@
 %
 % See also: eventosCOGrecto
 
-% Author:   Javi
-% History:  04.01.2008  file created
-%           16.01.2008  Inclusion de End Contact
-%                       A�adido par�metro reset
-%                       Incorporada a la toolbox(Diego)
-%           18.01.2008  Bug corregido, eliminado el uso de persistent durante el reset.
-%           18.01.2008  bug corregido, se cambia la llamada a picos por localmaxima, y se comprueba tama�o de pmax
-
 function[retardo_hs,retardo_to]=eventos_RT(ah,av,reset) %#ok<INUSD>
 
 filtro=[0.0365 0.0374 0.0375 0.0382 0.0381 0.0385 0.0381 0.0382 0.0375 0.0374 0.0365]; %filtro de fase lineal con frecuancia de corte 2Hz
@@ -76,7 +68,6 @@ if(length(pers_datah)>INTERVALO)
    T=0;
    if(pers_data2(end)<0 && pers_data2(end-1)>0)
       %se produjo un zero-crossing
-      
       %calcular periodo de la se�al
       if(aux==2) %si tenemos un trozo de 200
        auto=xcorr(pers_datah,TROZO,'unbiased');
@@ -88,6 +79,7 @@ if(length(pers_datah)>INTERVALO)
            d=diff(pmax);
            [aux1,aux2]=sort(abs(mean(d)-d));
            T=d(aux2(1));
+           T=T*(T>10);%Si T vale menos de 10 muestras el resultado es absurdo.
         end
       end
       flag=0;
@@ -141,38 +133,44 @@ if(length(pers_datah)>INTERVALO)
        end
    end
    
-   %Comprobamos si tenemos el 15% de la se�al para buscar un TO
+   %Comprobamos si tenemos el 25% de la se�al para buscar un TO
    flag_to=0;
    if(pers_indice_ultimo_hs>0)
       distancia=length(pers_datah)-pers_indice_ultimo_hs;
-      if(T~=0)
-          if((distancia-2)/T>=0.2) %le restamos 2 a distancia para tener algo de margen para el calculo de minimos
+      %if(T~=0)
+      %    if((distancia-2)/T>=0.25) %le restamos 2 a distancia para tener algo de margen para el calculo de minimos
+      %       flag_to=1;
+       %      buscamin=floor(0.10*T);
+       %      buscamax=min([ceil(0.25*T),distancia]);
+        %  end
+      %else
+         if(distancia>=25)
              flag_to=1;
-             buscamin=floor(0.05*T);
-             buscamax=min([ceil(0.15*T),distancia]);
-          end
-      else
-         if(distancia>=14)
-             flag_to=1;
-             buscamin=2;
-             buscamax=14;
+             buscamax=22;
+             buscaffneg=5;
+             mpb=10;
          end
-      end
+      %end
    end
    %Segun Zijlstra el TO es el minimo local de la aceleracion vertical que
-   %se encuentra entre el 5% y el 15% del paso
-   %Aparte, el TO se encuentra despues del FF, que es un maximo global de
-   %la celeracion vertical
+   %se encuentra entre el 5% y el 15% del paso. 
+   % Nota de Diego. Ni de Coña. Está entre el FF y el 25% despues del HS
    if(flag_to==1) %buscamos el to
-          maximos=localmaxima(pers_datav(pers_indice_ultimo_hs:end),2);
-          minimos=localmaxima(-pers_datav(pers_indice_ultimo_hs+buscamin:pers_indice_ultimo_hs+buscamax),2);
+          maximos=localmaxima(pers_datav(pers_indice_ultimo_hs-buscaffneg:pers_indice_ultimo_hs+buscamax/2),2);
           if(~isempty(maximos))
-             ff=maximos(1); %foot flat
-             aux=find((minimos+buscamin)>ff);
-             if(~isempty(aux))
-                evento=minimos(aux(1))+pers_indice_ultimo_hs+buscamin-1;
+             ff=maximos(1)-buscaffneg; %foot flat
+             minimos=localmaxima(-pers_datav(pers_indice_ultimo_hs+ff:pers_indice_ultimo_hs+buscamax),2);       
+             if(~isempty(minimos))
+                [val,ind]=min(abs(minimos-10));
+                evento=minimos(ind)+pers_indice_ultimo_hs+ff-1;
                 retardo_to=length(pers_datav)-evento;
+             else
+                 disp('No se ha encontrado el TO, valor aproximado'); %#ok<WNTAG>
+                 retardo_to=mpb;
              end
+          else
+              disp('No se ha encontrado el FF, valor aproximado'); %#ok<WNTAG>
+              retardo_to=mpb;
           end
           pers_indice_ultimo_hs=0;
     end
