@@ -24,7 +24,7 @@ function initsilop()
 
 global SILOP_CONFIG
 if (~isempty(SILOP_CONFIG))
-    if (isstruct(SILOP_CONFIG.BUS.File))
+    if (isfield(SILOP_CONFIG.BUS,'File'))
     	SILOP_CONFIG.BUS.File.Salvar=0;
     end
     stopsilop(1);
@@ -39,11 +39,7 @@ SILOP_CONFIG.SENHALES=[];
 SILOP_CONFIG.SENHALES.NUMEROSENHALES = 0;
 
 %Datos generales del bus
-SILOP_CONFIG.BUS.Xbus = -1;
-SILOP_CONFIG.BUS.SF_3D = -1;
-SILOP_CONFIG.BUS.SF_6DOF = -1;
-SILOP_CONFIG.BUS.Temporizador = -1;
-SILOP_CONFIG.BUS.File = -1;
+SILOP_CONFIG.BUS=[];
 
 %Datos de los algoritmos usados
 SILOP_CONFIG.ALGORITMOS = [];

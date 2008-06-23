@@ -32,45 +32,54 @@ end
 global SILOP_CONFIG
 global SILOP_DATA_LOG; %#ok<NUSED>
 
-if (SILOP_CONFIG.BUS.Temporizador ~= -1)
-    stop(SILOP_CONFIG.BUS.Temporizador);
-    if (modo>0)
-        delete(SILOP_CONFIG.BUS.Temporizador);
-        SILOP_CONFIG.BUS.Temporizador=-1;
-    end
-    clear simula_muestreo;
-    clear SILOP_DATA_LOG; %Liberamos la memoria del enorme fichero de log.
-end;
-if (isstruct(SILOP_CONFIG.BUS.Xbus))
-    %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
-    SILOP_CONFIG.BUS.Xbus=gotoconfig(SILOP_CONFIG.BUS.Xbus);
-    if (modo>0)
-        destruyexbusmaster(SILOP_CONFIG.BUS.Xbus);
-        SILOP_CONFIG.BUS.Xbus=-1;
-    end
-end;
-if (isstruct(SILOP_CONFIG.BUS.SF_3D))
-    %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
-    SILOP_CONFIG.BUS.SF_3D=sf3dgotoconfig(SILOP_CONFIG.BUS.SF_3D);
-    if (modo>0)
-        destruyesf3d(SILOP_CONFIG.BUS.SF_3D);
-        SILOP_CONFIG.BUS.SF_3D=-1;
-    end
-end;
-
-if (isstruct(SILOP_CONFIG.BUS.File))
-    if (SILOP_CONFIG.BUS.File.Salvar>0)
-        if (SILOP_CONFIG.BUS.File.Salvar==2)
-            zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
-            delete ('datos_alg.log');
-        else
-            zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log'});
-        end		
-        delete ('config.mat');
-        delete ('datos.log');
-        movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], SILOP_CONFIG.BUS.File.Name, 'f');
+if (isfield(SILOP_CONFIG.BUS,'File'))
+    if (isstruct(SILOP_CONFIG.BUS.File))
+        if (SILOP_CONFIG.BUS.File.Salvar>0)
+            if (SILOP_CONFIG.BUS.File.Salvar==2)
+                zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
+                delete ('datos_alg.log');
+            else
+                zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log'});
+            end		
+            delete ('config.mat');
+            delete ('datos.log');
+            movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], SILOP_CONFIG.BUS.File.Name, 'f');
+        end
     end
 end
+
+if (isfield(SILOP_CONFIG.BUS,'Temporizador'))
+    if (SILOP_CONFIG.BUS.Temporizador ~= -1)
+        stop(SILOP_CONFIG.BUS.Temporizador);
+        if (modo>0)
+            delete(SILOP_CONFIG.BUS.Temporizador);
+            SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,'Temporizador');
+        end
+        clear simula_muestreo;
+        clear SILOP_DATA_LOG; %Liberamos la memoria del enorme fichero de log.
+    end;
+end
+if (isfield(SILOP_CONFIG.BUS,'Xbus'))
+    if (isstruct(SILOP_CONFIG.BUS.Xbus))
+        %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
+        SILOP_CONFIG.BUS.Xbus=gotoconfig(SILOP_CONFIG.BUS.Xbus);
+        if (modo>0)
+            destruyexbusmaster(SILOP_CONFIG.BUS.Xbus);
+            SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,'Xbus');
+        end
+    end;
+end
+if (isfield(SILOP_CONFIG.BUS,'SF_3D'))
+    if (isstruct(SILOP_CONFIG.BUS.SF_3D))
+        %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
+        SILOP_CONFIG.BUS.SF_3D=sf3dgotoconfig(SILOP_CONFIG.BUS.SF_3D);
+        if (modo>0)
+            destruyesf3d(SILOP_CONFIG.BUS.SF_3D);
+            SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,'SF_3D');
+        end
+    end;
+end
+
 %Se limpian todos los algoritmos.
 for indice=1:length(SILOP_CONFIG.ALGORITMOS)
      clear (SILOP_CONFIG.ALGORITMOS(indice).nombre)
