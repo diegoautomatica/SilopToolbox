@@ -74,7 +74,6 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         end        
         t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 1.0, 'ExecutionMode', 'fixedRate');
         SILOP_CONFIG.BUS.Temporizador = t;
-        SILOP_CONFIG.BUS.Xbus=-1;
          
     elseif (modo_simulacion==0)
         if (nargin<2)
@@ -222,7 +221,6 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
             rethrow (lasterror());
         end
         SILOP_CONFIG.BUS.Xbus=xbus;
-        SILOP_CONFIG.BUS.Temporizador=-1;
         
         % Actualizar los valores de las se�ales
         switch (xbus.modo)
