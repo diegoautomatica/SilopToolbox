@@ -33,10 +33,10 @@ end
 
 
 
+%Funcion para el paso a modo medida
 function sf3d=sf3dgotomeasurement(sf3d)
-
-global SILOP_DATA_BUFFER;
-SILOP_DATA_BUFFER=[];
+    global SILOP_DATA_BUFFER;
+    SILOP_DATA_BUFFER=[];
 
     % Cuerpo del mensaje (excepto el byte de checksum)
     msg='x';
@@ -52,4 +52,34 @@ SILOP_DATA_BUFFER=[];
     fwrite(sf3d.puerto,msg,'uint8','async');
     leersf3dDatahandle=@leersf3dData;
     sf3d.puerto.BytesAvailableFcn={leersf3dDatahandle, sf3d};
+end
+
+
+%Funcion para laeer los datos del puerto serie. Llamada por una callback
+function leersf3dData(obj,event,sf3d)  %#ok<INUSL>
+    global SILOP_DATA_BUFFER;
+
+    [data,cnt,msg]=fread(obj,[sf3d.DataLength sf3d.buffer],'uint8');
+    if (~isempty(msg))
+        disp(msg);
+        error('error en la lectura de datos');
+    end
+    % Procesar los datos de 1 mensaje
+    if (any(data(2,:)-'X'))
+        disp('>>>> ERROR durante la captura de datos');
+    end
+    if (any(data(11,:)-'Y'))
+        disp('>>>> ERROR durante la captura de datos');
+    end
+    if (any(data(20,:)-'Z'))
+        disp('>>>> ERROR durante la captura de datos');
+    end
+    % procesar la informacion
+    for k=1:sf3d.buffer
+        ax=9.8*str2double(char(data(  4:  9,k)));
+        ay=9.8*str2double(char(data(13:18,k)));
+        az=9.8*str2double(char(data(22:27,k)));
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER; ax ay az]; %#ok<AGROW>
+    end
+    disp('leido un segundo de datos');
 end
