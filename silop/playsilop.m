@@ -56,13 +56,9 @@ try
             start(SILOP_CONFIG.BUS.Temporizador);
         end
     elseif (isfield(SILOP_CONFIG.BUS,'Xbus'))
-        if (isstruct(SILOP_CONFIG.BUS.Xbus))
-            SILOP_CONFIG.BUS.Xbus=gotomeasurement(SILOP_CONFIG.BUS.Xbus);
-        end
+        SILOP_CONFIG.BUS.Xbus =  driver_Xbus('gotomeasurement',SILOP_CONFIG.BUS.Xbus);
     elseif (isfield(SILOP_CONFIG.BUS,'SF_3D'))
-        if (isstruct(SILOP_CONFIG.BUS.SF_3D))
-            SILOP_CONFIG.BUS.SF_3D=driver_SF_3D('gotomeasurement',SILOP_CONFIG.BUS.SF_3D);
-        end
+        SILOP_CONFIG.BUS.SF_3D=driver_SF_3D('gotomeasurement',SILOP_CONFIG.BUS.SF_3D);
     end
 
     while(getkey()~=27) %tecla ESC
