@@ -17,7 +17,6 @@
 %
 % Examples:
 % >> sf=creasf3d('COM24',57600,50);
-% >> sf=sf3dgotomeasurement(sf);
 % >> sf=destruyesf3d(sf);
 %
 % See also: creasf3d, destruyesf3d

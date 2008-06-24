@@ -20,8 +20,7 @@
 %
 % Examples:
 %
-% See also: creaxbusmaster, gotoconfig, pararcaptura, continuarcaptura,
-%           destruyexbusmaster
+% See also: creaxbusmaster, gotoconfig, destruyexbusmaster
 
 % Author:   Rafael C. Gonzalez de los Reyes
 % History:  04.12.07    creacion del archivo

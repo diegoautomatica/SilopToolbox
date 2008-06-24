@@ -15,8 +15,7 @@
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2);
 % >> gotoconfig(xb);
 %
-% See also: creaxbusmaster, gotomeasurement, pararcaptura, continuarcaptura,
-%           destruyexbusmaster
+% See also: creaxbusmaster, destruyexbusmaster
 
 % Author:   Rafael C. Gonzalez de los Reyes
 % History:  04.12.07    creacion del archivo

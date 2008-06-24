@@ -59,7 +59,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
                         nocero=find(senhales(:,3*num_sensor)~=0);
                         [basura,Rot2]=ejes_anatomicos(senhales(nocero,3*num_sensor-2:3*num_sensor),senhales(nocero,3*num_sensor-2:3*num_sensor),[1,2,3]);
                         SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot2*Rot1); %Comprobar si no sería Rot2'*Rot1
-                        gotomeasurement(SILOP_CONFIG.BUS.Xbus);
+                        SILOP_CONFIG.BUS.Xbus =  driver_Xbus('gotomeasurement',SILOP_CONFIG.BUS.Xbus);
                         eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Rotacion=Rot2*Rot1']);
                     else
                         error('el numero de señales en alg_ejes_anatomicos es insuficiente');

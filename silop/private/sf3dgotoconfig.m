@@ -15,7 +15,7 @@
 % >> xb=creasf3d('COM24',9600);
 % >> sf3dgotoconfig(xb);
 %
-% See also: creasf3d, sf3dgotomeasurement, destruyesf3d
+% See also: creasf3d, destruyesf3d
 
 % Author:   Diego Álvarez
 
