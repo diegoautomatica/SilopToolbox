@@ -24,8 +24,8 @@ function initsilop()
 
 global SILOP_CONFIG
 if (~isempty(SILOP_CONFIG))
-    if (isfield(SILOP_CONFIG.BUS,'File'))
-    	SILOP_CONFIG.BUS.File.Salvar=0;
+    if (isfield(SILOP_CONFIG,'File'))
+    	SILOP_CONFIG.File.Salvar=0;
     end
     stopsilop(1);
 	SILOP_CONFIG=[];
@@ -44,5 +44,3 @@ SILOP_CONFIG.BUS=[];
 %Datos de los algoritmos usados
 SILOP_CONFIG.ALGORITMOS = [];
 SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE = -1;
-
-

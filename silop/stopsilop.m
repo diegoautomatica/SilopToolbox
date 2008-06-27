@@ -32,18 +32,18 @@ end
 global SILOP_CONFIG
 global SILOP_DATA_LOG; %#ok<NUSED>
 
-if (isfield(SILOP_CONFIG.BUS,'File'))
-    if (isstruct(SILOP_CONFIG.BUS.File))
-        if (SILOP_CONFIG.BUS.File.Salvar>0)
-            if (SILOP_CONFIG.BUS.File.Salvar==2)
-                zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
+if (isfield(SILOP_CONFIG,'File'))
+    if (isstruct(SILOP_CONFIG.File))
+        if (SILOP_CONFIG.File.Salvar>0)
+            if (SILOP_CONFIG.File.Salvar==2)
+                zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log','datos_alg.log'});
                 delete ('datos_alg.log');
             else
-                zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log'});
+                zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log'});
             end		
             delete ('config.mat');
             delete ('datos.log');
-            movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], SILOP_CONFIG.BUS.File.Name, 'f');
+            movefile ([SILOP_CONFIG.File.Name,'.zip'], SILOP_CONFIG.File.Name, 'f');
         end
     end
 end

@@ -39,11 +39,11 @@ try
     end
 
     if (salvar>0)
-        SILOP_CONFIG.BUS.File=struct('Salvar',salvar);
+        SILOP_CONFIG.File=struct('Salvar',salvar);
         if (nargin<2)
-            SILOP_CONFIG.BUS.File.Name='datos.sl';
+            SILOP_CONFIG.File.Name='datos.sl';
         else
-            SILOP_CONFIG.BUS.File.Name=fichero;			
+            SILOP_CONFIG.File.Name=fichero;			
         end
         save('config.mat','SILOP_CONFIG');
     end
@@ -51,16 +51,13 @@ try
     Comandos = creacomandos(SILOP_CONFIG);
 %Se encarga de crear los comandos para la llamada a las funciones a partir de la informaci�n de algoritmos a procesar
 
-    if (isfield(SILOP_CONFIG.BUS,'Temporizador'))
-        if (SILOP_CONFIG.BUS.Temporizador~=-1)
-            start(SILOP_CONFIG.BUS.Temporizador);
-        end
-    elseif (isfield(SILOP_CONFIG.BUS,'Xbus'))
-        SILOP_CONFIG.BUS.Xbus =  driver_Xbus('gotomeasurement',SILOP_CONFIG.BUS.Xbus);
-    elseif (isfield(SILOP_CONFIG.BUS,'SF_3D'))
-        SILOP_CONFIG.BUS.SF_3D=driver_SF_3D('gotomeasurement',SILOP_CONFIG.BUS.SF_3D);
+    drivername=fieldnames(SILOP_CONFIG.BUS);
+    if (length(drivername)>1)
+        error('solo se puede emplear un driver simultaneamente');
     end
-
+    driverfunction=str2func(['driver_',drivername{1}]);
+    SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
+    
     while(getkey()~=27) %tecla ESC
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
         if(hay_datos)
