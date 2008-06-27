@@ -65,3 +65,40 @@ function xbus=gotomeasurement(xbus)
     leerXBusDatahandle=@leerXBusData;
     xbus.puerto.BytesAvailableFcn={leerXBusDatahandle, xbus};
 end
+
+
+% LEERXBUSDATA Lee datos desde el dispositivo Xbus Master
+%Lee datos del buffer. Llamada por una callback
+function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
+    global SILOP_DATA_BUFFER;
+
+    data=fread(obj,[XBusMaster.DataLength XBusMaster.nm],'uint8');
+    % Procesar los datos de 1 mensaje
+    %checksum
+    if (any(mod(sum(data(2:end,:)),256)) )
+        disp('>>>> ERROR de checksum durante la captura de datos');
+    end
+    % tipo de mensaje
+    if (any(data(3,:)-50))
+        disp('>>>> ERROR de tipo de mensaje durante la captura de datos');
+    end
+    % procesar la informacion
+    muestra=([256 1]*data(5:6,:))';
+    q=quantizer('Mode','single');
+    SILOP_DATA_BUFFER=[];
+    for k=1:XBusMaster.ns
+        ax=hex2num(q,reshape(sprintf('%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        ay=hex2num(q,reshape(sprintf('%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        az=hex2num(q,reshape(sprintf('%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        rx=hex2num(q,reshape(sprintf('%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        ry=hex2num(q,reshape(sprintf('%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        rz=hex2num(q,reshape(sprintf('%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; %#ok<AGROW>
+    end
+    SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
+    disp(['leidos ' num2str([muestra(1) muestra(end)])])
+end
+

@@ -39,7 +39,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
             error('no se indica el lugar al que corresponden las señales en alg_ejes_anatomicos');
         end
         %En primer lugar comprobamos si estamos en modo Xbus
-        if (isstruct(SILOP_CONFIG.BUS.Xbus))
+        if (isfield(SILOP_CONFIG.BUS,'Xbus'))
             id_disp=zeros(1,SILOP_CONFIG.BUS.Xbus.ndisp);
             for k=1:SILOP_CONFIG.BUS.Xbus.ndisp
                 id_disp(k)=eval(SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k));
