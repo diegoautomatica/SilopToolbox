@@ -27,7 +27,6 @@ Para el futuro:
     Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
 		connectsilop debe permitir conectar a Wii, Nie+ipod, SF_6DOF
 			implica hacer la fontanería de comunicaciones
-		playsilop debe soportar los nuevos sensores
 		stopsilop debe soportar los nuevos sensores.
     Nueva estructura de drivers para no tener que tocar el nucleo por añadir devices.
 		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
@@ -36,6 +35,16 @@ Para el futuro:
 
 Done: 
 v0.10.1 Correccion de errores
+    playsilop ya no depende de los driver concretos. Llama al método 'gotomeasurement' del apropiado.
+    movido SILOP_CONFIG.BUS.File a SILOP_CONFIG.File en todas partes. NO es un driver de entrada.
+    alg_ejes_anatomicos ya no supone que exista SILOP_CONFIG.BUS.Xbus
+    driver_Temporizador incorpora la funcionalidad de 'gotomeasurement'. playsilop usa el driver
+    Añadida la funcion driver_Temporizador, que incorporara toda la funcionalidad del driver y eliminara el resto
+    driver_Xbus incorpora la funcionalidad 'leerXbusData'. Eliminada leerXbusdata.
+	iniciacaptura, continuarcaptura y pararcaptura se pasan al archive. No deberían usarse directamente.
+    driver_Xbus incorpora la funcionalidad de 'gotomeasurement'. playsilop usa el driver, alg_ejes_anatomicos tambien. Eliminada gotomeasurement
+    Añadida la funcion driver_Xbus, que incorporara toda la funcionalidad del driver y eliminara el resto
+	driver_SF_3D incorpora la funcionalidad 'leersf3dData'. Eliminada leersf3ddata.
 	driver_SF_3D incorpora la funcionalidad 'gotomeasurement'. Eliminada sf3dgotomeasurement. playsilop usa el driver.
 	Añadida la función driver_SF_3D, que incorporara toda la funcionalidad del driver, y eliminara el resto.
 	initsilop ya no rellena SILOP_CONFIG.BUS. Ya no espera que SILOP_CONFIG.Bus.File exista.
@@ -44,7 +53,7 @@ v0.10.1 Correccion de errores
 	stopsilop guarda los datos antes de tocar los drivers, que es más seguro.
 	stopsilop elimina los campos de SILOP_CONFIG.BUS al destruir el driver
 	stopsilop ya no espera que exista ningún campo relativo a los drivers en SILOP_CONFIG.BUS
-	Eventos_RT modificada para detectar mejor el TO. Cambiada deteccion freq señal y margenes de búsqueda TO
+	Eventos_RT modificada para detectar mejor el TO. Cambiada deteccion freq señal y margenes de búsqueda y metodo para detectar TO
 	Bug en playsilop. Ahora se limpia getkey despues de un error.
 
 v0.10 Nuevo sensor: Sparkfun serial 3D accelerometer. Etiquetas libres para la posicion de los sensores
