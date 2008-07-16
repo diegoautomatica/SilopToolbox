@@ -2,18 +2,24 @@
 %
 % CONNECTSILOP Conecta el sistema de procesamiento con los sensores
 % previamente especificados, o en el caso de trabajar
-% en modo simulacion con el fichero en el que esta guardado un log capturado por los XSens
+% en modo simulacion con el fichero en el que esta guardado un log
+% capturado
 % 
 % Syntax: 
-%   connectsilop(modo, source, bps, freq, modo, buffer)
+%   connectsilop(driver, source, bps, freq, modo, buffer)
 %
 %   Parametros de entrada:
-%		modo:  Parametro que indica el modo de funcionamiento
-%               0:   sensor xbus (por defecto)
-%               1:   simulacion
-%               2:   SparkFun 3D
-%       source     Fichero del que leer los datos(en simulacion) o puerto serie al que conectar(en RT)
-%                        valor por defecto: 'test.log' o 'COM24' por defecto(respectivamente). 
+%		driver:  Cadena de texto que indica el modo de funcionamiento (nombre
+%               del driver a usar). Por ejemplo: 
+%               'Xbus':             sensor xbus (por defecto)
+%               'Temporizador':     modo de simulacion
+%               'SF_3D':            SparkFun 3D serial accelerometer
+%                ...:               Consultar la lista de drivers en la
+%                                   documentacion para ver otros dispositivos soportados
+%       source     Puerto y/o fichero del que leer los datos
+%                        Valor por defecto: 'COM24'
+%                           El puerto de comunicaciones será tipicamente
+%                           COMx en windows o /dev/ttyUSBX en linux
 %                        El fichero para la simulacion  puede se un .log de Xsens, un .tana de Xsens
 %			             calibrado, o un .sl de la propia toolbox
 %       bps        Velocidad a la que conectarse 460800bps por defecto
@@ -35,11 +41,14 @@
 %           21.02.2008 Modificaciones de diego para simular desde .sl y .tana+comprobar que solo se use el cog en .log
 %           21.02.2008 Pruebas iniciales de reorientacion de los datos. s�lo para R positiva
 
-function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
+function connectsilop(driver, source, bps, freq, modo, buffer)
     
     if (nargin<1)
-        modo_simulacion=0; 
+        driver='Xbus'; 
     end	
+    if (nargin<2)
+        source='COM24';
+    end
     
     global SILOP_DATA_BUFFER;
     SILOP_DATA_BUFFER = [];
@@ -52,35 +61,26 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         error('no se ha indicado ningún IMU mediante addimu');
     end
     
-    if(modo_simulacion==1)
-        if (nargin<2)
-            log='test.log';
-        else 
-            existe=dir(log);
-            if (isempty(existe))
-                error('no se encuentra el fichero');
-            end	
-        end
+    if (strcmp(driver,'Temporizador'))
+        existe=dir(source);
+        if ((isempty(existe))&&(~strcmp(source,'test.log')))
+            error('no se encuentra el fichero');
+        end	
         %Si se toman datos de un .log
-        if (strcmp(log(end-3:end),'.log'))
-            conectar_a_log(log);
+        if (strcmp(source(end-3:end),'.log'))
+            conectar_a_log(source);
         %Si se toman datos de un .tana
-        elseif (strcmp(log(end-4:end),'.tana'))
-            conectar_a_tana(log);
+        elseif (strcmp(source(end-4:end),'.tana'))
+            conectar_a_tana(source);
         %Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
-        elseif (strcmp(log(end-2:end),'.sl'))
-            conectar_a_sl(log);
+        elseif (strcmp(source(end-2:end),'.sl'))
+            conectar_a_sl(source);
         else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
         end        
-        t = timer('TimerFcn', {@simula_muestreo, log}, 'Period', 1.0, 'ExecutionMode', 'fixedRate');
+        t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', 1.0, 'ExecutionMode', 'fixedRate');
         SILOP_CONFIG.BUS.Temporizador = t;
          
-    elseif (modo_simulacion==0)
-        if (nargin<2)
-            puerto='COM24';
-        else
-            puerto=log;
-        end
+    elseif (strcmp(driver,'Xbus'))
         if (nargin<3)
             bps=460800;
         end
@@ -94,13 +94,8 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
             buffer=1;
         end
 
-        conectar_a_xbus(puerto, bps, freq, modo, buffer);
-    elseif (modo_simulacion==2)
-        if (nargin<2)
-            puerto='COM24';
-        else
-            puerto=log;
-        end
+        conectar_a_xbus(source, bps, freq, modo, buffer);
+    elseif (strcmp(driver,'SF_3D'))
         if (nargin<3)
             bps=9600;
         end
@@ -113,7 +108,7 @@ function connectsilop(modo_simulacion, log, bps, freq, modo, buffer)
         if (nargin<6)
             buffer=1;
         end
-        conectar_a_SF_3D(puerto, bps, freq, modo, buffer);
+        conectar_a_SF_3D(source, bps, freq, modo, buffer);
     else
         error('modo de funcionamiento no soportado');
     end
@@ -217,8 +212,8 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
         % Crear el objeto xbusmaster
         try 
            xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
-        catch
-            rethrow (lasterror());
+        catch ME
+            rethrow (ME);
         end
         SILOP_CONFIG.BUS.Xbus=xbus;
         
@@ -266,11 +261,10 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
                     end    
                 end
             end
-        catch
-			s=lasterror();
-    		disp(s.message);
+        catch ME
+			disp(ME.message);
 			stopsilop();
-            rethrow(s);
+            rethrow(ME);
         end
     end % fin de modo xbusmaster
 
@@ -289,8 +283,8 @@ function conectar_a_SF_3D(puerto, bps, freq, modo, buffer)
         % Crear el objeto xbusmaster
         try 
            sf3d=creasf3d(puerto,bps,freq,modo,buffer);
-        catch
-            rethrow (lasterror());
+        catch ME
+            rethrow (ME);
         end
         SILOP_CONFIG.BUS.SF_3D=sf3d;               
         numero=2;
