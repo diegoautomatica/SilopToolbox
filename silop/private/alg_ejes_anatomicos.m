@@ -53,7 +53,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
                     %Se calcula la matriz de correccion
                     [filas,columnas]=size(senhales);
                     if (columnas>=3*num_sensor)
-                        gotoconfig(SILOP_CONFIG.BUS.Xbus);
+                        driver_Xbus('gotoconfig',SILOP_CONFIG.BUS.Xbus);
                         SILOP_CONFIG.BUS.Xbus=ReqObjectAlignment(SILOP_CONFIG.BUS.Xbus,p);
                         Rot1=SILOP_CONFIG.BUS.Xbus.Conf.Dev(p).Orientacion;%Rotacion original
                         nocero=find(senhales(:,3*num_sensor)~=0);
