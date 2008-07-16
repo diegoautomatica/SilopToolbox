@@ -28,7 +28,7 @@
 % Examples:
 % >> sf=creasf3d('/dev/ttyUSB0',9600)
 %
-% See also: destruyesf3d
+% See also:
 
 % Author:   Diego Álvarez
 
@@ -96,7 +96,7 @@ try
    fopen(sf3d.puerto);
 
    % Ir a modo configuracion
-   sf3d=sf3dgotoconfig(sf3d);
+   sf3d=driver_SF_3D('gotoconfig',sf3d);
    sf3d=sf3dsetperiod(sf3d);
 catch
   s=lasterror();

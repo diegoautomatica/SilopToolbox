@@ -12,7 +12,7 @@
 %
 % Examples:
 %
-% See also: creasf3d, sf3dgotoconfig, destruyesf3d
+% See also: creasf3d
 
 function sf3d=sf3dsetperiod(sf3d)
 

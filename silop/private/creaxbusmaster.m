@@ -28,7 +28,7 @@
 % Examples:
 % >> xb=creaxbusmaster('COM24',115200,50,0,1,2)
 %
-% See also: destruyexbusmaster
+% See also: 
 
 % Author:   Rafael C. Gonzalez de los Reyes
 % History:  04.12.07    creacion del archivo
@@ -123,7 +123,7 @@ try
    fopen(XBusMaster.puerto);
 
    % Ir a modo configuracion
-   gotoconfig(XBusMaster);
+   driver_Xbus('gotoconfig',XBusMaster);
    XBusMaster=InitBus(XBusMaster);
    if (XBusMaster.ndisp~=ns)
       error('SilopToolbox:creaxbusmaster','El numero de sensores conectados es distinto del numero de sensores declarados');
