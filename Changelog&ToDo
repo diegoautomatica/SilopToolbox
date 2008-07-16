@@ -27,14 +27,21 @@ Para el futuro:
     Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
 		connectsilop debe permitir conectar a Wii, Nie+ipod, SF_6DOF
 			implica hacer la fontanería de comunicaciones
-		stopsilop debe soportar los nuevos sensores.
     Nueva estructura de drivers para no tener que tocar el nucleo por añadir devices.
 		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
 
 -------------------------------------------------------------------------------------------
 
 Done: 
-v0.10.1 Correccion de errores
+v0.11 Correccion de errores. Cambios de uso en connectsilop
+    connectsilop modifica sus parámetros.
+    stopsilop ya no depende de los drivers concretos. Llama a los metodos 'gotoconfig' y 'destruye' del apropiado.
+    driver_Xbus incorpora la funcionalidad 'destruye'. stopsilop usa el driver. eliminada destruyexbusmaster.m
+    driver_Xbus incorpora la funcionalidad 'gotoconfig'. stopsilop,alg_ejes_anatomicos usan el driver. eliminada gotoconfig
+    driver_SF_3D incorpora la funcionalidad 'destruye'. stopsilop usa el driver. eliminada destruyesf3d.m
+    driver_SF_3D incorpora la funcionalidad 'gotoconfig'. stopsilop usa el driver. creasf3d tambien. eliminada sf3dgotoconfig
+    driver_Temporizador incorpora la funcionalidad 'destruye'. stopsilop usa el driver.
+    driver_Temporizador incorpora la funcionalidad 'gotoconfig'. stopsilop usa el driver.
     playsilop ya no depende de los driver concretos. Llama al método 'gotomeasurement' del apropiado.
     movido SILOP_CONFIG.BUS.File a SILOP_CONFIG.File en todas partes. NO es un driver de entrada.
     alg_ejes_anatomicos ya no supone que exista SILOP_CONFIG.BUS.Xbus
