@@ -37,7 +37,7 @@ tiempos(:,1)=AccHor;
 tiempos(:,2)=0*AccHor;
 
 %Puntos de palada
-eventos=buscamaximosth(filtro0(AccHor,64,10/frecuencia),0);
+eventos=buscamaximosth(filtro0(AccHor,80,8/frecuencia),0);
 tiempos(1:end-2,2)=eventos';
 
 
