@@ -17,7 +17,7 @@ addimu('COG', 204);
 %% Nos conectamos al sistema de adquisición de datos.
 % En este caso escogemos hacerlo trabajando en simulación y con un fichero
 % de log
-connectsilop(1); %Conectamos al sistema de muestreo
+connectsilop('Temporizador','test.log'); %Conectamos al sistema de muestreo
 
 
 %% Añadimos los algoritmos necesarios.
