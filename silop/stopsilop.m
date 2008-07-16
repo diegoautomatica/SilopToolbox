@@ -33,52 +33,38 @@ global SILOP_CONFIG
 global SILOP_DATA_LOG; %#ok<NUSED>
 
 if (isfield(SILOP_CONFIG,'File'))
-    if (isstruct(SILOP_CONFIG.File))
-        if (SILOP_CONFIG.File.Salvar>0)
-            if (SILOP_CONFIG.File.Salvar==2)
-                zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log','datos_alg.log'});
-                delete ('datos_alg.log');
-            else
-                zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log'});
-            end		
-            delete ('config.mat');
-            delete ('datos.log');
-            movefile ([SILOP_CONFIG.File.Name,'.zip'], SILOP_CONFIG.File.Name, 'f');
-        end
+    if (SILOP_CONFIG.File.Salvar>0)
+        if (SILOP_CONFIG.File.Salvar==2)
+            zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log','datos_alg.log'});
+            delete ('datos_alg.log');
+        else
+            zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log'});
+        end		
+        delete ('config.mat');
+        delete ('datos.log');
+        movefile ([SILOP_CONFIG.File.Name,'.zip'], SILOP_CONFIG.File.Name, 'f');
     end
 end
 
-if (isfield(SILOP_CONFIG.BUS,'Temporizador'))
-    if (SILOP_CONFIG.BUS.Temporizador ~= -1)
-        stop(SILOP_CONFIG.BUS.Temporizador);
-        if (modo>0)
-            delete(SILOP_CONFIG.BUS.Temporizador);
-            SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,'Temporizador');
-        end
-        clear simula_muestreo;
-        clear SILOP_DATA_LOG; %Liberamos la memoria del enorme fichero de log.
-    end;
+if (isstruct(SILOP_CONFIG.BUS))
+    drivername=fieldnames(SILOP_CONFIG.BUS);
+else
+    drivername=[];
 end
-if (isfield(SILOP_CONFIG.BUS,'Xbus'))
-    if (isstruct(SILOP_CONFIG.BUS.Xbus))
-        %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
-        SILOP_CONFIG.BUS.Xbus=gotoconfig(SILOP_CONFIG.BUS.Xbus);
-        if (modo>0)
-            destruyexbusmaster(SILOP_CONFIG.BUS.Xbus);
-            SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,'Xbus');
-        end
-    end;
+if (length(drivername)>1)
+    error('solo se puede emplear un driver simultaneamente');
+elseif (isempty(drivername))
+    return;
+else
+    driverfunction=str2func(['driver_',drivername{1}]);
+    SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotoconfig',SILOP_CONFIG.BUS.(drivername{1}));
+    if (modo>0)
+        driverfunction('destruye',SILOP_CONFIG.BUS.(drivername{1}));
+        SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,drivername{1});
+    end
 end
-if (isfield(SILOP_CONFIG.BUS,'SF_3D'))
-    if (isstruct(SILOP_CONFIG.BUS.SF_3D))
-        %stopasync(SILOP_CONFIG.BUS.Xbus.puerto);
-        SILOP_CONFIG.BUS.SF_3D=sf3dgotoconfig(SILOP_CONFIG.BUS.SF_3D);
-        if (modo>0)
-            destruyesf3d(SILOP_CONFIG.BUS.SF_3D);
-            SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,'SF_3D');
-        end
-    end;
-end
+
+
 
 %Se limpian todos los algoritmos.
 for indice=1:length(SILOP_CONFIG.ALGORITMOS)
