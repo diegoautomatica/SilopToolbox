@@ -17,15 +17,22 @@
 % Examples:
 
 function retorno=driver_Temporizador(operacion,parametros)
+global SILOP_DATA_LOG; %#ok<NUSED>
 
     switch operacion
         case 'create'
         case 'connect'
         case 'gotoconfig'
-        case 'gotomeasurement'
             retorno=parametros;
+            stop(parametros);
+            clear SILOP_DATA_LOG;
+            clear simula_muestreo;            
+        case 'gotomeasurement'
             start(parametros);
+            retorno=parametros;
         case 'destruye'
+            delete(parametros);
+            retorno=[];
         otherwise
             disp('error, el driver no soporta la operación indicada');
             retorno=[];

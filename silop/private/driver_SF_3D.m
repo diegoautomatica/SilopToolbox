@@ -22,12 +22,55 @@ function retorno=driver_SF_3D(operacion,parametros)
         case 'create'
         case 'connect'
         case 'gotoconfig'
+            retorno=sf3dgotoconfig(parametros);
         case 'gotomeasurement'
             retorno=sf3dgotomeasurement(parametros);
         case 'destruye'
+            retorno=[];
+            destruyesf3d(parametros);
         otherwise
             disp('error, el driver no soporta la operación indicada');
             retorno=[];
+    end
+end
+
+function sf3d=destruyesf3d(sf3d)
+
+    try 
+        fclose(sf3d.puerto);
+    catch %#ok<CTCH>
+    end
+    delete(sf3d.puerto);
+    clear sf3d
+    sf3d=[];
+end
+
+function sf3d=sf3dgotoconfig(sf3d)
+
+    %Limpiamos todo lo que puede quedar en el buffer de medidas anteriores
+    sf3d.puerto.Timeout=1;
+    while (sf3d.puerto.BytesAvailable>0)
+        % Vaciar el puerto 
+        % OJO!!! Los datos se perderan
+        disp(['>>> AVISO: Se descartaran ' int2str(sf3d.puerto.BytesAvailable) ' datos']);
+        fread(sf3d.puerto, sf3d.puerto.BytesAvailable,'uint8');
+    end
+
+    % Envia el mensaje de paso a config. Codigo hexadecimal 13
+    % Cuerpo del mensaje
+    msg=[hex2dec('13')]; %#ok<NBRAK>
+    % Se envia por el puerto serie 
+    fwrite(sf3d.puerto,msg,'uint8','async');
+    pause(1);
+    %Ya deberiamos estar en modo config.
+    %comprobamos la respuesta.
+    [ack,cnt,msg]=fread(sf3d.puerto, sf3d.puerto.BytesAvailable, 'uint8');
+    if (~isempty(msg))
+        error('no se ha recibido la respuesta al comando gotoconfig');
+    else
+        if (sum(ack(end-11:end))~=859)
+            error('Error de checksum durante gotoconfig');
+        end
     end
 end
 

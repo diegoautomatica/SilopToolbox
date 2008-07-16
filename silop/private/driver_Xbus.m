@@ -22,16 +22,69 @@ function retorno=driver_Xbus(operacion,parametros)
         case 'create'
         case 'connect'
         case 'gotoconfig'
+            retorno=gotoconfig(parametros);
         case 'gotomeasurement'
             retorno=gotomeasurement(parametros);
         case 'destruye'
+            retorno=[];
+            destruyexbusmaster(parametros);
         otherwise
             disp('error, el driver no soporta la operación indicada');
             retorno=[];
     end
 end
 
+function XBusMaster=destruyexbusmaster(xb)
 
+    XBusMaster=xb;
+    try 
+        fclose(xb.puerto);
+    catch %#ok<CTCH>
+    end
+    delete(XBusMaster.puerto);
+    clear XBusMaster
+    XBusMaster=[];
+end
+
+function XBusMaster=gotoconfig(XBusMaster)
+
+    % Envia el mensaje GoToConfig al objeto XBusMaster
+    % Cuerpo del mensaje (excepto el byte de checksum)
+    msg=[250,255,48,0];
+    % Se calcula el cheksum y se coloca al final
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    % Se envia por el puerto serie 
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+
+    %Ya deberiamos estar en modo config.
+    %Permitimos comunicaciones
+    XBusMaster.puerto.RequestToSend='on';
+    %y damos tiempo a que se termine cualquier trasmision en curso
+    pause(1);
+
+    %Limpiamos todo lo que puede quedar en el buffer de medidas anteriores
+    XBusMaster.puerto.Timeout=10;
+    while (XBusMaster.puerto.BytesAvailable>0)
+        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+
+    %Reenviamos el mensaje y esta vez comprobamos la respuesta.
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+    % Se espera a recibir la contestacion
+    [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
+    if (~isempty(msg))
+        error('no se ha recibido la respuesta al comando gotoconfig');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante gotoconfig');
+        else
+            if (ack(3)~=49)
+                error ('mensaje incorrecto recibido durante gotoconfig');
+            end
+        end
+    end
+end
 
 %Funcion para el paso a modo medida
 function xbus=gotomeasurement(xbus)
