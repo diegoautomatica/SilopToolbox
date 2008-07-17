@@ -22,10 +22,12 @@
 %                           COMx en windows o /dev/ttyUSBX en linux
 %                        El fichero para la simulacion  puede se un .log de Xsens, un .tana de Xsens
 %			             calibrado, o un .sl de la propia toolbox
+%		freq       Frecuencia de muestreo solicitada. Puede no coincidir con la real.
+%                   100Hz por defecto
+%       updateeach Tiempo tras el cual se realizará el procesamiento de los
+%                   datos recibidos. Por defecto 1 segundo.
 %       bps        Velocidad a la que conectarse 460800bps por defecto
-%		freq       Frecuencia de muestreo. 100Hz por defecto
 %       modo	   Conjunto de datos a capturar si se usa el xbus o el sf3d (por defecto callibrated) 
-%       buffer     Tamanho (en segundos) del buffer de datos
 %
 %   Parametros de salida: Ninguno 
 % 
@@ -41,15 +43,20 @@
 %           21.02.2008 Modificaciones de diego para simular desde .sl y .tana+comprobar que solo se use el cog en .log
 %           21.02.2008 Pruebas iniciales de reorientacion de los datos. s�lo para R positiva
 
-function connectsilop(driver, source, bps, freq, modo, buffer)
+function connectsilop(driver, source, freq, updateeach, bps, modo)
     
     if (nargin<1)
-        driver='Xbus'; 
+        driver='Xbus';
     end	
     if (nargin<2)
         source='COM24';
     end
-    
+    if (nargin<3)
+        freq=100;
+    end
+    if (nargin<4)
+        updateeach=1;
+    end
     global SILOP_DATA_BUFFER;
     SILOP_DATA_BUFFER = [];
     global SILOP_CONFIG;
@@ -77,36 +84,24 @@ function connectsilop(driver, source, bps, freq, modo, buffer)
             conectar_a_sl(source);
         else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
         end        
-        t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', 1.0, 'ExecutionMode', 'fixedRate');
+        t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', updateeach, 'ExecutionMode', 'fixedRate');
         SILOP_CONFIG.BUS.Temporizador = t;
          
     elseif (strcmp(driver,'Xbus'))
-        if (nargin<3)
+        if (nargin<5)
             bps=460800;
         end
-        if (nargin<4)
-            freq=100;
-        end
-        if (nargin<5)
+        if (nargin<6)
             modo=0;
         end
-        if (nargin<6)
-            buffer=1;
-        end
-
+        
         conectar_a_xbus(source, bps, freq, modo, buffer);
     elseif (strcmp(driver,'SF_3D'))
-        if (nargin<3)
+        if (nargin<5)
             bps=9600;
         end
-        if (nargin<4)
-            freq=100;
-        end
-        if (nargin<5)
-            modo=0;
-        end
         if (nargin<6)
-            buffer=1;
+            modo=0;
         end
         conectar_a_SF_3D(source, bps, freq, modo, buffer);
     else
