@@ -6,7 +6,7 @@
 % capturado
 % 
 % Syntax: 
-%   connectsilop(driver, source, bps, freq, modo, buffer)
+%   connectsilop(driver, source, freq, updateeach, driver_opt)
 %
 %   Parametros de entrada:
 %		driver:  Cadena de texto que indica el modo de funcionamiento (nombre
@@ -26,8 +26,8 @@
 %                   100Hz por defecto
 %       updateeach Tiempo tras el cual se realizará el procesamiento de los
 %                   datos recibidos. Por defecto 1 segundo.
-%       bps        Velocidad a la que conectarse 460800bps por defecto
-%       modo	   Conjunto de datos a capturar si se usa el xbus o el sf3d (por defecto callibrated) 
+%       driver_opt Parametros especificos para cada driver, que se deben
+%                   consultar en la documentacion del mismo.
 %
 %   Parametros de salida: Ninguno 
 % 
@@ -36,14 +36,8 @@
 %
 % See also: 
 
-% Author:   Antonio Lopez
-% History:  24.01.2008  creado
-%           24.01.2008 Incorporado a la toolbox
-%           20.02.2008 modificaciones de Rafa para la conexion al xbusmaster
-%           21.02.2008 Modificaciones de diego para simular desde .sl y .tana+comprobar que solo se use el cog en .log
-%           21.02.2008 Pruebas iniciales de reorientacion de los datos. s�lo para R positiva
 
-function connectsilop(driver, source, freq, updateeach, bps, modo)
+function connectsilop(driver, source, freq, updateeach, driver_opt)
     
     if (nargin<1)
         driver='Xbus';
@@ -57,6 +51,9 @@ function connectsilop(driver, source, freq, updateeach, bps, modo)
     if (nargin<4)
         updateeach=1;
     end
+    if (nargin<5)
+        driver_opt=[];
+    end
     global SILOP_DATA_BUFFER;
     SILOP_DATA_BUFFER = [];
     global SILOP_CONFIG;
@@ -69,10 +66,10 @@ function connectsilop(driver, source, freq, updateeach, bps, modo)
     end
     
     if (strcmp(driver,'Temporizador'))
-        existe=dir(source);
-        if ((isempty(existe))&&(~strcmp(source,'test.log')))
-            error('no se encuentra el fichero');
-        end	
+        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('create',{source,updateeach});
+        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('connect',SILOP_CONFIG.BUS.Temporizador);
+        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('gotoconfig',SILOP_CONFIG.BUS.Temporizador);
+        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',SILOP_CONFIG.BUS.Temporizador);
         %Si se toman datos de un .log
         if (strcmp(source(end-3:end),'.log'))
             conectar_a_log(source);
@@ -82,28 +79,13 @@ function connectsilop(driver, source, freq, updateeach, bps, modo)
         %Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
         elseif (strcmp(source(end-2:end),'.sl'))
             conectar_a_sl(source);
-        else error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
         end        
-        t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', updateeach, 'ExecutionMode', 'fixedRate');
-        SILOP_CONFIG.BUS.Temporizador = t;
+        
          
     elseif (strcmp(driver,'Xbus'))
-        if (nargin<5)
-            bps=460800;
-        end
-        if (nargin<6)
-            modo=0;
-        end
-        
-        conectar_a_xbus(source, bps, freq, modo, buffer);
+        conectar_a_xbus(source, freq, buffer, driver_opt);
     elseif (strcmp(driver,'SF_3D'))
-        if (nargin<5)
-            bps=9600;
-        end
-        if (nargin<6)
-            modo=0;
-        end
-        conectar_a_SF_3D(source, bps, freq, modo, buffer);
+        conectar_a_SF_3D(source, freq, buffer, driver_opt);
     else
         error('modo de funcionamiento no soportado');
     end
@@ -197,9 +179,19 @@ end
 
 
 
-function conectar_a_xbus(puerto, bps, freq, modo, buffer)
+function conectar_a_xbus(puerto, freq, buffer, driver_opt)
         global SILOP_CONFIG
         
+        if (length(driver_opt)<1)
+            bps=460800;
+        else
+            bps=driver_opt(1);
+        end
+        if (length(driver_opt)<2)
+            modo=0;
+        else
+            modo=driver_opt(2);
+        end
         % Calcular el numero de dispositivos por defecto
         posiciones=fieldnames(SILOP_CONFIG.SENHALES);
         ns=length(posiciones)-1;
@@ -266,8 +258,19 @@ function conectar_a_xbus(puerto, bps, freq, modo, buffer)
     
     
             
-function conectar_a_SF_3D(puerto, bps, freq, modo, buffer)
+function conectar_a_SF_3D(puerto, freq, buffer, driver_opt)
         global SILOP_CONFIG
+
+        if (length(driver_opt)<1)
+            bps=9600;
+        else
+            bps=driver_opt(1);
+        end
+        if (length(driver_opt)<2)
+            modo=0;
+        else
+            modo=driver_opt(2);
+        end
         
         % Calcular el numero de dispositivos por defecto
         posiciones=fieldnames(SILOP_CONFIG.SENHALES);
