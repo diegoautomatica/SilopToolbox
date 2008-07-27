@@ -69,19 +69,7 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('create',{source,updateeach});
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('connect',SILOP_CONFIG.BUS.Temporizador);
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('gotoconfig',SILOP_CONFIG.BUS.Temporizador);
-        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',SILOP_CONFIG.BUS.Temporizador);
-        %Si se toman datos de un .log
-        if (strcmp(source(end-3:end),'.log'))
-            conectar_a_log(source);
-        %Si se toman datos de un .tana
-        elseif (strcmp(source(end-4:end),'.tana'))
-            conectar_a_tana(source);
-        %Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
-        elseif (strcmp(source(end-2:end),'.sl'))
-            conectar_a_sl(source);
-        end        
-        
-         
+        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',{SILOP_CONFIG.BUS.Temporizador,source});
     elseif (strcmp(driver,'Xbus'))
         conectar_a_xbus(source, freq, buffer, driver_opt);
     elseif (strcmp(driver,'SF_3D'))
@@ -90,94 +78,6 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         error('modo de funcionamiento no soportado');
     end
 end
-
-
-
-
-function []=conectar_a_log(log)
-    global SILOP_CONFIG
-    global SILOP_DATA_LOG
-    
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    numerodeimus=length(posiciones)-1;
-    if (numerodeimus>1)
-        error('Solo se puede tener un IMU en la simulacion desde un .log');
-    end
-    sensor=2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 4;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 3;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Z = 7;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Y = 6;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_X = 5;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Z = 10;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Y = 9;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_X = 8;
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES = 10;
-	
-    SILOP_DATA_LOG=load(log);
-    orden=SILOP_CONFIG.SENHALES.COG.R;
-    Rot=zeros(3,3);
-    for k=1:3
-        Rot(k,abs(orden(k)))=sign(orden(k));
-    end;
-    SILOP_DATA_LOG(:,2:4)=SILOP_DATA_LOG(:,2:4)*Rot';
-    SILOP_DATA_LOG(:,5:7)=SILOP_DATA_LOG(:,5:7)*Rot';
-    SILOP_DATA_LOG(:,8:10)=SILOP_DATA_LOG(:,8:10)*Rot';
-end
-
-function  []=conectar_a_tana(log)
-    global SILOP_CONFIG
-    global SILOP_DATA_LOG
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    numerodeimus=length(posiciones)-1;
-    if (numerodeimus>1)
-        error('Solo se puede tener un IMU en la simulacion desde un .tana');
-    end
-    sensor=2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 3;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Z = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Y = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_X = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Z = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Y = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_X = -1;
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
-		
-	SILOP_DATA_LOG=load(log); 
-end
-
-function  []=conectar_a_sl(log)
-    global SILOP_CONFIG
-    global SILOP_DATA_LOG
-    unzip(log);
-    tmp=load('config.mat');
-     %Comprobamos que el log tenga los sensores solicitados
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    numerodeimus=length(posiciones)-1;
-    
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES = tmp.SILOP_CONFIG.SENHALES.NUMEROSENHALES;
-    for numero=2:numerodeimus+1
-        %la segunda condicion es para mantener compatibilidad con ficheros
-        %viejos, que tenían -1 en las señales no usadas.
-         if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
-                 error(['no se encuentra el sensor del ',posiciones{numero}]);
-         end
-             SILOP_CONFIG.SENHALES.(posiciones{numero})= tmp.SILOP_CONFIG.SENHALES.(posiciones{numero});
-    end    
-     %Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.
-     delete ('config.mat');
-     existe=dir('datos_alg.log');
-     if (~isempty(existe))
-         delete ('datos_alg.log');
-     end
-      SILOP_DATA_LOG=load('datos.log'); 
-     delete ('datos.log');
-end
-
-
 
 function conectar_a_xbus(puerto, freq, buffer, driver_opt)
         global SILOP_CONFIG
