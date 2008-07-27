@@ -32,49 +32,16 @@
 
 % Author:   Diego Álvarez
 
-function sf3d=creasf3d(puerto,bps,freq,modo,buffer)
+function sf3d=creasf3d(freq,buffer,sf3d)
 
 global SILOP_DATA_BUFFER;
 
-% asignamos los valores por defecto de las variables
-if (nargin<1)
-    puerto='/dev/ttyUSB0';
-end
-if (nargin<2)
-    bps=9600; 
-end
-if (nargin<3)
-    freq=100;
-end
-if (nargin<4)
-    modo=0;
-end
-if (nargin<5)
-    buffer=1;
-end
-
-sf3d.puerto=serial(puerto);
 % Calculamos el numero de muestras almacenadas en el buffer
 sf3d.freq=freq;
 sf3d.buffer=buffer*freq;
 
-sf3d.modo=modo;
-switch (sf3d.modo)
-    case 0,
-        sf3d.Data=3;
-        sf3d.DataLength=29;%bytes de cada mensaje
-    case 1,
-        error('Modo aun no soportado');
-    case 2,
-        error('Modo aun no soportado');
-    otherwise,
-        error('Modo invalido');
-end;
-
-sf3d.bps=bps;
-
 % Configurar el objeto serie
-sf3d.puerto.BaudRate=bps;
+sf3d.puerto.BaudRate=sf3d.bps;
 sf3d.puerto.DataBits=8;
 sf3d.puerto.FlowControl='none';
 sf3d.puerto.Parity='none';

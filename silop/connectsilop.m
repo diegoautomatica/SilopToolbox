@@ -70,14 +70,42 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('connect',SILOP_CONFIG.BUS.Temporizador);
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('gotoconfig',SILOP_CONFIG.BUS.Temporizador);
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',{SILOP_CONFIG.BUS.Temporizador,source});
-    elseif (strcmp(driver,'Xbus'))
-        conectar_a_xbus(source, freq, buffer, driver_opt);
     elseif (strcmp(driver,'SF_3D'))
-        conectar_a_SF_3D(source, freq, buffer, driver_opt);
+        SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('create',{source,updateeach,driver_opt});
+        SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('connect',SILOP_CONFIG.BUS.SF_3D);
+        %La llamada a connect aun no hace nada. Es necesario que tome casi
+        %todo el codigo restante de creasf3d
+                
+        % Crear el objeto xbusmaster
+        try 
+           sf3d=creasf3d(freq,updateeach,SILOP_CONFIG.BUS.SF_3D);
+        catch ME
+            rethrow (ME);
+        end
+        SILOP_CONFIG.BUS.SF_3D=sf3d;               
+        numero=2;
+        disp('Los sparkfun 3d no soportan reorientacion por hardware');
+        disp('el driver podria implementarla por software en el futuro');
+        disp('se ignora la orientacion especificada mediante addimu');
+        posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
+        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
+        SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
+    elseif (strcmp(driver,'Xbus'))
+        conectar_a_xbus(source, freq, updateeach, driver_opt);
     else
         error('modo de funcionamiento no soportado');
     end
 end
+
+
 
 function conectar_a_xbus(puerto, freq, buffer, driver_opt)
         global SILOP_CONFIG
@@ -158,45 +186,3 @@ function conectar_a_xbus(puerto, freq, buffer, driver_opt)
     
     
             
-function conectar_a_SF_3D(puerto, freq, buffer, driver_opt)
-        global SILOP_CONFIG
-
-        if (length(driver_opt)<1)
-            bps=9600;
-        else
-            bps=driver_opt(1);
-        end
-        if (length(driver_opt)<2)
-            modo=0;
-        else
-            modo=driver_opt(2);
-        end
-        
-        % Calcular el numero de dispositivos por defecto
-        posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-        ns=length(posiciones)-1;
-        if (ns>1)
-            error('Los sparkfun 3D sólo tienen un sensor, se han especificado demasiados IMUS')
-        end
-        % Crear el objeto xbusmaster
-        try 
-           sf3d=creasf3d(puerto,bps,freq,modo,buffer);
-        catch ME
-            rethrow (ME);
-        end
-        SILOP_CONFIG.BUS.SF_3D=sf3d;               
-        numero=2;
-        disp('Los sparkfun 3d no soportan reorientacion por hardware');
-        disp('el driver podria implementarla por software en el futuro');
-        disp('se ignora la orientacion especificada mediante addimu');
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
-        SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
-    end % fin de modo SF_3D

@@ -20,7 +20,9 @@ function retorno=driver_SF_3D(operacion,parametros)
 
     switch operacion
         case 'create'
+            retorno=creasf3d(parametros);
         case 'connect'
+            retorno=parametros; %NO hace nada aun
         case 'gotoconfig'
             retorno=sf3dgotoconfig(parametros);
         case 'gotomeasurement'
@@ -32,6 +34,47 @@ function retorno=driver_SF_3D(operacion,parametros)
             disp('error, el driver no soporta la operación indicada');
             retorno=[];
     end
+end
+
+function sf3d=creasf3d(parametros)
+    global SILOP_CONFIG
+    source=parametros{1};
+    driver_opt=parametros{3};
+    if (length(driver_opt)<1)
+        bps=9600;
+    else
+         bps=driver_opt(1);
+    end
+    if (length(driver_opt)<2)
+        modo=0;
+    else
+        modo=driver_opt(2);
+    end
+    % Calcular el numero de dispositivos por defecto
+    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    ns=length(posiciones)-1;
+    if (ns>1)
+        error('Los sparkfun 3D sólo tienen un sensor, se han especificado demasiados IMUS')
+    end
+    try
+        sf3d.puerto=serial(source);
+    catch ME
+        disp ('Imposible conectarse al puerto serie');
+        rethrow (ME);
+    end
+    sf3d.modo=modo;
+    switch (sf3d.modo)
+        case 0,
+            sf3d.Data=3;
+            sf3d.DataLength=29;%bytes de cada mensaje
+        case 1,
+            error('Modo aun no soportado');
+        case 2,
+            error('Modo aun no soportado');
+        otherwise,
+            error('Modo invalido');
+    end;
+    sf3d.bps=bps;
 end
 
 function sf3d=destruyesf3d(sf3d)
