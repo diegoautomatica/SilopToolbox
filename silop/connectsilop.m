@@ -72,17 +72,15 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',{SILOP_CONFIG.BUS.Temporizador,source});
     elseif (strcmp(driver,'SF_3D'))
         SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('create',{source,updateeach,driver_opt});
-        SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('connect',SILOP_CONFIG.BUS.SF_3D);
-        %La llamada a connect aun no hace nada. Es necesario que tome casi
-        %todo el codigo restante de creasf3d
-                
-        % Crear el objeto xbusmaster
+        SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('connect',{SILOP_CONFIG.BUS.SF_3D,freq,updateeach});
         try 
-           sf3d=creasf3d(freq,updateeach,SILOP_CONFIG.BUS.SF_3D);
+            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('gotoconfig',SILOP_CONFIG.BUS.SF_3D);
+            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('configura',SILOP_CONFIG.BUS.SF_3D);
         catch ME
+            disp (ME.message);
+            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('destruye',SILOP_CONFIG.BUS.SF_3D);
             rethrow (ME);
         end
-        SILOP_CONFIG.BUS.SF_3D=sf3d;               
         numero=2;
         disp('Los sparkfun 3d no soportan reorientacion por hardware');
         disp('el driver podria implementarla por software en el futuro');

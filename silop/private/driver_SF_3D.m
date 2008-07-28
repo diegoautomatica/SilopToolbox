@@ -22,7 +22,9 @@ function retorno=driver_SF_3D(operacion,parametros)
         case 'create'
             retorno=creasf3d(parametros);
         case 'connect'
-            retorno=parametros; %NO hace nada aun
+            retorno=connectsf3d(parametros);
+        case 'configura'
+            retorno=configurasf3d(parametros);
         case 'gotoconfig'
             retorno=sf3dgotoconfig(parametros);
         case 'gotomeasurement'
@@ -76,6 +78,42 @@ function sf3d=creasf3d(parametros)
     end;
     sf3d.bps=bps;
 end
+
+function sf3d=connectsf3d(parametros)
+    sf3d=parametros{1};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    % Calculamos el numero de muestras almacenadas en el buffer
+    sf3d.freq=freq;
+    sf3d.buffer=updateeach*freq;
+    % Configurar el objeto serie
+    sf3d.puerto.BaudRate=sf3d.bps;
+    sf3d.puerto.DataBits=8;
+    sf3d.puerto.FlowControl='none';
+    sf3d.puerto.Parity='none';
+    sf3d.puerto.StopBits=1;
+    sf3d.puerto.ReadAsyncMode = 'continuous';
+    sf3d.puerto.ByteOrder = 'littleEndian';
+    sf3d.puerto.BytesAvailableFcnCount = sf3d.DataLength*sf3d.buffer;
+    sf3d.puerto.BytesAvailableFcnMode = 'byte';
+    sf3d.puerto.InputBufferSize = 2*sf3d.DataLength*sf3d.buffer;
+    sf3d.puerto.OutputBufferSize = 512;
+    sf3d.puerto.Tag = 'SparkFun_3D';
+    sf3d.puerto.Timeout = 10;
+    try
+        fopen(sf3d.puerto);
+    catch ME
+        disp(ME.message);
+        delete (sf3d.puerto);
+        rethrow(ME); 
+    end
+end
+
+function sf3d=configurasf3d(parametros)
+    sf3d=parametros;
+    sf3d=sf3dsetperiod(sf3d);
+end
+
 
 function sf3d=destruyesf3d(sf3d)
 
