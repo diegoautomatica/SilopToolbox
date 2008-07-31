@@ -20,7 +20,7 @@
 %
 % Examples:
 %
-% See also: creaxbusmaster
+% See also: 
 
 % Author:   Rafael C. Gonzalez de los Reyes
 % History:  04.12.07    creacion del archivo

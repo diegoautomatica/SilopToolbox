@@ -72,8 +72,8 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',{SILOP_CONFIG.BUS.Temporizador,source});
     elseif (strcmp(driver,'SF_3D'))
         SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('create',{source,updateeach,driver_opt});
-        SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('connect',{SILOP_CONFIG.BUS.SF_3D,freq,updateeach});
         try 
+            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('connect',{SILOP_CONFIG.BUS.SF_3D,freq,updateeach});
             SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('gotoconfig',SILOP_CONFIG.BUS.SF_3D);
             SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('configura',SILOP_CONFIG.BUS.SF_3D);
         catch ME
@@ -81,106 +81,18 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
             SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('destruye',SILOP_CONFIG.BUS.SF_3D);
             rethrow (ME);
         end
-        numero=2;
-        disp('Los sparkfun 3d no soportan reorientacion por hardware');
-        disp('el driver podria implementarla por software en el futuro');
-        disp('se ignora la orientacion especificada mediante addimu');
-        posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
-        SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
-        SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
     elseif (strcmp(driver,'Xbus'))
-        conectar_a_xbus(source, freq, updateeach, driver_opt);
+        SILOP_CONFIG.BUS.Xbus = driver_Xbus('create',{source,updateeach,driver_opt});
+        try
+            SILOP_CONFIG.BUS.Xbus = driver_Xbus('connect',{SILOP_CONFIG.BUS.Xbus,freq,updateeach});
+            SILOP_CONFIG.BUS.Xbus = driver_Xbus('gotoconfig',SILOP_CONFIG.BUS.Xbus);
+            SILOP_CONFIG.BUS.Xbus = driver_Xbus('configura',SILOP_CONFIG.BUS.Xbus);
+        catch ME
+            disp(ME.message);
+            SILOP_CONFIG.BUS.Xbus = driver_Xbus('destruye',SILOP_CONFIG.BUS.Xbus);
+            rethrow (ME);
+        end
     else
         error('modo de funcionamiento no soportado');
     end
 end
-
-
-
-function conectar_a_xbus(puerto, freq, buffer, driver_opt)
-        global SILOP_CONFIG
-        
-        if (length(driver_opt)<1)
-            bps=460800;
-        else
-            bps=driver_opt(1);
-        end
-        if (length(driver_opt)<2)
-            modo=0;
-        else
-            modo=driver_opt(2);
-        end
-        % Calcular el numero de dispositivos por defecto
-        posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-        ns=length(posiciones)-1;
-                        
-        % Crear el objeto xbusmaster
-        try 
-           xbus=creaxbusmaster(puerto,bps,freq,modo,buffer,ns);
-        catch ME
-            rethrow (ME);
-        end
-        SILOP_CONFIG.BUS.Xbus=xbus;
-        
-        % Actualizar los valores de las se�ales
-        switch (xbus.modo)
-            case 0,
-                factor=9; %#ok<NASGU>
-            case 1,
-                factor=9+4; %#ok<NASGU>
-            case 2,
-                factor=9+9; %#ok<NASGU>
-        end;
-        
-        % Identificar sensores y asignar los valores de las columnas
-        % correspondientes
-        id_disp=zeros(1,xbus.ndisp);
-        for k=1:xbus.ndisp
-            id_disp(k)=eval(xbus.sensores.Cadena(:,k));
-        end
-    
-        try
-            for numero=2:ns+1
-                %Buscamos el dispositivo en cada punto
-                p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
-                if (isempty(p))
-                    error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
-                else
-                    orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
-                    Rot=zeros(3,3);
-                    for k=1:3
-                        Rot(k,abs(orden(k)))=sign(orden(k));
-                    end;
-                    SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
-                    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
-                    if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                        SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
-                    end    
-                end
-            end
-        catch ME
-			disp(ME.message);
-			stopsilop();
-            rethrow(ME);
-        end
-    end % fin de modo xbusmaster
-
-    
-    
-            

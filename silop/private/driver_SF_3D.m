@@ -100,18 +100,28 @@ function sf3d=connectsf3d(parametros)
     sf3d.puerto.OutputBufferSize = 512;
     sf3d.puerto.Tag = 'SparkFun_3D';
     sf3d.puerto.Timeout = 10;
-    try
-        fopen(sf3d.puerto);
-    catch ME
-        disp(ME.message);
-        delete (sf3d.puerto);
-        rethrow(ME); 
-    end
+    fopen(sf3d.puerto);
 end
 
 function sf3d=configurasf3d(parametros)
+    global SILOP_CONFIG
     sf3d=parametros;
     sf3d=sf3dsetperiod(sf3d);
+    numero=2;
+    disp('Los sparkfun 3d no soportan reorientacion por hardware');
+    disp('el driver podria implementarla por software en el futuro');
+    disp('se ignora la orientacion especificada mediante addimu');
+    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
+    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
+    SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
 end
 
 
@@ -127,7 +137,6 @@ function sf3d=destruyesf3d(sf3d)
 end
 
 function sf3d=sf3dgotoconfig(sf3d)
-
     %Limpiamos todo lo que puede quedar en el buffer de medidas anteriores
     sf3d.puerto.Timeout=1;
     while (sf3d.puerto.BytesAvailable>0)

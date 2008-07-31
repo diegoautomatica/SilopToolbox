@@ -20,7 +20,11 @@ function retorno=driver_Xbus(operacion,parametros)
 
     switch operacion
         case 'create'
+            retorno=creaxbus(parametros);
         case 'connect'
+            retorno=connectxbus(parametros);
+        case 'configura'
+            retorno=configuraxbus(parametros);
         case 'gotoconfig'
             retorno=gotoconfig(parametros);
         case 'gotomeasurement'
@@ -34,15 +38,147 @@ function retorno=driver_Xbus(operacion,parametros)
     end
 end
 
+function xbus=creaxbus(parametros)
+    global SILOP_CONFIG
+    source=parametros{1};
+    driver_opt=parametros{3};
+    if (length(driver_opt)<1)
+        bps=460800;    
+    else
+         bps=driver_opt(1);
+    end
+    if (length(driver_opt)<2)
+        modo=0;
+    else
+        modo=driver_opt(2);
+    end
+    % Calcular el numero de dispositivos por defecto
+    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    ns=length(posiciones)-1;
+    xbus.ns=ns;
+    try
+        xbus.puerto=serial(source);
+    catch ME
+        disp ('Imposible conectarse al puerto serie');
+        rethrow (ME);
+    end
+    xbus.modo=modo;
+    switch (xbus.modo)
+        case 0,
+            xbus.DataLength=ns*36+2;
+            xbus.Data=1+9*ns;
+        case 1,
+            xbus.DataLength=ns*(36+16)+2;
+            xbus.Data=1+(9+4)*ns;
+        case 2,
+            xbus.DataLength=ns*(36+36)+2;
+            xbus.Data=1+(9+9)*ns;
+        otherwise,
+            disp ('modo invalido');
+            delete (xbus.puerto);
+    end;
+    if (xbus.DataLength>254)
+        xbus.DataLength=xbus.DataLength+7; % se incluye la cabecera y el checksum
+    else
+        xbus.DataLength=xbus.DataLength+5; % Se incluye la cabecera y el checksum
+    end
+
+    xbus.bps=bps;
+end
+
+function xbus=connectxbus(parametros)
+    xbus=parametros{1};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    % Calculamos el numero de muestras almacenadas en el buffer
+    xbus.freq=freq;
+    xbus.buffer=updateeach*freq;
+    % Configurar el objeto serie
+    xbus.puerto.BaudRate=xbus.bps;
+    xbus.puerto.DataBits=8;
+    xbus.puerto.FlowControl='none';
+    xbus.puerto.Parity='none';
+    xbus.puerto.StopBits=2;
+    xbus.puerto.ReadAsyncMode = 'continuous';
+    xbus.puerto.ByteOrder = 'littleEndian';
+    xbus.puerto.BytesAvailableFcnCount = xbus.DataLength*xbus.buffer;
+    xbus.puerto.BytesAvailableFcnMode = 'byte';
+    xbus.puerto.InputBufferSize = xbus.DataLength*100;
+    xbus.puerto.OutputBufferSize = 512;
+    xbus.puerto.Tag = 'XBus_Master';
+    xbus.puerto.Timeout = 10;
+    % Abrir el puerto de comunicaciones
+    fopen(xbus.puerto);
+end
+
+function xbus=configuraxbus(parametros)
+    global SILOP_CONFIG
+    xbus=parametros;
+    xbus=InitBus(xbus);
+    xbus=ReqConfiguration(xbus);
+    xbus=SetPeriod(xbus,xbus.freq);
+    switch (modo)
+        case 0,
+            xbus=SetMTOutputMode(xbus,0);
+        case 1,
+            xbus=SetMTOutputMode(xbus,1);
+        case 2,
+            xbus=SetMTOutputMode(xbus,3);
+    end
+    % Actualizar los valores de las se�ales
+    switch (xbus.modo)
+        case 0,
+            factor=9; %#ok<NASGU>
+        case 1,
+            factor=9+4; %#ok<NASGU>
+        case 2,
+            factor=9+9; %#ok<NASGU>
+    end;
+        
+    % Identificar sensores y asignar los valores de las columnas
+    % correspondientes
+    id_disp=zeros(1,xbus.ndisp);
+    for k=1:xbus.ndisp
+        id_disp(k)=eval(xbus.sensores.Cadena(:,k));
+    end
+    
+    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    for numero=2:ns+1
+        %Buscamos el dispositivo en cada punto
+        p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
+        if (isempty(p))
+            error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
+        else
+            orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
+            Rot=zeros(3,3);
+            for k=1:3
+                Rot(k,abs(orden(k)))=sign(orden(k));
+            end;
+            SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
+            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
+            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
+                SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
+            end    
+        end
+    end
+end
+
 function XBusMaster=destruyexbusmaster(xb)
 
-    XBusMaster=xb;
     try 
         fclose(xb.puerto);
     catch %#ok<CTCH>
     end
-    delete(XBusMaster.puerto);
-    clear XBusMaster
+    delete(xb.puerto);
+    clear xb
     XBusMaster=[];
 end
 
