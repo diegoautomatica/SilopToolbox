@@ -41,7 +41,9 @@ end
 function sf3d=creasf3d(parametros)
     global SILOP_CONFIG
     source=parametros{1};
-    driver_opt=parametros{3};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    driver_opt=parametros{4};
     if (length(driver_opt)<1)
         bps=9600;
     else
@@ -52,6 +54,9 @@ function sf3d=creasf3d(parametros)
     else
         modo=driver_opt(2);
     end
+    % Calculamos el numero de muestras almacenadas en el buffer
+    sf3d.freq=freq;
+    sf3d.buffer=updateeach*freq;
     % Calcular el numero de dispositivos por defecto
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     ns=length(posiciones)-1;
@@ -80,12 +85,7 @@ function sf3d=creasf3d(parametros)
 end
 
 function sf3d=connectsf3d(parametros)
-    sf3d=parametros{1};
-    freq=parametros{2};
-    updateeach=parametros{3};
-    % Calculamos el numero de muestras almacenadas en el buffer
-    sf3d.freq=freq;
-    sf3d.buffer=updateeach*freq;
+    sf3d=parametros;
     % Configurar el objeto serie
     sf3d.puerto.BaudRate=sf3d.bps;
     sf3d.puerto.DataBits=8;

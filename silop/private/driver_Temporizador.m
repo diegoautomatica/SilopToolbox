@@ -26,16 +26,16 @@ global SILOP_DATA_LOG; %#ok<NUSED>
             retorno=parametros; %NO hace nada. Pero es necesario que exista
         case 'gotoconfig'
             retorno=parametros;
-            stop(parametros);
+            stop(parametros.t);
             clear SILOP_DATA_LOG;
             clear simula_muestreo;
         case 'configura'
             retorno=configuratemporizador(parametros);
         case 'gotomeasurement'
-            start(parametros);
+            start(parametros.t);
             retorno=parametros;
         case 'destruye'
-            delete(parametros);
+            delete(parametros.t);
             retorno=[];
         otherwise
             disp('error, el driver no soporta la operación indicada');
@@ -43,30 +43,36 @@ global SILOP_DATA_LOG; %#ok<NUSED>
     end
 end
 
-function t=createmporizador(parametros)
-    existe=dir(parametros{1});
-    if ((isempty(existe))&&(~strcmp(parametros{1},'test.log')))
+function temporizador=createmporizador(parametros)
+    source=parametros{1};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    temporizador.source=source;
+    temporizador.freq=freq;
+    temporizador.updateeach=updateeach;
+    existe=dir(source);
+    if ((isempty(existe))&&(~strcmp(source,'test.log')))
         error('no se encuentra el fichero');
     end
-    if ( (~strcmp(parametros{1}(end-3:end),'.log'))&&(~strcmp(parametros{1}(end-4:end),'.tana'))&&(~strcmp(parametros{1}(end-2:end),'.sl')) )
+    if ( (~strcmp(source(end-3:end),'.log'))&&(~strcmp(source(end-4:end),'.tana'))&&(~strcmp(source(end-2:end),'.sl')))
         error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
     end        
-    t = timer('TimerFcn', {@simula_muestreo, parametros{1}}, 'Period', parametros{2}, 'ExecutionMode', 'fixedRate');
+    temporizador.t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', updateeach, 'ExecutionMode', 'fixedRate');
 end
 
 function retorno=configuratemporizador(parametros)
     %Si se toman datos de un .log
-    source=parametros{2};
-    if (strcmp(source(end-3:end),'.log'))
-        conectar_a_log(source);
+    temporizador=parametros;
+    if (strcmp(temporizador.source(end-3:end),'.log'))
+        conectar_a_log(temporizador.source);
     %Si se toman datos de un .tana
-    elseif (strcmp(source(end-4:end),'.tana'))
-        conectar_a_tana(source);
+    elseif (strcmp(temporizador.source(end-4:end),'.tana'))
+        conectar_a_tana(temporizador.source);
     %Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
-    elseif (strcmp(source(end-2:end),'.sl'))
-        conectar_a_sl(source);
+    elseif (strcmp(temporizador.source(end-2:end),'.sl'))
+        conectar_a_sl(temporizador.source);
     end        
-    retorno=parametros{1};%Por ahora no hace nada
+    retorno=parametros;
 end
 
 %Callback que simula la realizaci�n de un muestreo desde los Xsens

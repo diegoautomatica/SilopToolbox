@@ -41,7 +41,9 @@ end
 function xbus=creaxbus(parametros)
     global SILOP_CONFIG
     source=parametros{1};
-    driver_opt=parametros{3};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    driver_opt=parametros{4};
     if (length(driver_opt)<1)
         bps=460800;    
     else
@@ -52,6 +54,9 @@ function xbus=creaxbus(parametros)
     else
         modo=driver_opt(2);
     end
+    % Calculamos el numero de muestras almacenadas en el buffer
+    xbus.freq=freq;
+    xbus.buffer=updateeach*freq;
     % Calcular el numero de dispositivos por defecto
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
     ns=length(posiciones)-1;
@@ -87,12 +92,7 @@ function xbus=creaxbus(parametros)
 end
 
 function xbus=connectxbus(parametros)
-    xbus=parametros{1};
-    freq=parametros{2};
-    updateeach=parametros{3};
-    % Calculamos el numero de muestras almacenadas en el buffer
-    xbus.freq=freq;
-    xbus.buffer=updateeach*freq;
+    xbus=parametros;
     % Configurar el objeto serie
     xbus.puerto.BaudRate=xbus.bps;
     xbus.puerto.DataBits=8;
@@ -291,3 +291,226 @@ function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     disp(['leidos ' num2str([muestra(1) muestra(end)])])
 end
 
+function [XBusMaster]=InitBus(XBusMaster)
+    % Envia el mensaje InitBus al objeto XBusMaster
+    % El proceso se queda bloqueado hasta recibir la informacion
+
+    % Cuerpo del mensaje (excepto el byte de checksum)
+    msg=[250,255,2,0];
+    % Se calcula el cheksum y se coloca al final
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    % Se envia por el puerto serie 
+    if (XBusMaster.puerto.BytesAvailable>0)
+        % Vaciar el puerto 
+        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+    % El valor del TimeOut se fija a 1 segundo
+    XBusMaster.puerto.Timeout=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+    % Se espera a recibir la contestacion
+    % Primero se leen 4 bytes para concer la longitud total del mensaje
+    % NOTA: Al no conocer la longitud total de mensaje, si especificamos el
+    % maximo valor posible, la funcion fread se bloquearia hasta que venciese
+    % el tout.
+    [ack1,cnt1,msg]=fread(XBusMaster.puerto,4,'uint8');
+    if (cnt1<4 || ~isempty(msg))
+        disp(msg);
+        error('no se ha recibido una respuesta correcta en InitBus');
+    else
+        if (ack1(3)~=3)
+            error('Error en la secuencia de mensajes');
+        end
+    end
+    % de momento no se ha detectado ningun error y se continua con la lectura
+    % del resto del mensaje ack1(end)+1 bytes
+    [ack2,cnt2,msg]=fread(XBusMaster.puerto,ack1(end)+1,'uint8');
+    ack=[ack1; ack2];
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido una respuesta correcta en InitBus');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum en initbus');
+        end
+        XBusMaster.ndisp=ack(4)/4;
+        XBusMaster.sensores.ID=reshape(ack(5:(end-1)),[4 XBusMaster.ndisp]);
+        XBusMaster.sensores.Cadena=reshape(sprintf('%02X',double(ack(5:(end-1)))),[2*4 XBusMaster.ndisp]);
+    end
+end
+
+function [XBusMaster]=ReqConfiguration(XBusMaster)
+    % Envia el mensaje InitBus al objeto XBusMaster
+    % El proceso se queda bloqueado hasta recibir la informacion
+    % Cuerpo del mensaje (excepto el byte de checksum)
+    msg=[250,255,12,0];
+    % Se calcula el cheksum y se coloca al final
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    % Se envia por el puerto serie 
+    if (XBusMaster.puerto.BytesAvailable>0)
+        % Vaciar el puerto 
+        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+    % El valor del TimeOut se fija a 1 segundo
+    XBusMaster.puerto.Timeout=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+    % Se espera a recibir la contestacion
+    % Primero se leen 4 bytes para concer la longitud total del mensaje
+    % NOTA: Al no conocer la longitud total de mensaje, si especificamos el
+    % maximo valor posible, la funcion fread se bloquearia hasta que venciese
+    % el tout.
+    [ack1,cnt1,msg]=fread(XBusMaster.puerto,4,'uint8');
+    if (cnt1<4 || ~isempty(msg))
+        disp(msg);
+        error('no se ha recibido la respuesta en ReqConfiguration');
+    else
+        if (ack1(3)~=13)
+            error('Error en la secuencia de mensajes duranta ReqConfiguration');
+        end
+    end
+    % de momento no se ha detectado ningun error y se continua con la lectura
+    % del resto del mensaje ack1(end)+1 bytes
+    [ack2,cnt2,msg]=fread(XBusMaster.puerto,ack1(end)+1,'uint8');
+    ack=[ack1; ack2];
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido la respuesta en ReqConfiguration');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante ReqConfiguration');
+        end
+        XBusMaster.Conf.MDID=ack(5:8);
+        XBusMaster.Conf.SampPeriod=115200/([256 1]*ack(9:10));
+        XBusMarter.Conf.OutputSkipFactor=[256 1]*ack(11:12);
+        XBusMaster.Conf.SyncMode=[256 1]*ack(13:14);
+        XBusMaster.Conf.SyncSkipFactor=[256 1]*ack(15:16);
+        XBusMaster.Conf.SyncOffset=(256.^[3 2 1 0])*ack(17:20);
+        XBusMaster.Conf.Date.Year=(10.^[3 2 1 0])*ack(21:24);
+        XBusMaster.Conf.Date.Month=(10.^[1 0])*ack(25:26);
+        XBusMaster.Conf.Date.Day=(10.^[1 0])*ack(27:28);
+        XBusMaster.Conf.Time.Hour=[10 1]*ack(29:30);
+        XBusMaster.Conf.Time.Min=[10 1]*ack(31:32);
+        XBusMaster.Conf.Time.Sec=[10 1]*ack(33:34);
+        XBusMaster.Conf.Time.CS=[10 1]*ack(35:36);
+        XBusMaster.Conf.DevNum=[256 1]*ack(101:102);
+        for k=1:(XBusMaster.Conf.DevNum)
+            base=103+20*(k-1)-1;
+            XBusMaster.Conf.Dev(k).ID=ack(base+(1:4));
+            XBusMaster.Conf.Dev(k).DataLength=[256 1]*ack(base+(5:6));
+            XBusMaster.Conf.Dev(k).OutputMode=[256 1]*ack(base+(7:8));
+            XBusMaster.Conf.Dev(k).OutputSettings=[256 1]*ack(base+(9:10));
+        end
+    end
+end
+
+function XBusMaster=SetPeriod(XBusMaster,freq)
+    % Envia el mensaje SetPeriod al objeto XBusMaster
+    % El proceso se queda bloqueado hasta recibir la informacion
+    % Calcular la frecuencia de muestreo
+    fm=[fix(115200/freq/256) mod(115200/freq,256)];
+    % Cuerpo del mensaje (excepto el byte de checksum)
+    msg=[250,255,4,2,fm];
+    % Se calcula el cheksum y se coloca al final
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    % Se envia por el puerto serie 
+    if (XBusMaster.puerto.BytesAvailable>0)
+        % Vaciar el puerto 
+        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+    % El valor del TimeOut se fija a 1 segundo
+    XBusMaster.puerto.timeOut=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+    % Se espera a recibir la contestacion
+    [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido respuesta al comando setperiod');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante el comando setperiod');
+        else
+            if (ack(3)~=5)
+                error('Error en la secuencia de mensajes durante el comando setperiod');
+            end
+        end
+    end
+    % Se actualiza la configuracion
+    XBusMaster=ReqConfiguration(XBusMaster);
+end
+
+function XBusMaster=SetMTOutputMode(XBusMaster, orientformat)
+    switch (orientformat)
+        case 0
+            outmode=[0 2];
+            outsett=[0 0 0 0];
+        case 1
+            outmode=[0 6];
+            outsett=[0 0 0 0];
+        case 2
+            outmode=[0 6];
+            outsett=[0 0 0 4];
+        case 3
+            outmode=[0 6];
+            outsett=[0 0 0 8];
+    end
+    for k=1:XBusMaster.Conf.DevNum
+        % Cuerpo del mensaje (excepto el byte de checksum)
+        msg=[250,k,208,2,outmode];
+        % Se calcula el cheksum y se coloca al final
+        msg=[msg 256-mod(sum(msg(2:end)),256)]; %#ok<AGROW>
+        % Se envia por el puerto serie 
+        if (XBusMaster.puerto.BytesAvailable>0)
+            % Vaciar el puerto 
+            disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+            fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+        end
+        % El valor del TimeOut se fija a 1 segundo
+        XBusMaster.puerto.Timeout=1;
+        fwrite(XBusMaster.puerto,msg,'uint8','async');
+        % Se espera a recibir la contestacion
+        [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
+        if (~isempty(msg))
+            error('no se ha recibido respuesta al comando setmtoutputmode');
+        else
+            if (mod(sum(ack(2:end)),256)~=0)
+                error('Error de checksum durante el comando setmtoutputmode');
+            else
+                if (ack(3)~=209)
+                    error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
+                end
+            end
+        end
+        % Enviar el mensaje SetOutputSettings
+        % Cuerpo del mensaje (excepto el byte de checksum)
+        msg=[250,k,210,4,outsett];
+        % Se calcula el cheksum y se coloca al final
+        msg=[msg 256-mod(sum(msg(2:end)),256)]; %#ok<AGROW>
+        % Se envia por el puerto serie 
+        if (XBusMaster.puerto.BytesAvailable>0)
+            % Vaciar el puerto 
+            disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+            fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+        end
+        % El valor del TimeOut se fija a 1 segundo
+        XBusMaster.puerto.Timeout=1;
+        fwrite(XBusMaster.puerto,msg,'uint8','async');
+        % Se espera a recibir la contestacion
+        [ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
+        if (~isempty(msg))
+            disp(msg);
+            error('no se ha recibido respuesta durante el comando setmtoutputmode');
+        else
+            if (mod(sum(ack(2:end)),256)~=0)
+                error('Error de checksum durante el comando setmtoutputmode');
+            else
+                if (ack(3)~=211)
+                    error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
+                end
+            end
+        end
+    end
+    % Se actualiza la configuracion
+    XBusMaster=ReqConfiguration(XBusMaster);
+end

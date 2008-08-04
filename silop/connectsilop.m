@@ -65,34 +65,21 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         error('no se ha indicado ningún IMU mediante addimu');
     end
     
-    if (strcmp(driver,'Temporizador'))
-        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('create',{source,updateeach});
-        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('connect',SILOP_CONFIG.BUS.Temporizador);
-        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('gotoconfig',SILOP_CONFIG.BUS.Temporizador);
-        SILOP_CONFIG.BUS.Temporizador = driver_Temporizador('configura',{SILOP_CONFIG.BUS.Temporizador,source});
-    elseif (strcmp(driver,'SF_3D'))
-        SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('create',{source,updateeach,driver_opt});
-        try 
-            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('connect',{SILOP_CONFIG.BUS.SF_3D,freq,updateeach});
-            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('gotoconfig',SILOP_CONFIG.BUS.SF_3D);
-            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('configura',SILOP_CONFIG.BUS.SF_3D);
-        catch ME
-            disp (ME.message);
-            SILOP_CONFIG.BUS.SF_3D = driver_SF_3D('destruye',SILOP_CONFIG.BUS.SF_3D);
-            rethrow (ME);
+    driverfunction=str2func(['driver_',driver]);
+    try
+        SILOP_CONFIG.BUS.(driver)=driverfunction('create',{source,freq,updateeach,driver_opt});
+    catch ME
+        if (strcmp(ME.identifier,'MATLAB:UndefinedFunction'))
+            disp('El driver seleccionado no está disponible');
         end
-    elseif (strcmp(driver,'Xbus'))
-        SILOP_CONFIG.BUS.Xbus = driver_Xbus('create',{source,updateeach,driver_opt});
-        try
-            SILOP_CONFIG.BUS.Xbus = driver_Xbus('connect',{SILOP_CONFIG.BUS.Xbus,freq,updateeach});
-            SILOP_CONFIG.BUS.Xbus = driver_Xbus('gotoconfig',SILOP_CONFIG.BUS.Xbus);
-            SILOP_CONFIG.BUS.Xbus = driver_Xbus('configura',SILOP_CONFIG.BUS.Xbus);
-        catch ME
-            disp(ME.message);
-            SILOP_CONFIG.BUS.Xbus = driver_Xbus('destruye',SILOP_CONFIG.BUS.Xbus);
-            rethrow (ME);
-        end
-    else
-        error('modo de funcionamiento no soportado');
+        rethrow(ME);
     end
-end
+    try
+        SILOP_CONFIG.BUS.(driver) = driverfunction('connect',SILOP_CONFIG.BUS.(driver));
+        SILOP_CONFIG.BUS.(driver) = driverfunction('gotoconfig',SILOP_CONFIG.BUS.(driver));
+        SILOP_CONFIG.BUS.(driver) = driverfunction('configura',SILOP_CONFIG.BUS.(driver));
+    catch ME
+        disp (ME.message);
+        SILOP_CONFIG.BUS.(driver)=driverfunction('destruye',SILOP_CONFIG.BUS.(driver));
+        rethrow(ME);
+    end
