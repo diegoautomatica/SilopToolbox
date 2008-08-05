@@ -110,14 +110,11 @@ function [sf3d,senhales]=configurasf3d(parametros)
     disp('se ignora la orientacion especificada mediante addimu');
     posiciones=fieldnames(senhales);
     senhales.(posiciones{numero}).Acc_Z = 3;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
     senhales.(posiciones{numero}).Acc_Y = 2;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
     senhales.(posiciones{numero}).Acc_X = 1;
-    senhales.(posiciones{numero}).G_Z = -1;
-    senhales.(posiciones{numero}).G_Y = -1;
-    senhales.(posiciones{numero}).G_X = -1;
-    senhales.(posiciones{numero}).MG_Z = -1;
-    senhales.(posiciones{numero}).MG_Y = -1;
-    senhales.(posiciones{numero}).MG_X = -1;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
     senhales.NUMEROSENHALES=3;
 end
 

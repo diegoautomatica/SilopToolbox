@@ -154,14 +154,23 @@ function [xbus,senhales]=configuraxbus(parametros)
             end;
             SetObjectAlignment(xbus,p,Rot);
             senhales.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
+            disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
             senhales.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
+            disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
             senhales.(posiciones{numero}).Acc_X = factor*(p-1)+2;
+            disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
             senhales.(posiciones{numero}).G_Z = factor*(p-1)+7;
+            disp(['Anadida senhal ',posiciones{sensor},'.G_Z']); 
             senhales.(posiciones{numero}).G_Y = factor*(p-1)+6;
+            disp(['Anadida senhal ',posiciones{sensor},'.G_Y']); 
             senhales.(posiciones{numero}).G_X = factor*(p-1)+5;
+            disp(['Anadida senhal ',posiciones{sensor},'.G_X']); 
             senhales.(posiciones{numero}).MG_Z = factor*(p-1)+10;
+            disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
             senhales.(posiciones{numero}).MG_Y = factor*(p-1)+9;
+            disp(['Anadida senhal ',posiciones{sensor},'.MG_Y']); 
             senhales.(posiciones{numero}).MG_X = factor*(p-1)+8;
+            disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
             if (senhales.(posiciones{numero}).MG_Z>senhales.NUMEROSENHALES)
                 senhales.NUMEROSENHALES=senhales.(posiciones{numero}).MG_Z;
             end    

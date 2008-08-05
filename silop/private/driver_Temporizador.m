@@ -111,14 +111,23 @@ function [senhales]=conectar_a_log(log,senhales)
     end
     sensor=2;
     senhales.(posiciones{sensor}).Acc_Z = 4;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
     senhales.(posiciones{sensor}).Acc_Y = 3;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
     senhales.(posiciones{sensor}).Acc_X = 2;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
     senhales.(posiciones{sensor}).G_Z = 7;
+    disp(['Anadida senhal ',posiciones{sensor},'.G_Z']); 
     senhales.(posiciones{sensor}).G_Y = 6;
+    disp(['Anadida senhal ',posiciones{sensor},'.G_Y']); 
     senhales.(posiciones{sensor}).G_X = 5;
+    disp(['Anadida senhal ',posiciones{sensor},'.G_X']); 
     senhales.(posiciones{sensor}).MG_Z = 10;
+    disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
     senhales.(posiciones{sensor}).MG_Y = 9;
+    disp(['Anadida senhal ',posiciones{sensor},'.MG_Y']); 
     senhales.(posiciones{sensor}).MG_X = 8;
+    disp(['Anadida senhal ',posiciones{sensor},'.MG_X']); 
     senhales.NUMEROSENHALES = 10;
 	
     SILOP_DATA_LOG=load(log);
@@ -141,14 +150,11 @@ function  [senhales]=conectar_a_tana(log,senhales)
     end
     sensor=2;
     senhales.(posiciones{sensor}).Acc_Z = 3;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
     senhales.(posiciones{sensor}).Acc_Y = 2;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
     senhales.(posiciones{sensor}).Acc_X = 1;
-    senhales.(posiciones{sensor}).G_Z = -1;
-    senhales.(posiciones{sensor}).G_Y = -1;
-    senhales.(posiciones{sensor}).G_X = -1;
-    senhales.(posiciones{sensor}).MG_Z = -1;
-    senhales.(posiciones{sensor}).MG_Y = -1;
-    senhales.(posiciones{sensor}).MG_X = -1;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
     senhales.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
 		
 	SILOP_DATA_LOG=load(log); 
