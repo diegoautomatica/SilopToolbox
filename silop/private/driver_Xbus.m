@@ -16,15 +16,15 @@
 %
 % Examples:
 
-function retorno=driver_Xbus(operacion,parametros)
-
+function [retorno,senhales]=driver_Xbus(operacion,parametros)
+    senhales=[];
     switch operacion
         case 'create'
             retorno=creaxbus(parametros);
         case 'connect'
             retorno=connectxbus(parametros);
         case 'configura'
-            retorno=configuraxbus(parametros);
+            [retorno,senhales]=configuraxbus(parametros);
         case 'gotoconfig'
             retorno=gotoconfig(parametros);
         case 'gotomeasurement'
@@ -39,11 +39,11 @@ function retorno=driver_Xbus(operacion,parametros)
 end
 
 function xbus=creaxbus(parametros)
-    global SILOP_CONFIG
     source=parametros{1};
     freq=parametros{2};
     updateeach=parametros{3};
-    driver_opt=parametros{4};
+    ns=parametros{4};
+    driver_opt=parametros{5};
     if (length(driver_opt)<1)
         bps=460800;    
     else
@@ -57,9 +57,7 @@ function xbus=creaxbus(parametros)
     % Calculamos el numero de muestras almacenadas en el buffer
     xbus.freq=freq;
     xbus.buffer=updateeach*freq;
-    % Calcular el numero de dispositivos por defecto
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    ns=length(posiciones)-1;
+    % numero de dispositivos
     xbus.ns=ns;
     try
         xbus.puerto=serial(source);
@@ -111,9 +109,9 @@ function xbus=connectxbus(parametros)
     fopen(xbus.puerto);
 end
 
-function xbus=configuraxbus(parametros)
-    global SILOP_CONFIG
-    xbus=parametros;
+function [xbus,senhales]=configuraxbus(parametros)
+    xbus=parametros{1};
+    senhales=parametros{2};
     xbus=InitBus(xbus);
     xbus=ReqConfiguration(xbus);
     xbus=SetPeriod(xbus,xbus.freq);
@@ -142,30 +140,30 @@ function xbus=configuraxbus(parametros)
         id_disp(k)=eval(xbus.sensores.Cadena(:,k));
     end
     
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    posiciones=fieldnames(senhales);
     for numero=2:ns+1
         %Buscamos el dispositivo en cada punto
-        p=(find(id_disp==SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie));
+        p=(find(id_disp==senhales.(posiciones{numero}).Serie));
         if (isempty(p))
             error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
         else
-            orden=SILOP_CONFIG.SENHALES.(posiciones{numero}).R;
+            orden=senhales.(posiciones{numero}).R;
             Rot=zeros(3,3);
             for k=1:3
                 Rot(k,abs(orden(k)))=sign(orden(k));
             end;
-            SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot);
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = factor*(p-1)+7;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = factor*(p-1)+6;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = factor*(p-1)+5;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = factor*(p-1)+10;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = factor*(p-1)+9;
-            SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = factor*(p-1)+8;
-            if (SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z>SILOP_CONFIG.SENHALES.NUMEROSENHALES)
-                SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z;
+            SetObjectAlignment(xbus,p,Rot);
+            senhales.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
+            senhales.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
+            senhales.(posiciones{numero}).Acc_X = factor*(p-1)+2;
+            senhales.(posiciones{numero}).G_Z = factor*(p-1)+7;
+            senhales.(posiciones{numero}).G_Y = factor*(p-1)+6;
+            senhales.(posiciones{numero}).G_X = factor*(p-1)+5;
+            senhales.(posiciones{numero}).MG_Z = factor*(p-1)+10;
+            senhales.(posiciones{numero}).MG_Y = factor*(p-1)+9;
+            senhales.(posiciones{numero}).MG_X = factor*(p-1)+8;
+            if (senhales.(posiciones{numero}).MG_Z>senhales.NUMEROSENHALES)
+                senhales.NUMEROSENHALES=senhales.(posiciones{numero}).MG_Z;
             end    
         end
     end

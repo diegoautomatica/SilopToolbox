@@ -16,15 +16,15 @@
 %
 % Examples:
 
-function retorno=driver_SF_3D(operacion,parametros)
-
+function [retorno,senhales]=driver_SF_3D(operacion,parametros)
+    senhales=[];
     switch operacion
         case 'create'
             retorno=creasf3d(parametros);
         case 'connect'
             retorno=connectsf3d(parametros);
         case 'configura'
-            retorno=configurasf3d(parametros);
+            [retorno,senhales]=configurasf3d(parametros);
         case 'gotoconfig'
             retorno=sf3dgotoconfig(parametros);
         case 'gotomeasurement'
@@ -39,11 +39,11 @@ function retorno=driver_SF_3D(operacion,parametros)
 end
 
 function sf3d=creasf3d(parametros)
-    global SILOP_CONFIG
     source=parametros{1};
     freq=parametros{2};
     updateeach=parametros{3};
-    driver_opt=parametros{4};
+    ns=parametros{4};
+    driver_opt=parametros{5};
     if (length(driver_opt)<1)
         bps=9600;
     else
@@ -57,9 +57,6 @@ function sf3d=creasf3d(parametros)
     % Calculamos el numero de muestras almacenadas en el buffer
     sf3d.freq=freq;
     sf3d.buffer=updateeach*freq;
-    % Calcular el numero de dispositivos por defecto
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    ns=length(posiciones)-1;
     if (ns>1)
         error('Los sparkfun 3D sólo tienen un sensor, se han especificado demasiados IMUS')
     end
@@ -103,25 +100,25 @@ function sf3d=connectsf3d(parametros)
     fopen(sf3d.puerto);
 end
 
-function sf3d=configurasf3d(parametros)
-    global SILOP_CONFIG
-    sf3d=parametros;
+function [sf3d,senhales]=configurasf3d(parametros)
+    sf3d=parametros{1};
+    senhales=parametros{2};
     sf3d=sf3dsetperiod(sf3d);
     numero=2;
     disp('Los sparkfun 3d no soportan reorientacion por hardware');
     disp('el driver podria implementarla por software en el futuro');
     disp('se ignora la orientacion especificada mediante addimu');
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Z = 3;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_Y = 2;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).Acc_X = 1;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Z = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_Y = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).G_X = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Z = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_Y = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{numero}).MG_X = -1;
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES=3;
+    posiciones=fieldnames(senhales);
+    senhales.(posiciones{numero}).Acc_Z = 3;
+    senhales.(posiciones{numero}).Acc_Y = 2;
+    senhales.(posiciones{numero}).Acc_X = 1;
+    senhales.(posiciones{numero}).G_Z = -1;
+    senhales.(posiciones{numero}).G_Y = -1;
+    senhales.(posiciones{numero}).G_X = -1;
+    senhales.(posiciones{numero}).MG_Z = -1;
+    senhales.(posiciones{numero}).MG_Y = -1;
+    senhales.(posiciones{numero}).MG_X = -1;
+    senhales.NUMEROSENHALES=3;
 end
 
 

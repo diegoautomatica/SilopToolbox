@@ -16,9 +16,9 @@
 %
 % Examples:
 
-function retorno=driver_Temporizador(operacion,parametros)
-global SILOP_DATA_LOG; %#ok<NUSED>
-
+function [retorno,senhales]=driver_Temporizador(operacion,parametros)
+    global SILOP_DATA_LOG; %#ok<NUSED>
+    senhales=[];
     switch operacion
         case 'create' %parametros: {source, updateeach} 
             retorno=createmporizador(parametros);
@@ -30,7 +30,7 @@ global SILOP_DATA_LOG; %#ok<NUSED>
             clear SILOP_DATA_LOG;
             clear simula_muestreo;
         case 'configura'
-            retorno=configuratemporizador(parametros);
+            [retorno,senhales]=configuratemporizador(parametros);
         case 'gotomeasurement'
             start(parametros.t);
             retorno=parametros;
@@ -60,19 +60,20 @@ function temporizador=createmporizador(parametros)
     temporizador.t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', updateeach, 'ExecutionMode', 'fixedRate');
 end
 
-function retorno=configuratemporizador(parametros)
+function [retorno,senhales]=configuratemporizador(parametros)
     %Si se toman datos de un .log
-    temporizador=parametros;
+    temporizador=parametros{1};
+    retorno=temporizador;
+    senhales=parametros{2};
     if (strcmp(temporizador.source(end-3:end),'.log'))
-        conectar_a_log(temporizador.source);
+        senhales=conectar_a_log(temporizador.source,senhales);
     %Si se toman datos de un .tana
     elseif (strcmp(temporizador.source(end-4:end),'.tana'))
-        conectar_a_tana(temporizador.source);
+        senhales=conectar_a_tana(temporizador.source,senhales);
     %Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero
     elseif (strcmp(temporizador.source(end-2:end),'.sl'))
-        conectar_a_sl(temporizador.source);
+        senhales=conectar_a_sl(temporizador.source,senhales);
     end        
-    retorno=parametros;
 end
 
 %Callback que simula la realizaci�n de un muestreo desde los Xsens
@@ -100,29 +101,28 @@ function simula_muestreo(obj, event, log) %#ok<INUSD>
     end
 end
 
-function []=conectar_a_log(log)
-    global SILOP_CONFIG
+function [senhales]=conectar_a_log(log,senhales)
     global SILOP_DATA_LOG
     
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    posiciones=fieldnames(senhales);
     numerodeimus=length(posiciones)-1;
     if (numerodeimus>1)
         error('Solo se puede tener un IMU en la simulacion desde un .log');
     end
     sensor=2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 4;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 3;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Z = 7;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Y = 6;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_X = 5;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Z = 10;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Y = 9;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_X = 8;
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES = 10;
+    senhales.(posiciones{sensor}).Acc_Z = 4;
+    senhales.(posiciones{sensor}).Acc_Y = 3;
+    senhales.(posiciones{sensor}).Acc_X = 2;
+    senhales.(posiciones{sensor}).G_Z = 7;
+    senhales.(posiciones{sensor}).G_Y = 6;
+    senhales.(posiciones{sensor}).G_X = 5;
+    senhales.(posiciones{sensor}).MG_Z = 10;
+    senhales.(posiciones{sensor}).MG_Y = 9;
+    senhales.(posiciones{sensor}).MG_X = 8;
+    senhales.NUMEROSENHALES = 10;
 	
     SILOP_DATA_LOG=load(log);
-    orden=SILOP_CONFIG.SENHALES.COG.R;
+    orden=senhales.(posiciones{sensor}).R;
     Rot=zeros(3,3);
     for k=1:3
         Rot(k,abs(orden(k)))=sign(orden(k));
@@ -132,46 +132,44 @@ function []=conectar_a_log(log)
     SILOP_DATA_LOG(:,8:10)=SILOP_DATA_LOG(:,8:10)*Rot';
 end
 
-function  []=conectar_a_tana(log)
-    global SILOP_CONFIG
+function  [senhales]=conectar_a_tana(log,senhales)
     global SILOP_DATA_LOG
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    posiciones=fieldnames(senhales);
     numerodeimus=length(posiciones)-1;
     if (numerodeimus>1)
         error('Solo se puede tener un IMU en la simulacion desde un .tana');
     end
     sensor=2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Z = 3;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_Y = 2;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).Acc_X = 1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Z = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_Y = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).G_X = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Z = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_Y = -1;
-    SILOP_CONFIG.SENHALES.(posiciones{sensor}).MG_X = -1;
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
+    senhales.(posiciones{sensor}).Acc_Z = 3;
+    senhales.(posiciones{sensor}).Acc_Y = 2;
+    senhales.(posiciones{sensor}).Acc_X = 1;
+    senhales.(posiciones{sensor}).G_Z = -1;
+    senhales.(posiciones{sensor}).G_Y = -1;
+    senhales.(posiciones{sensor}).G_X = -1;
+    senhales.(posiciones{sensor}).MG_Z = -1;
+    senhales.(posiciones{sensor}).MG_Y = -1;
+    senhales.(posiciones{sensor}).MG_X = -1;
+    senhales.NUMEROSENHALES = 5; %3 aceleraciones y 2!! tiempos
 		
 	SILOP_DATA_LOG=load(log); 
 end
 
-function  []=conectar_a_sl(log)
-    global SILOP_CONFIG
+function  [senhales]=conectar_a_sl(log,senhales)
     global SILOP_DATA_LOG
     unzip(log);
     tmp=load('config.mat');
      %Comprobamos que el log tenga los sensores solicitados
-    posiciones=fieldnames(SILOP_CONFIG.SENHALES);
+    posiciones=fieldnames(senhales);
     numerodeimus=length(posiciones)-1;
     
-    SILOP_CONFIG.SENHALES.NUMEROSENHALES = tmp.SILOP_CONFIG.SENHALES.NUMEROSENHALES;
+    senhales.NUMEROSENHALES = tmp.SILOP_CONFIG.SENHALES.NUMEROSENHALES;
     for numero=2:numerodeimus+1
         %la segunda condicion es para mantener compatibilidad con ficheros
         %viejos, que tenían -1 en las señales no usadas.
          if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
                  error(['no se encuentra el sensor del ',posiciones{numero}]);
          end
-             SILOP_CONFIG.SENHALES.(posiciones{numero})= tmp.SILOP_CONFIG.SENHALES.(posiciones{numero});
+             senhales.(posiciones{numero})= tmp.SILOP_CONFIG.SENHALES.(posiciones{numero});
     end    
      %Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.
      delete ('config.mat');
@@ -179,6 +177,6 @@ function  []=conectar_a_sl(log)
      if (~isempty(existe))
          delete ('datos_alg.log');
      end
-      SILOP_DATA_LOG=load('datos.log'); 
+     SILOP_DATA_LOG=load('datos.log'); 
      delete ('datos.log');
 end

@@ -67,7 +67,7 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
     
     driverfunction=str2func(['driver_',driver]);
     try
-        SILOP_CONFIG.BUS.(driver)=driverfunction('create',{source,freq,updateeach,driver_opt});
+        SILOP_CONFIG.BUS.(driver)=driverfunction('create',{source,freq,updateeach,numerodeimus,driver_opt});
     catch ME
         if (strcmp(ME.identifier,'MATLAB:UndefinedFunction'))
             disp('El driver seleccionado no está disponible');
@@ -77,7 +77,7 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
     try
         SILOP_CONFIG.BUS.(driver) = driverfunction('connect',SILOP_CONFIG.BUS.(driver));
         SILOP_CONFIG.BUS.(driver) = driverfunction('gotoconfig',SILOP_CONFIG.BUS.(driver));
-        SILOP_CONFIG.BUS.(driver) = driverfunction('configura',SILOP_CONFIG.BUS.(driver));
+        [SILOP_CONFIG.BUS.(driver),SILOP_CONFIG.SENHALES] = driverfunction('configura',{SILOP_CONFIG.BUS.(driver),SILOP_CONFIG.SENHALES});
     catch ME
         disp (ME.message);
         SILOP_CONFIG.BUS.(driver)=driverfunction('destruye',SILOP_CONFIG.BUS.(driver));
