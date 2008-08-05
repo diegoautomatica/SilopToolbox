@@ -41,14 +41,9 @@ function addimu(donde, serie, R) %#ok<INUSD>
     end
 
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    if (isempty(strmatch(donde, posiciones,'exact')))
-        for campo={'Serie','Acc_Z','Acc_Y','Acc_X','G_Z','G_Y','G_X','MG_Z','MG_Y','MG_X'}
-            SILOP_CONFIG.SENHALES.(donde).(campo{1})=-1;
-        end
-    else
+    if (~isempty(strmatch(donde, posiciones,'exact')))
          error('el sensor ya estaba declarado')
     end
-
     SILOP_CONFIG.SENHALES.(donde).Serie=serie;
 	SILOP_CONFIG.SENHALES.(donde).R=R;
 
