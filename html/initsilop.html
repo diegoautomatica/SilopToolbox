@@ -72,8 +72,8 @@ function initsilop()
 
 global SILOP_CONFIG
 if (~isempty(SILOP_CONFIG))
-    if (isstruct(SILOP_CONFIG.BUS.File))
-    	SILOP_CONFIG.BUS.File.Salvar=0;
+    if (isfield(SILOP_CONFIG,'File'))
+    	SILOP_CONFIG.File.Salvar=0;
     end
     <a class="mfun" href="stopsilop.html">stopsilop</a>(1);
 	SILOP_CONFIG=[];
@@ -87,17 +87,11 @@ SILOP_CONFIG.SENHALES=[];
 SILOP_CONFIG.SENHALES.NUMEROSENHALES = 0;
 
 <em class="mcom">%Datos generales del bus</em>
-SILOP_CONFIG.BUS.Xbus = -1;
-SILOP_CONFIG.BUS.SF_3D = -1;
-SILOP_CONFIG.BUS.SF_6DOF = -1;
-SILOP_CONFIG.BUS.Temporizador = -1;
-SILOP_CONFIG.BUS.File = -1;
+SILOP_CONFIG.BUS=[];
 
 <em class="mcom">%Datos de los algoritmos usados</em>
 SILOP_CONFIG.ALGORITMOS = [];
 SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE = -1;
-
-
 </pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->

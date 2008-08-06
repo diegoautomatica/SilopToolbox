@@ -13,8 +13,8 @@
 <hr size="3" noshade="noshade" />
 
 <p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
- | <a href="Contentsprivate.html">Local contents</a>
- | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+ | <a href="Contentsarchive.html">Local contents</a>
+ | Local Index (<a href = "indexslfarchive.html">short</a> | <a href = "indexllfarchive.html">long</a>)
 </p>
 
 <hr size="3" noshade="noshade" />
@@ -39,12 +39,11 @@
                modificado durante la llamada.
 
  Examples:
- &gt;&gt; xb=<a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
- &gt;&gt; [xb]=<a class="mfun" href="../private/iniciacaptura.html">iniciacaptura</a>(xb);
+ &gt;&gt; xb=creaxbusmaster('COM24',115200,50,0,1,2);
  &gt;&gt; xb=pararcaptura(xb);
 
- See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/iniciacaptura.html">iniciacaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: creaxbusmaster, <a class="mfun" href="../archive/iniciacaptura.html">iniciacaptura</a>, <a class="mfun" href="../archive/continuarcaptura.html">continuarcaptura</a>,
+           destruyexbusmaster
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -55,7 +54,7 @@
 </tr>
 <tr valign="top"><td>
 <ul>
-<li><a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a></li>
+<li><a class="mfun" href="../archive/continuarcaptura.html">continuarcaptura</a></li>
 </ul>
 </td><td></td>
 </tr>
@@ -71,7 +70,7 @@
 
 function XBusMaster=pararcaptura(XBusMaster)
 
-stopasync(XBusMaster.puerto) <em class="mcom">%Esto no tendría que deshacerse en <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>?</em>
+stopasync(XBusMaster.puerto) <em class="mcom">%Esto no tendría que deshacerse en <a class="mfun" href="../archive/continuarcaptura.html">continuarcaptura</a>?</em>
 XBusMaster.puerto.RequestToSend='off';
 </pre>
 <hr size="3" noshade="noshade" />

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses  " />
-<meta name="keywords" content=" destruyesf3d destruyexbusmaster gotoconfig sf3dgotoconfig simula_muestreo connectsilop initsilop playsilop " />
+<meta name="keywords" content="  initsilop playsilop " />
 <title>Documentation of  stopsilop</title>
 </head>
 <body >
@@ -48,20 +48,11 @@
 <h2 >Cross-Reference Information</H2>
 <table border="0" width="100%">
 <tr align="left">
-<th width="50%">This function calls</th>
+<th width="50%"></th>
 <th width="50%">This function is called by</th>
 </tr>
-<tr valign="top"><td>
+<tr valign="top"><td></td><td>
 <ul>
-<li><a class="mfun" href="private/destruyesf3d.html">destruyesf3d</a></li>
-<li><a class="mfun" href="private/destruyexbusmaster.html">destruyexbusmaster</a></li>
-<li><a class="mfun" href="private/gotoconfig.html">gotoconfig</a></li>
-<li><a class="mfun" href="private/sf3dgotoconfig.html">sf3dgotoconfig</a></li>
-<li><a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a></li>
-</ul>
-</td><td>
-<ul>
-<li><a class="mfun" href="connectsilop.html">connectsilop</a></li>
 <li><a class="mfun" href="initsilop.html">initsilop</a></li>
 <li><a class="mfun" href="playsilop.html">playsilop</a></li>
 </ul>
@@ -86,45 +77,40 @@ end
 global SILOP_CONFIG
 global SILOP_DATA_LOG; <em class="mcom">%#ok&lt;NUSED&gt;</em>
 
-if (SILOP_CONFIG.BUS.Temporizador ~= -1)
-    stop(SILOP_CONFIG.BUS.Temporizador);
-    if (modo&gt;0)
-        delete(SILOP_CONFIG.BUS.Temporizador);
-        SILOP_CONFIG.BUS.Temporizador=-1;
-    end
-    clear <a class="mfun" href="private/simula_muestreo.html">simula_muestreo</a>;
-    clear SILOP_DATA_LOG; <em class="mcom">%Liberamos la memoria del enorme fichero de log.</em>
-end;
-if (isstruct(SILOP_CONFIG.BUS.Xbus))
-    <em class="mcom">%stopasync(SILOP_CONFIG.BUS.Xbus.puerto);</em>
-    SILOP_CONFIG.BUS.Xbus=<a class="mfun" href="private/gotoconfig.html">gotoconfig</a>(SILOP_CONFIG.BUS.Xbus);
-    if (modo&gt;0)
-        <a class="mfun" href="private/destruyexbusmaster.html">destruyexbusmaster</a>(SILOP_CONFIG.BUS.Xbus);
-        SILOP_CONFIG.BUS.Xbus=-1;
-    end
-end;
-if (isstruct(SILOP_CONFIG.BUS.SF_3D))
-    <em class="mcom">%stopasync(SILOP_CONFIG.BUS.Xbus.puerto);</em>
-    SILOP_CONFIG.BUS.SF_3D=<a class="mfun" href="private/sf3dgotoconfig.html">sf3dgotoconfig</a>(SILOP_CONFIG.BUS.SF_3D);
-    if (modo&gt;0)
-        <a class="mfun" href="private/destruyesf3d.html">destruyesf3d</a>(SILOP_CONFIG.BUS.SF_3D);
-        SILOP_CONFIG.BUS.SF_3D=-1;
-    end
-end;
-
-if (isstruct(SILOP_CONFIG.BUS.File))
-    if (SILOP_CONFIG.BUS.File.Salvar&gt;0)
-        if (SILOP_CONFIG.BUS.File.Salvar==2)
-            zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log','datos_alg.log'});
+if (isfield(SILOP_CONFIG,'File'))
+    if (SILOP_CONFIG.File.Salvar&gt;0)
+        if (SILOP_CONFIG.File.Salvar==2)
+            zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log','datos_alg.log'});
             delete ('datos_alg.log');
         else
-            zip(SILOP_CONFIG.BUS.File.Name,{'config.mat','datos.log'});
+            zip(SILOP_CONFIG.File.Name,{'config.mat','datos.log'});
         end		
         delete ('config.mat');
         delete ('datos.log');
-        movefile ([SILOP_CONFIG.BUS.File.Name,'.zip'], SILOP_CONFIG.BUS.File.Name, 'f');
+        movefile ([SILOP_CONFIG.File.Name,'.zip'], SILOP_CONFIG.File.Name, 'f');
     end
 end
+
+if (isstruct(SILOP_CONFIG.BUS))
+    drivername=fieldnames(SILOP_CONFIG.BUS);
+else
+    drivername=[];
+end
+if (length(drivername)&gt;1)
+    error('solo se puede emplear un driver simultaneamente');
+elseif (isempty(drivername))
+    return;
+else
+    driverfunction=str2func(['driver_',drivername{1}]);
+    SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotoconfig',SILOP_CONFIG.BUS.(drivername{1}));
+    if (modo&gt;0)
+        driverfunction('destruye',SILOP_CONFIG.BUS.(drivername{1}));
+        SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,drivername{1});
+    end
+end
+
+
+
 <em class="mcom">%Se limpian todos los algoritmos.</em>
 for indice=1:length(SILOP_CONFIG.ALGORITMOS)
      clear (SILOP_CONFIG.ALGORITMOS(indice).nombre)

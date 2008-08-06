@@ -72,14 +72,6 @@
 <pre>
 
 
-<em class="mcom">% Author:   Javi</em>
-<em class="mcom">% History:  04.01.2008  file created</em>
-<em class="mcom">%           16.01.2008  Inclusion de End Contact</em>
-<em class="mcom">%                       A�adido par�metro reset</em>
-<em class="mcom">%                       Incorporada a la toolbox(Diego)</em>
-<em class="mcom">%           18.01.2008  Bug corregido, eliminado el uso de persistent durante el reset.</em>
-<em class="mcom">%           18.01.2008  bug corregido, se cambia la llamada a picos por <a class="mfun" href="private/localmaxima.html">localmaxima</a>, y se comprueba tama�o de pmax</em>
-
 function[retardo_hs,retardo_to]=eventos_RT(ah,av,reset) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
 filtro=[0.0365 0.0374 0.0375 0.0382 0.0381 0.0385 0.0381 0.0382 0.0375 0.0374 0.0365]; <em class="mcom">%filtro de fase lineal con frecuancia de corte 2Hz</em>
@@ -124,7 +116,6 @@ if(length(pers_datah)&gt;INTERVALO)
    T=0;
    if(pers_data2(end)&lt;0 &amp;&amp; pers_data2(end-1)&gt;0)
       <em class="mcom">%se produjo un zero-crossing</em>
-      
       <em class="mcom">%calcular periodo de la se�al</em>
       if(aux==2) <em class="mcom">%si tenemos un trozo de 200</em>
        auto=xcorr(pers_datah,TROZO,'unbiased');
@@ -136,6 +127,7 @@ if(length(pers_datah)&gt;INTERVALO)
            d=diff(pmax);
            [aux1,aux2]=sort(abs(mean(d)-d));
            T=d(aux2(1));
+           T=T*(T&gt;10);<em class="mcom">%Si T vale menos de 10 muestras el resultado es absurdo.</em>
         end
       end
       flag=0;
@@ -189,38 +181,44 @@ if(length(pers_datah)&gt;INTERVALO)
        end
    end
    
-   %Comprobamos si tenemos el 15<em class="mcom">% de la se�al para buscar un TO</em>
+   %Comprobamos si tenemos el 25<em class="mcom">% de la se�al para buscar un TO</em>
    flag_to=0;
    if(pers_indice_ultimo_hs&gt;0)
       distancia=length(pers_datah)-pers_indice_ultimo_hs;
-      if(T~=0)
-          if((distancia-2)/T&gt;=0.2) <em class="mcom">%le restamos 2 a distancia para tener algo de margen para el calculo de minimos</em>
+      <em class="mcom">%if(T~=0)</em>
+      %    if((distancia-2)/T&gt;=0.25) <em class="mcom">%le restamos 2 a distancia para tener algo de margen para el calculo de minimos</em>
+      <em class="mcom">%       flag_to=1;</em>
+       <em class="mcom">%      buscamin=floor(0.10*T);</em>
+       <em class="mcom">%      buscamax=min([ceil(0.25*T),distancia]);</em>
+        <em class="mcom">%  end</em>
+      <em class="mcom">%else</em>
+         if(distancia&gt;=25)
              flag_to=1;
-             buscamin=floor(0.05*T);
-             buscamax=min([ceil(0.15*T),distancia]);
-          end
-      else
-         if(distancia&gt;=14)
-             flag_to=1;
-             buscamin=2;
-             buscamax=14;
+             buscamax=22;
+             buscaffneg=5;
+             mpb=10;
          end
-      end
+      <em class="mcom">%end</em>
    end
    <em class="mcom">%Segun Zijlstra el TO es el minimo local de la aceleracion vertical que</em>
-   %se encuentra entre el 5% y el 15<em class="mcom">% del paso</em>
-   <em class="mcom">%Aparte, el TO se encuentra despues del FF, que es un maximo global de</em>
-   <em class="mcom">%la celeracion vertical</em>
+   %se encuentra entre el 5% y el 15<em class="mcom">% del paso. </em>
+   % Nota de Diego. Ni de Coña. Está entre el FF y el 25<em class="mcom">% despues del HS</em>
    if(flag_to==1) <em class="mcom">%buscamos el to</em>
-          maximos=<a class="mfun" href="private/localmaxima.html">localmaxima</a>(pers_datav(pers_indice_ultimo_hs:end),2);
-          minimos=<a class="mfun" href="private/localmaxima.html">localmaxima</a>(-pers_datav(pers_indice_ultimo_hs+buscamin:pers_indice_ultimo_hs+buscamax),2);
+          maximos=<a class="mfun" href="private/localmaxima.html">localmaxima</a>(pers_datav(pers_indice_ultimo_hs-buscaffneg:pers_indice_ultimo_hs+buscamax/2),2);
           if(~isempty(maximos))
-             ff=maximos(1); <em class="mcom">%foot flat</em>
-             aux=find((minimos+buscamin)&gt;ff);
-             if(~isempty(aux))
-                evento=minimos(aux(1))+pers_indice_ultimo_hs+buscamin-1;
+             ff=maximos(1)-buscaffneg; <em class="mcom">%foot flat</em>
+             minimos=<a class="mfun" href="private/localmaxima.html">localmaxima</a>(-pers_datav(pers_indice_ultimo_hs+ff:pers_indice_ultimo_hs+buscamax),2);       
+             if(~isempty(minimos))
+                [val,ind]=min(abs(minimos-10));
+                evento=minimos(ind)+pers_indice_ultimo_hs+ff-1;
                 retardo_to=length(pers_datav)-evento;
+             else
+                 disp('No se ha encontrado el TO, valor aproximado'); <em class="mcom">%#ok&lt;WNTAG&gt;</em>
+                 retardo_to=mpb;
              end
+          else
+              disp('No se ha encontrado el FF, valor aproximado'); <em class="mcom">%#ok&lt;WNTAG&gt;</em>
+              retardo_to=mpb;
           end
           pers_indice_ultimo_hs=0;
     end

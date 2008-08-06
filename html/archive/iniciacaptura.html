@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" INICIACAPTURA Comienza la captura de datos " />
-<meta name="keywords" content=" gotomeasurement  " />
+<meta name="keywords" content="   " />
 <title>Documentation of  iniciacaptura</title>
 </head>
 <body >
@@ -13,8 +13,8 @@
 <hr size="3" noshade="noshade" />
 
 <p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
- | <a href="Contentsprivate.html">Local contents</a>
- | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+ | <a href="Contentsarchive.html">Local contents</a>
+ | Local Index (<a href = "indexslfarchive.html">short</a> | <a href = "indexllfarchive.html">long</a>)
 </p>
 
 <hr size="3" noshade="noshade" />
@@ -32,33 +32,19 @@
  
  Input parameters:
    XBusMaster-&gt; Objeto con la informaci�n del dispositivo, tal y como se proporciona
-                por <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>
+                por creaxbusmaster
 
  Output parameters:
    XBusMaster- Es el mismo objeto de entrada que puede haber sido
                modificado durante la llamada.
 
  Examples:
- &gt;&gt; xb=<a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
- &gt;&gt; xb=<a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a>(xb);
+ &gt;&gt; xb=creaxbusmaster('COM24',115200,50,0,1,2);
+ &gt;&gt; xb=gotomeasurement(xb);
 
- See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: creaxbusmaster, <a class="mfun" href="../archive/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../archive/continuarcaptura.html">continuarcaptura</a>,
+           destruyexbusmaster
 </pre>
-<hr size="3" noshade="noshade" />
-<h2 >Cross-Reference Information</H2>
-<table border="0" width="100%">
-<tr align="left">
-<th width="50%">This function calls</th>
-<th width="50%"></th>
-</tr>
-<tr valign="top"><td>
-<ul>
-<li><a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a></li>
-</ul>
-</td><td></td>
-</tr>
-</table>
 <hr size="3" noshade="noshade" />
 <h2 >Listing of function iniciacaptura</h2>
 <pre>
@@ -69,7 +55,7 @@
 
 function XBusMaster=iniciacaptura(XBusMaster)
 
-XBusMaster=<a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a>(XBusMaster);
+XBusMaster=gotomeasurement(XBusMaster);
 
 </pre>
 <hr size="3" noshade="noshade" />

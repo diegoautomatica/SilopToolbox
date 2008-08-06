@@ -1,120 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-<html>
-<head>
-<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<meta name="description" content=" GOTOCONFIG Pasa el dispositivo Xbus Master al estado config " />
-<meta name="keywords" content="  alg_ejes_anatomicos creaxbusmaster sf3dgotoconfig stopsilop " />
-<title>Documentation of  gotoconfig</title>
-</head>
-<body >
-<h1 >Documentation of  gotoconfig</h1>
-<hr size="3" noshade="noshade" />
-
-<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
- | <a href="Contentsprivate.html">Local contents</a>
- | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
-</p>
-
-<hr size="3" noshade="noshade" />
-<h2 >Function Synopsis</h2>
-<pre>XBusMaster=gotoconfig(XBusMaster)</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Help text</h2>
-<pre>
- GOTOCONFIG Pasa el dispositivo Xbus Master al estado config
-
- GOTOCONFIG Env�a al dispositivo Xbus Master un mensaje que le obliga
- pasar al modo config. Pueden perderse datos que existan en el buffer de
- entrada.
- 
- Syntax: gotoconfig(XBusMaster)
- 
- Input parameters:
-   XBusMaster-&gt;  Objeto con la informaci�n del dispositivo.
-
- Output parameters: Ninguno
-
- Examples:
- &gt;&gt; xb=<a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
- &gt;&gt; gotoconfig(xb);
-
- See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a>, <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>, <a class="mfun" href="../private/continuarcaptura.html">continuarcaptura</a>,
-           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
-</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Cross-Reference Information</H2>
-<table border="0" width="100%">
-<tr align="left">
-<th width="50%"></th>
-<th width="50%">This function is called by</th>
-</tr>
-<tr valign="top"><td></td><td>
-<ul>
-<li><a class="mfun" href="../private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a></li>
-<li><a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a></li>
-<li><a class="mfun" href="../private/sf3dgotoconfig.html">sf3dgotoconfig</a></li>
-<li><a class="mfun" href="../stopsilop.html">stopsilop</a></li>
-</ul>
-</td>
-</tr>
-</table>
-<hr size="3" noshade="noshade" />
-<h2 >Listing of function gotoconfig</h2>
-<pre>
-
-
-<em class="mcom">% Author:   Rafael C. Gonzalez de los Reyes</em>
-<em class="mcom">% History:  04.12.07    creacion del archivo</em>
-<em class="mcom">%           18.12.07    pasada a private por Diego. Se conserva .doc en private-SilopToolbox.doc</em>
-
-function XBusMaster=gotoconfig(XBusMaster)
-
-<em class="mcom">% Envia el mensaje GoToConfig al objeto XBusMaster</em>
-<em class="mcom">% error vale 1 si no se recibe el mensaje de ack</em>
-<em class="mcom">% El proceso se queda bloqueado hasta recibir el ack</em>
-
-<em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
-msg=[250,255,48,0];
-<em class="mcom">% Se calcula el cheksum y se coloca al final</em>
-msg=[msg 256-mod(sum(msg(2:end)),256)];
-<em class="mcom">% Se envia por el puerto serie </em>
-fwrite(XBusMaster.puerto,msg,'uint8','async');
-
-<em class="mcom">%Ya deberiamos estar en modo config.</em>
-<em class="mcom">%Permitimos comunicaciones</em>
-XBusMaster.puerto.RequestToSend='on';
-<em class="mcom">%y damos tiempo a que se termine cualquier trasmision en curso</em>
-pause(1);
-
-<em class="mcom">%Limpiamos todo lo que puede quedar en el buffer de medidas anteriores</em>
-XBusMaster.puerto.Timeout=10;
-while (XBusMaster.puerto.BytesAvailable&gt;0)
-    <em class="mcom">% Vaciar el puerto </em>
-    <em class="mcom">% OJO!!! Los datos se perderan</em>
-    disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
-    fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
-end
-
-<em class="mcom">%Reenviamos el mensaje y esta vez comprobamos la respuesta.</em>
-fwrite(XBusMaster.puerto,msg,'uint8','async');
-<em class="mcom">% Se espera a recibir la contestacion</em>
-[ack,cnt,msg]=fread(XBusMaster.puerto,5,'uint8');
-if (~isempty(msg))
-    error('no se ha recibido la respuesta al comando gotoconfig');
-else
-    if (mod(sum(ack(2:end)),256)~=0)
-        error('Error de checksum durante gotoconfig');
-    else
-        if (ack(3)~=49)
-            error ('mensaje incorrecto recibido durante gotoconfig');
-        end
-    end
-end
-</pre>
-<hr size="3" noshade="noshade" />
-<!--navigate-->
-<!--copyright-->
-</body>
-</html>

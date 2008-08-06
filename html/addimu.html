@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" ADDIMU Añade un IMU al sistema de procesamiento de las aplicaciones estandar de la toolbox " />
-<meta name="keywords" content="  connectsilop silopdemo " />
+<meta name="keywords" content="  connectsilop driver_sf_3d silopdemo " />
 <title>Documentation of  addimu</title>
 </head>
 <body >
@@ -58,6 +58,7 @@
 <tr valign="top"><td></td><td>
 <ul>
 <li><a class="mfun" href="connectsilop.html">connectsilop</a></li>
+<li><a class="mfun" href="private/driver_SF_3D.html">driver_SF_3D</a></li>
 <li><a class="mfun" href="silopdemo.html">silopdemo</a></li>
 </ul>
 </td>
@@ -86,14 +87,9 @@ function addimu(donde, serie, R) <em class="mcom">%#ok&lt;INUSD&gt;</em>
     end
 
     posiciones=fieldnames(SILOP_CONFIG.SENHALES);
-    if (isempty(strmatch(donde, posiciones,'exact')))
-        for campo={'Serie','Acc_Z','Acc_Y','Acc_X','G_Z','G_Y','G_X','MG_Z','MG_Y','MG_X'}
-            SILOP_CONFIG.SENHALES.(donde).(campo{1})=-1;
-        end
-    else
+    if (~isempty(strmatch(donde, posiciones,'exact')))
          error('el sensor ya estaba declarado')
     end
-
     SILOP_CONFIG.SENHALES.(donde).Serie=serie;
 	SILOP_CONFIG.SENHALES.(donde).R=R;
 

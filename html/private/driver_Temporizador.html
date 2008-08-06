@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" DRIVER_Temporizador implementa todo el código necesario para el correcto " />
+<meta name="keywords" content="   " />
+<title>Documentation of  driver_Temporizador</title>
+</head>
+<body >
+<h1 >Documentation of  driver_Temporizador</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[retorno,senhales]=driver_Temporizador(operacion,parametros)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ DRIVER_Temporizador implementa todo el código necesario para el correcto
+ funcionamiento de las simulaciones a partir de ficheros de log
+ No está pensado para llamarse por si mismo, sino para ser usado desde el
+ sistema de captura de la toolbox.
+
+
+ DRIVER_Temporizador implementa todo el código necesario para el correcto
+ funcionamiento de las simulaciones a partir de ficheros de log
+ No está pensado para llamarse por si mismo, sino para ser usado desde el
+ sistema de captura de la toolbox.
+
+ 
+ Syntax: retorno=driver_Temporizador(operacion, parametros)
+ 
+ Output parameters:
+
+ Examples:
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function driver_Temporizador</h2>
+<pre>
+
+
+function [retorno,senhales]=driver_Temporizador(operacion,parametros)
+    global SILOP_DATA_LOG; <em class="mcom">%#ok&lt;NUSED&gt;</em>
+    senhales=[];
+    switch operacion
+        case 'create' <em class="mcom">%parametros: {source, updateeach} </em>
+            retorno=createmporizador(parametros);
+        case 'connect'
+            retorno=parametros; <em class="mcom">%NO hace nada. Pero es necesario que exista</em>
+        case 'gotoconfig'
+            retorno=parametros;
+            stop(parametros.t);
+            clear SILOP_DATA_LOG;
+            clear simula_muestreo;
+        case 'configura'
+            [retorno,senhales]=configuratemporizador(parametros);
+        case 'gotomeasurement'
+            start(parametros.t);
+            retorno=parametros;
+        case 'destruye'
+            delete(parametros.t);
+            retorno=[];
+        otherwise
+            disp('error, el driver no soporta la operación indicada');
+            retorno=[];
+    end
+end
+
+function temporizador=createmporizador(parametros)
+    source=parametros{1};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    temporizador.source=source;
+    temporizador.freq=freq;
+    temporizador.updateeach=updateeach;
+    existe=dir(source);
+    if ((isempty(existe))&amp;&amp;(~strcmp(source,'test.log')))
+        error('no se encuentra el fichero');
+    end
+    if ( (~strcmp(source(end-3:end),'.log'))&amp;&amp;(~strcmp(source(end-4:end),'.tana'))&amp;&amp;(~strcmp(source(end-2:end),'.sl')))
+        error('formato de archivo desconocido. Solo se soportan ficheros .log, .tana y .sl');
+    end        
+    temporizador.t = timer('TimerFcn', {@simula_muestreo, source}, 'Period', updateeach, 'ExecutionMode', 'fixedRate');
+end
+
+function [retorno,senhales]=configuratemporizador(parametros)
+    <em class="mcom">%Si se toman datos de un .log</em>
+    temporizador=parametros{1};
+    retorno=temporizador;
+    senhales=parametros{2};
+    if (strcmp(temporizador.source(end-3:end),'.log'))
+        senhales=conectar_a_log(temporizador.source,senhales);
+    <em class="mcom">%Si se toman datos de un .tana</em>
+    elseif (strcmp(temporizador.source(end-4:end),'.tana'))
+        senhales=conectar_a_tana(temporizador.source,senhales);
+    <em class="mcom">%Si se toman los datos de un .sl tenemos que comprobar el config de ese fichero</em>
+    elseif (strcmp(temporizador.source(end-2:end),'.sl'))
+        senhales=conectar_a_sl(temporizador.source,senhales);
+    end        
+end
+
+<em class="mcom">%Callback que simula la realizaci�n de un muestreo desde los Xsens</em>
+function simula_muestreo(obj, event, log) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+
+    persistent puntero_datos;
+    if (isempty(puntero_datos))
+        puntero_datos=1;
+    end
+
+    global SILOP_DATA_BUFFER;
+    global SILOP_DATA_LOG;
+    longitud = length(SILOP_DATA_LOG);
+    MuestrasCaptura = 100;
+
+    <em class="mcom">%Realiza capturas mientras haya datos, almaceno en el buffer y llamo a funcion SILOP().</em>
+    <em class="mcom">%Esta ultima necesita conocer el numero de muestras que se han capturado</em>
+
+    if (puntero_datos+MuestrasCaptura &lt; longitud)
+        SILOP_DATA_BUFFER = SILOP_DATA_LOG(puntero_datos:puntero_datos+MuestrasCaptura-1, :);
+        puntero_datos = puntero_datos + MuestrasCaptura;
+    else
+        disp('Se acabaron los datos');
+        SILOP_DATA_BUFFER = NaN;
+    end
+end
+
+function [senhales]=conectar_a_log(log,senhales)
+    global SILOP_DATA_LOG
+    
+    posiciones=fieldnames(senhales);
+    numerodeimus=length(posiciones)-1;
+    if (numerodeimus&gt;1)
+        error('Solo se puede tener un IMU en la simulacion desde un .log');
+    end
+    sensor=2;
+    senhales.(posiciones{sensor}).Acc_Z = 4;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
+    senhales.(posiciones{sensor}).Acc_Y = 3;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
+    senhales.(posiciones{sensor}).Acc_X = 2;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
+    senhales.(posiciones{sensor}).G_Z = 7;
+    disp(['Anadida senhal ',posiciones{sensor},'.G_Z']); 
+    senhales.(posiciones{sensor}).G_Y = 6;
+    disp(['Anadida senhal ',posiciones{sensor},'.G_Y']); 
+    senhales.(posiciones{sensor}).G_X = 5;
+    disp(['Anadida senhal ',posiciones{sensor},'.G_X']); 
+    senhales.(posiciones{sensor}).MG_Z = 10;
+    disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
+    senhales.(posiciones{sensor}).MG_Y = 9;
+    disp(['Anadida senhal ',posiciones{sensor},'.MG_Y']); 
+    senhales.(posiciones{sensor}).MG_X = 8;
+    disp(['Anadida senhal ',posiciones{sensor},'.MG_X']); 
+    senhales.NUMEROSENHALES = 10;
+	
+    SILOP_DATA_LOG=load(log);
+    orden=senhales.(posiciones{sensor}).R;
+    Rot=zeros(3,3);
+    for k=1:3
+        Rot(k,abs(orden(k)))=sign(orden(k));
+    end;
+    SILOP_DATA_LOG(:,2:4)=SILOP_DATA_LOG(:,2:4)*Rot';
+    SILOP_DATA_LOG(:,5:7)=SILOP_DATA_LOG(:,5:7)*Rot';
+    SILOP_DATA_LOG(:,8:10)=SILOP_DATA_LOG(:,8:10)*Rot';
+end
+
+function  [senhales]=conectar_a_tana(log,senhales)
+    global SILOP_DATA_LOG
+    posiciones=fieldnames(senhales);
+    numerodeimus=length(posiciones)-1;
+    if (numerodeimus&gt;1)
+        error('Solo se puede tener un IMU en la simulacion desde un .tana');
+    end
+    sensor=2;
+    senhales.(posiciones{sensor}).Acc_Z = 3;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
+    senhales.(posiciones{sensor}).Acc_Y = 2;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
+    senhales.(posiciones{sensor}).Acc_X = 1;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
+    senhales.NUMEROSENHALES = 5; <em class="mcom">%3 aceleraciones y 2!! tiempos</em>
+		
+	SILOP_DATA_LOG=load(log); 
+end
+
+function  [senhales]=conectar_a_sl(log,senhales)
+    global SILOP_DATA_LOG
+    unzip(log);
+    tmp=load('config.mat');
+     <em class="mcom">%Comprobamos que el log tenga los sensores solicitados</em>
+    posiciones=fieldnames(senhales);
+    numerodeimus=length(posiciones)-1;
+    
+    senhales.NUMEROSENHALES = tmp.SILOP_CONFIG.SENHALES.NUMEROSENHALES;
+    for numero=2:numerodeimus+1
+        <em class="mcom">%la segunda condicion es para mantener compatibilidad con ficheros</em>
+        <em class="mcom">%viejos, que tenían -1 en las señales no usadas.</em>
+         if  (~isfield(tmp.SILOP_CONFIG.SENHALES, posiciones{numero}) ||  (tmp.SILOP_CONFIG.SENHALES.(posiciones{numero}).Serie==-1  ))
+                 error(['no se encuentra el sensor del ',posiciones{numero}]);
+         end
+             senhales.(posiciones{numero})= tmp.SILOP_CONFIG.SENHALES.(posiciones{numero});
+    end    
+     <em class="mcom">%Ya no necesitamos mas el .mat ni tampoco los resultados de algoritmos previos.</em>
+     delete ('config.mat');
+     existe=dir('datos_alg.log');
+     if (~isempty(existe))
+         delete ('datos_alg.log');
+     end
+     SILOP_DATA_LOG=load('datos.log'); 
+     delete ('datos.log');
+end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

@@ -1,103 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-<html>
-<head>
-<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<meta name="description" content=" SF3DGOTOCONFIG Pasa el dispositivo al estado de configuracion " />
-<meta name="keywords" content=" gotoconfig creasf3d stopsilop " />
-<title>Documentation of  sf3dgotoconfig</title>
-</head>
-<body >
-<h1 >Documentation of  sf3dgotoconfig</h1>
-<hr size="3" noshade="noshade" />
-
-<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
- | <a href="Contentsprivate.html">Local contents</a>
- | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
-</p>
-
-<hr size="3" noshade="noshade" />
-<h2 >Function Synopsis</h2>
-<pre>sf3d=sf3dgotoconfig(sf3d)</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Help text</h2>
-<pre>
- SF3DGOTOCONFIG Pasa el dispositivo al estado de configuracion
-
- SF3DGOTOCONFIG Envia al dispositivo un mensaje que le obliga
- a pasar al modo de configuracion. Pueden perderse datos que existan en el buffer de
- entrada.
- 
- Syntax: sf3dgotoconfig(sf3d)
- 
- Input parameters:
-   sf3d -&gt;  Objeto con la informacion del dispositivo.
-
- Output parameters: Ninguno
-
- Examples:
- &gt;&gt; xb=<a class="mfun" href="../private/creasf3d.html">creasf3d</a>('COM24',9600);
- &gt;&gt; sf3dgotoconfig(xb);
-
- See also: <a class="mfun" href="../private/creasf3d.html">creasf3d</a>, <a class="mfun" href="../private/sf3dgotomeasurement.html">sf3dgotomeasurement</a>, <a class="mfun" href="../private/destruyesf3d.html">destruyesf3d</a>
-</pre>
-<hr size="3" noshade="noshade" />
-<h2 >Cross-Reference Information</H2>
-<table border="0" width="100%">
-<tr align="left">
-<th width="50%">This function calls</th>
-<th width="50%">This function is called by</th>
-</tr>
-<tr valign="top"><td>
-<ul>
-<li><a class="mfun" href="../private/gotoconfig.html">gotoconfig</a></li>
-</ul>
-</td><td>
-<ul>
-<li><a class="mfun" href="../private/creasf3d.html">creasf3d</a></li>
-<li><a class="mfun" href="../stopsilop.html">stopsilop</a></li>
-</ul>
-</td>
-</tr>
-</table>
-<hr size="3" noshade="noshade" />
-<h2 >Listing of function sf3dgotoconfig</h2>
-<pre>
-
-
-<em class="mcom">% Author:   Diego Álvarez</em>
-
-function sf3d=sf3dgotoconfig(sf3d)
-
-<em class="mcom">%Limpiamos todo lo que puede quedar en el buffer de medidas anteriores</em>
-sf3d.puerto.Timeout=1;
-while (sf3d.puerto.BytesAvailable&gt;0)
-    <em class="mcom">% Vaciar el puerto </em>
-    <em class="mcom">% OJO!!! Los datos se perderan</em>
-    disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(sf3d.puerto.BytesAvailable) ' datos']);
-    fread(sf3d.puerto, sf3d.puerto.BytesAvailable,'uint8');
-end
-
-<em class="mcom">% Envia el mensaje de paso a config. Codigo hexadecimal 13</em>
-<em class="mcom">% Cuerpo del mensaje</em>
-msg=[hex2dec('13')]; <em class="mcom">%#ok&lt;NBRAK&gt;</em>
-<em class="mcom">% Se envia por el puerto serie </em>
-fwrite(sf3d.puerto,msg,'uint8','async');
-pause(1);
-<em class="mcom">%Ya deberiamos estar en modo config.</em>
-<em class="mcom">%comprobamos la respuesta.</em>
-[ack,cnt,msg]=fread(sf3d.puerto, sf3d.puerto.BytesAvailable, 'uint8');
-if (~isempty(msg))
-    error('no se ha recibido la respuesta al comando <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>');
-else
-    if (sum(ack(end-11:end))~=859)
-        error('Error de checksum durante <a class="mfun" href="../private/gotoconfig.html">gotoconfig</a>');
-    end
-end
-</pre>
-<hr size="3" noshade="noshade" />
-<!--navigate-->
-<!--copyright-->
-</body>
-</html>

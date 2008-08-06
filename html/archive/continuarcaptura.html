@@ -13,8 +13,8 @@
 <hr size="3" noshade="noshade" />
 
 <p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
- | <a href="Contentsprivate.html">Local contents</a>
- | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+ | <a href="Contentsarchive.html">Local contents</a>
+ | Local Index (<a href = "indexslfarchive.html">short</a> | <a href = "indexllfarchive.html">long</a>)
 </p>
 
 <hr size="3" noshade="noshade" />
@@ -24,10 +24,10 @@
 <h2 >Help text</h2>
 <pre>
  CONTINUARCAPTURA Reanuda la adquisición de datos tras una llamada a
- <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>
+ <a class="mfun" href="../archive/pararcaptura.html">pararcaptura</a>
 
  CONTINUARCAPTURA Reanuda la adquisición de datos tras una llamada a
- <a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>
+ <a class="mfun" href="../archive/pararcaptura.html">pararcaptura</a>
  
  Syntax: XBusMaster=continuarcaptura(XBusMaster)
  
@@ -39,13 +39,13 @@
                modificado durante la llamada.
 
  Examples:
- &gt;&gt; xb=<a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>('COM24',115200,50,0,1,2);
- &gt;&gt; [xb,error]=<a class="mfun" href="../private/gotomeasurement.html">gotomeasurement</a>(xb);
- &gt;&gt; xb=<a class="mfun" href="../private/pararcaptura.html">pararcaptura</a>(xb);
+ &gt;&gt; xb=creaxbusmaster('COM24',115200,50,0,1,2);
+ &gt;&gt; [xb,error]=gotomeasurement(xb);
+ &gt;&gt; xb=<a class="mfun" href="../archive/pararcaptura.html">pararcaptura</a>(xb);
  &gt;&gt; xb=continuarcaptura(xb);
 
- See also: <a class="mfun" href="../private/creaxbusmaster.html">creaxbusmaster</a>, <a class="mfun" href="../private/iniciacaptura.html">iniciacaptura</a>, continuarcaptura,
-           <a class="mfun" href="../private/destruyexbusmaster.html">destruyexbusmaster</a>
+ See also: creaxbusmaster, <a class="mfun" href="../archive/iniciacaptura.html">iniciacaptura</a>, continuarcaptura,
+           destruyexbusmaster
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -56,7 +56,7 @@
 </tr>
 <tr valign="top"><td></td><td>
 <ul>
-<li><a class="mfun" href="../private/pararcaptura.html">pararcaptura</a></li>
+<li><a class="mfun" href="../archive/pararcaptura.html">pararcaptura</a></li>
 </ul>
 </td>
 </tr>

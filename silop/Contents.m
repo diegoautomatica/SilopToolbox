@@ -1,5 +1,5 @@
 % InerSens Toolbox
-% Version 0.10 13-Jun-2008
+% Version 0.11 06-Ago-2008
 %Copyright (C) 2007-2008 Universidad de Oviedo
 %Todos los derechos reservados
 %

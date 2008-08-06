@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados " />
-<meta name="keywords" content=" getkey gotomeasurement sf3dgotomeasurement stopsilop silopdemo " />
+<meta name="keywords" content=" getkey stopsilop silopdemo " />
 <title>Documentation of  playsilop</title>
 </head>
 <body >
@@ -55,8 +55,6 @@
 <tr valign="top"><td>
 <ul>
 <li><a class="mfun" href="private/getkey.html">getkey</a></li>
-<li><a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a></li>
-<li><a class="mfun" href="private/sf3dgotomeasurement.html">sf3dgotomeasurement</a></li>
 <li><a class="mfun" href="stopsilop.html">stopsilop</a></li>
 </ul>
 </td><td>
@@ -73,7 +71,7 @@
 
 <em class="mcom">% Author:   Diego Alvarez</em>
 <em class="mcom">% History:  29.01.2008  creado e Incorporado a la toolbox</em>
-<em class="mcom">%           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante <a class="mfun" href="private/iniciacaptura.html">iniciacaptura</a>().</em>
+<em class="mcom">%           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante <a class="mfun" href="archive/iniciacaptura.html">iniciacaptura</a>().</em>
 
 
 function playsilop(salvar,fichero)
@@ -90,11 +88,11 @@ try
     end
 
     if (salvar&gt;0)
-        SILOP_CONFIG.BUS.File=struct('Salvar',salvar);
+        SILOP_CONFIG.File=struct('Salvar',salvar);
         if (nargin&lt;2)
-            SILOP_CONFIG.BUS.File.Name='datos.sl';
+            SILOP_CONFIG.File.Name='datos.sl';
         else
-            SILOP_CONFIG.BUS.File.Name=fichero;			
+            SILOP_CONFIG.File.Name=fichero;			
         end
         save('config.mat','SILOP_CONFIG');
     end
@@ -102,14 +100,13 @@ try
     Comandos = creacomandos(SILOP_CONFIG);
 <em class="mcom">%Se encarga de crear los comandos para la llamada a las funciones a partir de la informaci�n de algoritmos a procesar</em>
 
-    if (SILOP_CONFIG.BUS.Temporizador~=-1)
-        start(SILOP_CONFIG.BUS.Temporizador);
-    elseif (isstruct(SILOP_CONFIG.BUS.Xbus))
-        SILOP_CONFIG.BUS.Xbus=<a class="mfun" href="private/gotomeasurement.html">gotomeasurement</a>(SILOP_CONFIG.BUS.Xbus);
-    elseif (isstruct(SILOP_CONFIG.BUS.SF_3D))
-        SILOP_CONFIG.BUS.SF_3D=<a class="mfun" href="private/sf3dgotomeasurement.html">sf3dgotomeasurement</a>(SILOP_CONFIG.BUS.SF_3D);
+    drivername=fieldnames(SILOP_CONFIG.BUS);
+    if (length(drivername)&gt;1)
+        error('solo se puede emplear un driver simultaneamente');
     end
-
+    driverfunction=str2func(['driver_',drivername{1}]);
+    SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
+    
     while(<a class="mfun" href="private/getkey.html">getkey</a>()~=27) <em class="mcom">%tecla ESC</em>
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
         if(hay_datos)
@@ -155,6 +152,8 @@ try
 catch
     s=lasterror();
     disp(s.message);
+    <a class="mfun" href="private/getkey.html">getkey</a>(1);
+    clear('<a class="mfun" href="private/getkey.html">getkey</a>');
     <a class="mfun" href="stopsilop.html">stopsilop</a>();
     rethrow(s);
 end

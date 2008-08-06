@@ -6,6 +6,7 @@ Para el 1.0
 		el parámetro frecuencia no se respeta.
 	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
   alg_est_dist_simur ignora los TO. Volver a usarlos ahora que tenemos un metodo de deteccion fiable.
+	alg_ejes_anatomicos es muy rara, y usa cosas del xbus externas al driver.
 
 Para el futuro:
 	Algoritmos
@@ -20,20 +21,25 @@ Para el futuro:
 		Implementar removeimu, para eliminar imus añadidos por addimu
 		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
 		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
-		addimu debe soportar que los sensores tengan más señales que un Xsens
 	  Modo de simulación a la máxima velocidad posible del ordenador.
 
 	Nuevos sensores
-    Addimu debe soportar especificar el tipo de sensor (o autodetectarlo segun el nombre/num serie)
-		connectsilop debe permitir conectar a Wii, Nie+ipod, SF_6DOF
-			implica hacer la fontanería de comunicaciones
-    Nueva estructura de drivers para no tener que tocar el nucleo por añadir devices.
+		añadir drivers
 		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
 
 -------------------------------------------------------------------------------------------
 
 Done: 
 v0.11 Correccion de errores. Cambios de uso en connectsilop
+		Los nombres de las señales Acc_X, etc son dependientes del driver, y pueden ser cualquiera.
+		terminada la estructura de drivers.
+		eliminada la referencia global a SILOP_CONFIG en los drivers.
+    driver_Xbus incorpora toda la funcionalidad. connectsilop la usa. Eliminadas todas sus funciones auxiliares
+		driver_SF_3D incorpora la funcionalidad de sf3dsetperiod y 'configura'. Eliminada sf3dsetperiod.m
+		driver_SF_3D incorpora la funcionalidad 'connect' y 'configura'(parcial). Connectsilop la usa. Se elimina creasf3d.m
+    driver_SF_3D incorpora la funcionalidad 'create'. connectsilop la usa. Eliminada esa funcionalidad de creasf3d.m
+    driver_temporizador incorpora la callback de 'muestreo'. Eliminada simula_muestreo.m
+    driver_temporizador incorpora la funcionalidad 'create', 'connect' y 'configura'. connectsilop usa el driver.
     connectsilop modifica sus parámetros.
     stopsilop ya no depende de los drivers concretos. Llama a los metodos 'gotoconfig' y 'destruye' del apropiado.
     driver_Xbus incorpora la funcionalidad 'destruye'. stopsilop usa el driver. eliminada destruyexbusmaster.m
