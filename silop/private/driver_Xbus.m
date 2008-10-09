@@ -115,7 +115,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     xbus=InitBus(xbus);
     xbus=ReqConfiguration(xbus);
     xbus=SetPeriod(xbus,xbus.freq);
-    switch (modo)
+    switch (xbus.modo)
         case 0,
             xbus=SetMTOutputMode(xbus,0);
         case 1,
@@ -141,7 +141,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     end
     
     posiciones=fieldnames(senhales);
-    for numero=2:ns+1
+    for numero=2:xbus.ns+1
         %Buscamos el dispositivo en cada punto
         p=(find(id_disp==senhales.(posiciones{numero}).Serie));
         if (isempty(p))
@@ -154,23 +154,23 @@ function [xbus,senhales]=configuraxbus(parametros)
             end;
             SetObjectAlignment(xbus,p,Rot);
             senhales.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-            disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.Acc_Z']); 
             senhales.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-            disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
+            disp(['Anadida senhal ',posiciones{numero},'.Acc_Y']); 
             senhales.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-            disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
+            disp(['Anadida senhal ',posiciones{numero},'.Acc_X']); 
             senhales.(posiciones{numero}).G_Z = factor*(p-1)+7;
-            disp(['Anadida senhal ',posiciones{sensor},'.G_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.G_Z']); 
             senhales.(posiciones{numero}).G_Y = factor*(p-1)+6;
-            disp(['Anadida senhal ',posiciones{sensor},'.G_Y']); 
+            disp(['Anadida senhal ',posiciones{numero},'.G_Y']); 
             senhales.(posiciones{numero}).G_X = factor*(p-1)+5;
-            disp(['Anadida senhal ',posiciones{sensor},'.G_X']); 
+            disp(['Anadida senhal ',posiciones{numero},'.G_X']); 
             senhales.(posiciones{numero}).MG_Z = factor*(p-1)+10;
-            disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_Z']); 
             senhales.(posiciones{numero}).MG_Y = factor*(p-1)+9;
-            disp(['Anadida senhal ',posiciones{sensor},'.MG_Y']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_Y']); 
             senhales.(posiciones{numero}).MG_X = factor*(p-1)+8;
-            disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_Z']); 
             if (senhales.(posiciones{numero}).MG_Z>senhales.NUMEROSENHALES)
                 senhales.NUMEROSENHALES=senhales.(posiciones{numero}).MG_Z;
             end    
@@ -258,8 +258,10 @@ function xbus=gotomeasurement(xbus)
     elseif (ack(3)~=17)
                 error('Error en la secuencia de mensajes durante el comando gotomeasurement');
     end
+    XBusMaster.puerto.RequestToSend='off';
     leerXBusDatahandle=@leerXBusData;
     xbus.puerto.BytesAvailableFcn={leerXBusDatahandle, xbus};
+    XBusMaster.puerto.RequestToSend='on';
 end
 
 
@@ -268,7 +270,7 @@ end
 function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     global SILOP_DATA_BUFFER;
 
-    data=fread(obj,[XBusMaster.DataLength XBusMaster.nm],'uint8');
+    data=fread(obj,[XBusMaster.DataLength XBusMaster.buffer],'uint8');
     % Procesar los datos de 1 mensaje
     %checksum
     if (any(mod(sum(data(2:end,:)),256)) )
@@ -283,15 +285,15 @@ function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     q=quantizer('Mode','single');
     SILOP_DATA_BUFFER=[];
     for k=1:XBusMaster.ns
-        ax=hex2num(q,reshape(sprintf('%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        ay=hex2num(q,reshape(sprintf('%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        az=hex2num(q,reshape(sprintf('%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        rx=hex2num(q,reshape(sprintf('%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        ry=hex2num(q,reshape(sprintf('%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        rz=hex2num(q,reshape(sprintf('%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
-        mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); 
+        ax=hex2num(q,reshape(sprintf('%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        ay=hex2num(q,reshape(sprintf('%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        az=hex2num(q,reshape(sprintf('%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        rx=hex2num(q,reshape(sprintf('%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        ry=hex2num(q,reshape(sprintf('%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        rz=hex2num(q,reshape(sprintf('%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+        mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
         SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; %#ok<AGROW>
     end
     SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
