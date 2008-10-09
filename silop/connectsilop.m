@@ -39,7 +39,7 @@
 
 function connectsilop(driver, source, freq, updateeach, driver_opt)
     
-    if (nargin<1)
+   if (nargin<1)
         driver='Xbus';
     end	
     if (nargin<2)
