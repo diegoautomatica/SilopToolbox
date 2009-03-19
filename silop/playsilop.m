@@ -100,8 +100,8 @@ try
     getkey(1);
     clear ('getkey');
 
-catch
-    s=lasterror();
+catch %#ok<CTCH>
+    s=lasterror(); %#ok<LERR>
     disp(s.message);
     getkey(1);
     clear('getkey');
@@ -159,12 +159,13 @@ function comandos = creacomandos(C)
 
           if(~isempty(alg.dependencias))
               l = length(alg.dependencias);
-
+                vsen='';
                for t=1:l
                    deps = alg.dependencias{t};
-                   vsen = sprintf('%d, ', deps); 
-                   subcad = [subcad sprintf(', VENTANA(:,[ %s])', vsen(1:end-2))]; %#ok<AGROW>
+                   vsen = [vsen,sprintf('%d, ', deps)]; %#ok<AGROW>
+                   
                end;
+               subcad = [subcad sprintf(', VENTANA(:,[ %s])', vsen(1:end-2))]; %#ok<AGROW>
 
           end;
 
