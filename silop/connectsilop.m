@@ -80,6 +80,7 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         [SILOP_CONFIG.BUS.(driver),SILOP_CONFIG.SENHALES] = driverfunction('configura',{SILOP_CONFIG.BUS.(driver),SILOP_CONFIG.SENHALES});
     catch ME
         disp (ME.message);
-        SILOP_CONFIG.BUS.(driver)=driverfunction('destruye',SILOP_CONFIG.BUS.(driver));
+        driverfunction('destruye',SILOP_CONFIG.BUS.(driver));
+        SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,driver);
         rethrow(ME);
     end
