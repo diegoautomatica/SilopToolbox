@@ -79,6 +79,7 @@ function xbus=creaxbus(parametros)
         otherwise,
             disp ('modo invalido');
             delete (xbus.puerto);
+            error ('modo invalido');
     end;
     if (xbus.DataLength>254)
         xbus.DataLength=xbus.DataLength+7; % se incluye la cabecera y el checksum
