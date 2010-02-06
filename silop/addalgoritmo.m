@@ -30,10 +30,33 @@
 %           25.01.2008 Incorporado a la toolbox
 %           01.02.2008 se busca con buscaposiciones{k} y no de {l}. Necesario para dependencias multiples   
 
-function addalgoritmo(nombre, n_valores_retorno, senhales, params, dependencias)
+function addalgoritmo(nombre, retornos, senhales, params, dependencias)
 
     global SILOP_CONFIG;
     
+    
+    if (isnumeric(retornos))
+        n_valores_retorno=retornos;
+    else 
+        n_valores_retorno=0;
+        if (~isempty(retornos))
+            if (~iscell(retornos))
+                error('la lista de señales retornadas debe ser un cell array')
+            end
+            for senhal=retornos
+                [punto,dato]=strtok(senhal{1},'.'); %Rompo por el punto
+                dato=dato(2:end); %Quito el punto
+                if (isfield(SILOP_CONFIG.SENHALES,punto))
+                    if (isfield(SILOP_CONFIG.SENHALES.(punto),dato))
+                       error('La señal %s del %s ya existe',dato,punto);
+                    end
+                end
+                %Falta añadir las señales en SILOP_CONFIG.SENHALES
+                % y reservar sus posiciones
+                n_valores_retorno=nvalores_retorno+1;
+            end
+        end
+    end
     
     alg.senhales=[];
     if (~isempty(senhales))
