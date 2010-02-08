@@ -42,14 +42,14 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
         if (isfield(SILOP_CONFIG.BUS,'Xbus'))
             id_disp=zeros(1,SILOP_CONFIG.BUS.Xbus.ndisp);
             for k=1:SILOP_CONFIG.BUS.Xbus.ndisp
-                id_disp(k)=eval(SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k));
+                id_disp(k)=SILOP_CONFIG.BUS.Xbus.sensores.(Cadena(:,k));
             end
     	
             num_sensor=1;
             for donde=params %lista de sensores a corregir
                 %Buscamos el dispositivo en cada punto
-                if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-                    p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
+                if (SILOP_CONFIG.SENHALES.(donde{1}).Serie~=-1)
+                    p=find(id_disp==SILOP_CONFIG.SENHALES.(donde{1}).Serie);
                     %Se calcula la matriz de correccion
                     [filas,columnas]=size(senhales);
                     if (columnas>=3*num_sensor)
@@ -60,7 +60,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
                         [basura,Rot2]=ejes_anatomicos(senhales(nocero,3*num_sensor-2:3*num_sensor),senhales(nocero,3*num_sensor-2:3*num_sensor),[1,2,3]);
                         SetObjectAlignment(SILOP_CONFIG.BUS.Xbus,p,Rot2*Rot1); %Comprobar si no sería Rot2'*Rot1
                         SILOP_CONFIG.BUS.Xbus =  driver_Xbus('gotomeasurement',SILOP_CONFIG.BUS.Xbus);
-                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Rotacion=Rot2*Rot1']);
+                        SILOP_CONFIG.SENHALES.(donde{1}).Rotacion=Rot2*Rot1';
                     else
                         error('el numero de señales en alg_ejes_anatomicos es insuficiente');
                     end
