@@ -17,10 +17,10 @@
 %   Parámetros de salida: Ninguno
 % 
 % Examples: 
-% addalgoritmo('alg_det_event', 2, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
-% addalgoritmo('alg_est_dist_pendulo' , 1, {'COG.Acc_Z'}, [], {'alg_det_event'});
-% addalgoritmo('alg_est_orient_gyro', 1, {'COG.G_Z'}, [], {});
-% addalgoritmo('alg_est_2d', 2, [], [], {'alg_est_dist_pendulo'  'alg_est_orient_gyro'});
+% addalgoritmo('alg_det_event', {'COG.HS','COG.TO'}, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
+% addalgoritmo('alg_est_dist_pendulo' , {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [], {});
+% addalgoritmo('alg_est_orient_gyro', {'COG.Orient'}, {'COG.G_Z'}, [], {});
+% addalgoritmo('alg_est_2d', {'P.X','P.Y'}, {'COG.Dist','COG.Orient'}, [], {});
 % addalgoritmo('alg_plot_pos2d', 0, [], [], {'alg_est_2d'});
 %   
 % See also: 
@@ -33,30 +33,6 @@
 function addalgoritmo(nombre, retornos, senhales, params, dependencias)
 
     global SILOP_CONFIG;
-    
-    
-    if (isnumeric(retornos))
-        n_valores_retorno=retornos;
-    else 
-        n_valores_retorno=0;
-        if (~isempty(retornos))
-            if (~iscell(retornos))
-                error('la lista de señales retornadas debe ser un cell array')
-            end
-            for senhal=retornos
-                [punto,dato]=strtok(senhal{1},'.'); %Rompo por el punto
-                dato=dato(2:end); %Quito el punto
-                if (isfield(SILOP_CONFIG.SENHALES,punto))
-                    if (isfield(SILOP_CONFIG.SENHALES.(punto),dato))
-                       error('La señal %s del %s ya existe',dato,punto);
-                    end
-                end
-                %Falta añadir las señales en SILOP_CONFIG.SENHALES
-                % y reservar sus posiciones
-                n_valores_retorno=nvalores_retorno+1;
-            end
-        end
-    end
     
     alg.senhales=[];
     if (~isempty(senhales))
@@ -75,7 +51,7 @@ function addalgoritmo(nombre, retornos, senhales, params, dependencias)
             alg.senhales=[alg.senhales SILOP_CONFIG.SENHALES.(punto).(dato)];
         end
     end
-    
+
     alg.parametros = params;    
     
     if(isempty(dependencias))
@@ -93,16 +69,49 @@ function addalgoritmo(nombre, retornos, senhales, params, dependencias)
         end;
     end;
      
-    %Muevo esto al final, hasta que ya se que los datos están bien
+    %Punto en el que se insertaran las señales nuevas
     col_disp = SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE;
     if(col_disp == -1)
         col_disp = SILOP_CONFIG.SENHALES.NUMEROSENHALES+1;
     end;
     
-    alg.nombre = nombre;
     
+    if (isnumeric(retornos))
+        n_valores_retorno=retornos;
+    else 
+        n_valores_retorno=0;
+        if (~isempty(retornos))
+            if (~iscell(retornos))
+                error('la lista de señales retornadas debe ser un cell array')
+            end
+            for senhal=retornos
+                [punto,dato]=strtok(senhal{1},'.'); %Rompo por el punto
+                dato=dato(2:end); %Quito el punto
+                if (isfield(SILOP_CONFIG.SENHALES,punto))
+                    if (isfield(SILOP_CONFIG.SENHALES.(punto),dato))
+                       error('La señal %s del %s ya existe',dato,punto);
+                    end
+                end
+                n_valores_retorno=n_valores_retorno+1;
+            end
+            indice=0;
+            for senhal=retornos
+                [punto,dato]=strtok(senhal{1},'.'); %Rompo por el punto
+                dato=dato(2:end); %Quito el punto
+                SILOP_CONFIG.SENHALES.(punto).(dato)=col_disp+indice;
+                SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.NUMEROSENHALES+1;
+                indice=indice+1;
+            end
+        end
+    end
+    
+    
+    %Muevo esto al final, hasta que ya se que los datos están bien
     alg.posiciones = col_disp:col_disp+n_valores_retorno-1;
     SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE = col_disp+n_valores_retorno;
+    
+    alg.nombre = nombre;
+    
     
     SILOP_CONFIG.ALGORITMOS = [SILOP_CONFIG.ALGORITMOS alg];
 
