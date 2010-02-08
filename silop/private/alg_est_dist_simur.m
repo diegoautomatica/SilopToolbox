@@ -3,18 +3,18 @@
 %ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
 %wrapper de la funcion distancia_penduloparcial
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_dist_simur', 1, {'COG.Acc_Z'}, [freq,hsensor,pie], {'alg_det_event'});
+%    addalgoritmo('alg_est_dist_simur', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,hsensor,pie], {});
 %
-%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
-% y dependencias.
-%NOTA IMPORTANTE. UPODATE el algoritmo ignora la deteccion del TO, en
+%Parametros: como todos los alg_*. resultados anteriores, senhales a usar,
+%parametros y dependencias.
+%NOTA IMPORTANTE. UPTODATE el algoritmo ignora la deteccion del TO, en
 %contra de los especificado en distanciapenduloparcial.
 
 %Creado: 01-02-2008 por Diego
 
-function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
+function resultado = alg_est_dist_simur(previos, senhales, params, dependencias) %#ok<INUSD>
 
-        acel_z = senhales;
+        acel_z = senhales(:,1);
 	resultado = previos;
         
 	if (length(params)<3)
@@ -36,7 +36,7 @@ function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
 	end
 	 
 
-    eventos_hs=find(dependencias(1:end,1));
+    eventos_hs=find(senhales(:,2));
 	eventos_hs=eventos_hs';
 	if (~isempty(eventos_hs))
 		viejoevento=eventos_hs(1);
@@ -44,7 +44,7 @@ function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
         	for k=eventos_hs(2:end) %#ok<ALIGN>
                 if (isnan(resultado(k)))
                     if ((k-viejoevento)<200) %Menos de dos segundos un paso
-                        to=1; %find(dependencias(viejoevento:k,2));
+                        to=1; %find(senhales(viejoevento:k,3));
                         if (isempty(to))
                             warning('Toe-Off no detectado. Se pierde un paso'); %#ok<WNTAG>
                         else

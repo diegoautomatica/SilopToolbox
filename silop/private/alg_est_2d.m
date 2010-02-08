@@ -2,17 +2,17 @@
 %
 %ALG_EST_2D Algoritmo para la estimacion de la posicion en 2d. 
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_2d', 2, [], [], {'alg_est_dist' , 'alg_est_orient'});
+%    addalgoritmo('alg_est_2d', {'P.X','P.Y'}, {'P.Dist','P.Orient'}, [], {});
 %
-%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
-% y dependencias (distancia recorrida en cada paso y orientacion).
+%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar(distancia recorrida en cada paso y orientacion),
+% parametros(vacio en este caso) y dependencias .
 
 %Creado: 01-02-2008 por Diego
 
-function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencias) %#ok<INUSL>
+function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencias)  %#ok<INUSD>
 
-    distancias = dependencias(:,1);
-    angulos = dependencias(:,2);
+    distancias = senhales(:,1);
+    angulos = senhales(:,2);
 	
     resultadox=previos(:,1);
     resultadoy=previos(:,2);

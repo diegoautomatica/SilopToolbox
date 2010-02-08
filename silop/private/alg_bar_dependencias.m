@@ -2,6 +2,7 @@
 %
 %ALG_BAR_DEPENDENCIAS Algoritmo para la representacion de resultados de otros mediante diagramas de barras.
 % Util cuando se tienen datos aislados entre muchos NaN
+% WARNING: ESTA FUNCION ES OBSOLETA. DEBERIA USARSE alg_bar_senhales
 %Se puede configurar mediante:
 %    addalgoritmo('alg_bar_dependencias', 0, [], [], {'dependencia'});
 %
