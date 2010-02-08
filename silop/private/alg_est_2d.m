@@ -9,10 +9,10 @@
 
 %Creado: 01-02-2008 por Diego
 
-function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2) %#ok<INUSL>
+function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencias) %#ok<INUSL>
 
-    distancias = dependencia1;
-    angulos = dependencia2;
+    distancias = dependencias(:,1);
+    angulos = dependencias(:,2);
 	
     resultadox=previos(:,1);
     resultadoy=previos(:,2);
