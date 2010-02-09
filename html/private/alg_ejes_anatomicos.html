@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias) %#ok<STOUT,INUSD,INUSL></pre>
+<pre>corregido = alg_ejes_anatomicos(previos, senhales, params) %#ok<STOUT,INUSD,INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -31,12 +31,12 @@ ALG_EJES_ANATOMICOS Algoritmo para la calibracion fina de los datos procedentes 
   calibracion fina se deben emplear ficheros .tana o .sl, que ya están
   correctamente calibrados.
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_ejes_anatomicos', 0, {'COG.Acc_X','COG.Acc_Y','COG.Acc_Z'}, {'COG'}, {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_ejes_anatomicos', 0, {'COG.Acc_X','COG.Acc_Y','COG.Acc_Z'}, {'COG'});
 
 Parametros: como todos los alg_ resultados anteriores, 
  señales a usar (las tres aceleraciones de cada sensor a calibrar)
- parametros(lista con los nombres de los sensores a calibrar, en el mismo orden que las señales) 
- y dependencias(vacia en este caso)
+ parametros(lista con los nombres de los sensores a calibrar, en el mismo
+ orden que las señales). 
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -67,7 +67,7 @@ Parametros: como todos los alg_ resultados anteriores,
 <em class="mcom">%necesitar acceso al dispositivo XbusMaster. No se debe usar como modelo de</em>
 <em class="mcom">%programación de algoritmos.</em>
 
-function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;STOUT,INUSD,INUSL&gt;</em>
+function corregido = alg_ejes_anatomicos(previos, senhales, params) <em class="mcom">%#ok&lt;STOUT,INUSD,INUSL&gt;</em>
 
     global SILOP_CONFIG
     persistent done
@@ -89,14 +89,14 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
         if (isfield(SILOP_CONFIG.BUS,'Xbus'))
             id_disp=zeros(1,SILOP_CONFIG.BUS.Xbus.ndisp);
             for k=1:SILOP_CONFIG.BUS.Xbus.ndisp
-                id_disp(k)=eval(SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k));
+                id_disp(k)=SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k);
             end
     	
             num_sensor=1;
             for donde=params <em class="mcom">%lista de sensores a corregir</em>
                 <em class="mcom">%Buscamos el dispositivo en cada punto</em>
-                if (eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Serie~=-1']))
-                    p=eval(['find(id_disp==SILOP_CONFIG.SENHALES.',donde{1},'.Serie)']);
+                if (SILOP_CONFIG.SENHALES.(donde{1}).Serie~=-1)
+                    p=find(id_disp==SILOP_CONFIG.SENHALES.(donde{1}).Serie);
                     <em class="mcom">%Se calcula la matriz de correccion</em>
                     [filas,columnas]=size(senhales);
                     if (columnas&gt;=3*num_sensor)
@@ -107,7 +107,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
                         [basura,Rot2]=<a class="mfun" href="../ejes_anatomicos.html">ejes_anatomicos</a>(senhales(nocero,3*num_sensor-2:3*num_sensor),senhales(nocero,3*num_sensor-2:3*num_sensor),[1,2,3]);
                         <a class="mfun" href="../private/setobjectalignment.html">SetObjectAlignment</a>(SILOP_CONFIG.BUS.Xbus,p,Rot2*Rot1); <em class="mcom">%Comprobar si no sería Rot2'*Rot1</em>
                         SILOP_CONFIG.BUS.Xbus =  <a class="mfun" href="../private/driver_xbus.html">driver_Xbus</a>('gotomeasurement',SILOP_CONFIG.BUS.Xbus);
-                        eval(['SILOP_CONFIG.SENHALES.',donde{1},'.Rotacion=Rot2*Rot1']);
+                        SILOP_CONFIG.SENHALES.(donde{1}).Rotacion=Rot2*Rot1';
                     else
                         error('el numero de señales en alg_ejes_anatomicos es insuficiente');
                     end
@@ -120,7 +120,8 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
         else
             error('se esta usando una funcion de calibracion fina que solo esta disponible con el XbusMaster');
         end
-    end</pre>
+    end
+</pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->
 <!--copyright-->

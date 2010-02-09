@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" SETOBJECTALIGNMENT Envía el mensaje SetObjectAlignment al objeto XBusMaster " />
-<meta name="keywords" content="  alg_ejes_anatomicos driver_xbus " />
+<meta name="keywords" content="  alg_ejes_anatomicos driver_mtig driver_xbus " />
 <title>Documentation of  SetObjectAlignment</title>
 </head>
 <body >
@@ -53,6 +53,7 @@
 <tr valign="top"><td></td><td>
 <ul>
 <li><a class="mfun" href="../private/alg_ejes_anatomicos.html">alg_ejes_anatomicos</a></li>
+<li><a class="mfun" href="../private/driver_MTiG.html">driver_MTiG</a></li>
 <li><a class="mfun" href="../private/driver_Xbus.html">driver_Xbus</a></li>
 </ul>
 </td>
@@ -81,7 +82,6 @@ matriz=matriz';
     <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
     msg=[msg 256-mod(sum(msg(2:end)),256)];
     <em class="mcom">% Se envia por el puerto serie </em>
-    <em class="mcom">%XBusMaster.puerto.RequestToSend='off';</em>
     while (XBusMaster.puerto.BytesAvailable&gt;0)
         <em class="mcom">% Vaciar el puerto </em>
         <em class="mcom">% OJO!!! Los datos se perderan</em>

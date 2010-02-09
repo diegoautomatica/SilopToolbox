@@ -149,8 +149,8 @@ try
     <a class="mfun" href="private/getkey.html">getkey</a>(1);
     clear ('<a class="mfun" href="private/getkey.html">getkey</a>');
 
-catch
-    s=lasterror();
+catch <em class="mcom">%#ok&lt;CTCH&gt;</em>
+    s=lasterror(); <em class="mcom">%#ok&lt;LERR&gt;</em>
     disp(s.message);
     <a class="mfun" href="private/getkey.html">getkey</a>(1);
     clear('<a class="mfun" href="private/getkey.html">getkey</a>');
@@ -205,17 +205,6 @@ function comandos = creacomandos(C)
           end;
 
           subcad = [subcad cad_params]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
-
-          if(~isempty(alg.dependencias))
-              l = length(alg.dependencias);
-
-               for t=1:l
-                   deps = alg.dependencias{t};
-                   vsen = sprintf('<em class="mcom">%d, ', deps); </em>
-                   subcad = [subcad sprintf(', VENTANA(:,[ %s])', vsen(1:end-2))]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
-               end;
-
-          end;
 
           subcad = [subcad ');']; <em class="mcom">%#ok&lt;AGROW&gt;</em>
 

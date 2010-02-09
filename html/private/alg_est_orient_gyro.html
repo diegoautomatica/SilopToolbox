@@ -25,13 +25,13 @@
 <pre>
 ALG_EST_ORIENT_GYRO Algoritmo para la estimacion de la orientaci�n mediante el gir�scopo
 
-ALG_EST_ORIENT_GYRO Algoritmo para la estimaci�n de la orientaci�n mediante el gir�scopo. 
- Este algoritmo actua como wrapper de la funci�n <a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>.
+ALG_EST_ORIENT_GYRO Algoritmo para la estimacion de la orientaci�n mediante el gir�scopo. 
+ Este algoritmo actua como wrapper de la funcion <a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>.
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_orient_gyro', 1, {'COG.G_Z'}, [], {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_orient_gyro', {'COG.Orient'}, {'COG.G_Z'}, []);
 
 Parametros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(se puede indicar 
- unicamente la frecuencia de muestreo) y dependencias(vacia en este caso)
+ unicamente la frecuencia de muestreo)
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -63,7 +63,7 @@ function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias
         giro = senhales;
 	resultado = previos;
         
-        mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas a�n no procesadas</em>
+        mov_sin_calcular = find(isnan(resultado)); <em class="mcom">%Filas aun no procesadas</em>
 	if (~isempty(mov_sin_calcular))
         
 	if (isempty(params))

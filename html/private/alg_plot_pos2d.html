@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) %#ok<INUSL></pre>
+<pre>yadibujado=alg_plot_pos2d(resultados, senhales, params) %#ok<INUSD,INUSL></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -27,10 +27,12 @@ ALG_PLOT_POS2D Algoritmo para la representacion de la posicion en 2d
 
 ALG_PLOT_SENHALES Algoritmo para la representacion de la posicion en 2d
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_plot_pos2d', 0, [], [], {'<a class="mfun" href="../private/alg_est_2d.html">alg_est_2d</a>'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_plot_pos2d', 1, {'Punto.X','Punto.Y'}, []);
 
-Parámetros: como todos los alg_*. resultados anteriores, señales a usar{vacio en este caso}, 
- parametros(vacio en este caso) y dependencias{'<a class="mfun" href="../private/alg_est_2d.html">alg_est_2d</a>'}.
+Parámetros: como todos los alg_*. resultados anteriores, señales a usar{coordenadas x e y estimadas} 
+ parametros(vacio en este caso) y dependencias.
+ El dato devuelto es para consumo propio (no redibujar puntos ya
+ dibujados)
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -53,7 +55,7 @@ Parámetros: como todos los alg_*. resultados anteriores, señales a usar{vacio 
 
 <em class="mcom">%Creado: 06-02-2008 por Diego</em>
 
-function yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSL&gt;</em>
+function yadibujado=alg_plot_pos2d(resultados, senhales, params) <em class="mcom">%#ok&lt;INUSD,INUSL&gt;</em>
 
 
 
@@ -69,11 +71,11 @@ function yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) <
     if (isempty(ultimodibujado))
         ultimodibujado=1;
     end
-    indices=find(~isnan(dependencias(ultimodibujado+1:end,1)))+ultimodibujado;
+    indices=find(~isnan(senhales(ultimodibujado+1:end,1)))+ultimodibujado;
     yadibujado=resultados;
     if (~isempty(indices))
         yadibujado(1:max(indices))=1;
-        midata=[midata;dependencias(indices,1), dependencias(indices,2)];
+        midata=[midata;senhales(indices,1), senhales(indices,2)];
         plot(midata(:,1),midata(:,2));
         drawnow;
     end

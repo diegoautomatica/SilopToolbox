@@ -72,16 +72,15 @@ connectsilop('Temporizador','test.log'); <em class="mcom">%Conectamos al sistema
 
 %<em class="mcom">% Añadimos los algoritmos necesarios.</em>
 <em class="mcom">% Añadimos el algoritmo de deteccion de eventos, para localizar los instantes de HS y TO</em>
-addalgoritmo('<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>', 2, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
+addalgoritmo('<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>', {'COG.HS','COG.TO'}, {'COG.Acc_Z', 'COG.Acc_X'}, []);
 
 %<em class="mcom">% Añadimos los algoritmos restantes,</em>
 <em class="mcom">% medicion de pasos, estimacion de la orientacion, calculo de posiciones 2d</em>
 <em class="mcom">% y representación de la posición en 2d</em>
-addalgoritmo('<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>' , 1, {'COG.Acc_Z'}, [], {'<a class="mfun" href="private/alg_det_event.html">alg_det_event</a>'});
-addalgoritmo('<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>', 1, {'COG.G_Z'}, [], {});
-addalgoritmo('<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>', 2, [], [], {'<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>',  '<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>'});
-addalgoritmo('<a class="mfun" href="private/alg_plot_pos2d.html">alg_plot_pos2d</a>', 1, [], [], {'<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>'});
-
+addalgoritmo('<a class="mfun" href="private/alg_est_dist_pendulo.html">alg_est_dist_pendulo</a>' , {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, []);
+addalgoritmo('<a class="mfun" href="private/alg_est_orient_gyro.html">alg_est_orient_gyro</a>', {'COG.Orient'}, {'COG.G_Z'}, []);
+addalgoritmo('<a class="mfun" href="private/alg_est_2d.html">alg_est_2d</a>', {'COG.X','COG.Y'}, {'COG.Dist','COG.Orient'}, []);
+addalgoritmo('<a class="mfun" href="private/alg_plot_pos2d.html">alg_plot_pos2d</a>', 1, {'COG.X','COG.Y'}, []);
     
 %<em class="mcom">% Se pone en marcha el proceso</em>
 <em class="mcom">% Se detiene mediante la pulsación de la tecla ESC</em>

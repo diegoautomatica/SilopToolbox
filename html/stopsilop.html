@@ -102,10 +102,17 @@ elseif (isempty(drivername))
     return;
 else
     driverfunction=str2func(['driver_',drivername{1}]);
-    SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotoconfig',SILOP_CONFIG.BUS.(drivername{1}));
+    try 
+        SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotoconfig',SILOP_CONFIG.BUS.(drivername{1}));
+    catch ME <em class="mcom">%#ok&lt;NASGU&gt;</em>
+       if (modo==0)
+        modo=1; <em class="mcom">%La configuracion es errornea. No va a funcionar, así que necesitamos hacer destruye.</em>
+        disp('Error de comunicación. Se destruirá el driver antiguo antes de proseguir')
+       end
+    end
     if (modo&gt;0)
-        driverfunction('destruye',SILOP_CONFIG.BUS.(drivername{1}));
-        SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,drivername{1});
+         driverfunction('destruye',SILOP_CONFIG.BUS.(drivername{1}));
+         SILOP_CONFIG.BUS=rmfield(SILOP_CONFIG.BUS,drivername{1});
     end
 end
 

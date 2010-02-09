@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>resultado = alg_est_dist_simur(previos, senhales, params, dependencias)</pre>
+<pre>resultado = alg_est_dist_simur(previos, senhales, params) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -28,11 +28,10 @@ ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos medi
 ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
 wrapper de la funcion <a class="mfun" href="../distancia_penduloparcial.html">distancia_penduloparcial</a>
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_dist_simur', 1, {'COG.Acc_Z'}, [freq,hsensor,pie], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_dist_simur', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,hsensor,pie]);
 
-Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
- y dependencias.
-NOTA IMPORTANTE. UPODATE el algoritmo ignora la deteccion del TO, en
+Parametros: como todos los alg_*. resultados anteriores, senhales a usar y parametros.
+NOTA IMPORTANTE. UPTODATE el algoritmo ignora la deteccion del TO, en
 contra de los especificado en distanciapenduloparcial.
 </pre>
 <hr size="3" noshade="noshade" />
@@ -56,9 +55,9 @@ contra de los especificado en distanciapenduloparcial.
 
 <em class="mcom">%Creado: 01-02-2008 por Diego</em>
 
-function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
+function resultado = alg_est_dist_simur(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
-        acel_z = senhales;
+        acel_z = senhales(:,1);
 	resultado = previos;
         
 	if (length(params)&lt;3)
@@ -80,7 +79,7 @@ function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
 	end
 	 
 
-    eventos_hs=find(dependencias(1:end,1));
+    eventos_hs=find(senhales(:,2));
 	eventos_hs=eventos_hs';
 	if (~isempty(eventos_hs))
 		viejoevento=eventos_hs(1);
@@ -88,7 +87,7 @@ function resultado = alg_est_dist_simur(previos, senhales, params, dependencias)
         	for k=eventos_hs(2:end) <em class="mcom">%#ok&lt;ALIGN&gt;</em>
                 if (isnan(resultado(k)))
                     if ((k-viejoevento)&lt;200) <em class="mcom">%Menos de dos segundos un paso</em>
-                        to=1; <em class="mcom">%find(dependencias(viejoevento:k,2));</em>
+                        to=1; <em class="mcom">%find(senhales(viejoevento:k,3));</em>
                         if (isempty(to))
                             warning('Toe-Off no detectado. Se pierde un paso'); <em class="mcom">%#ok&lt;WNTAG&gt;</em>
                         else

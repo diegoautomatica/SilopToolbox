@@ -128,6 +128,7 @@ function xbus=creaxbus(parametros)
         otherwise,
             disp ('modo invalido');
             delete (xbus.puerto);
+            error ('modo invalido');
     end;
     if (xbus.DataLength&gt;254)
         xbus.DataLength=xbus.DataLength+7; <em class="mcom">% se incluye la cabecera y el checksum</em>
@@ -164,7 +165,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     xbus=InitBus(xbus);
     xbus=ReqConfiguration(xbus);
     xbus=SetPeriod(xbus,xbus.freq);
-    switch (modo)
+    switch (xbus.modo)
         case 0,
             xbus=SetMTOutputMode(xbus,0);
         case 1,
@@ -190,7 +191,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     end
     
     posiciones=fieldnames(senhales);
-    for numero=2:ns+1
+    for numero=2:xbus.ns+1
         <em class="mcom">%Buscamos el dispositivo en cada punto</em>
         p=(find(id_disp==senhales.(posiciones{numero}).Serie));
         if (isempty(p))
@@ -203,23 +204,23 @@ function [xbus,senhales]=configuraxbus(parametros)
             end;
             <a class="mfun" href="../private/setobjectalignment.html">SetObjectAlignment</a>(xbus,p,Rot);
             senhales.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
-            disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.Acc_Z']); 
             senhales.(posiciones{numero}).Acc_Y = factor*(p-1)+3;
-            disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
+            disp(['Anadida senhal ',posiciones{numero},'.Acc_Y']); 
             senhales.(posiciones{numero}).Acc_X = factor*(p-1)+2;
-            disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
+            disp(['Anadida senhal ',posiciones{numero},'.Acc_X']); 
             senhales.(posiciones{numero}).G_Z = factor*(p-1)+7;
-            disp(['Anadida senhal ',posiciones{sensor},'.G_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.G_Z']); 
             senhales.(posiciones{numero}).G_Y = factor*(p-1)+6;
-            disp(['Anadida senhal ',posiciones{sensor},'.G_Y']); 
+            disp(['Anadida senhal ',posiciones{numero},'.G_Y']); 
             senhales.(posiciones{numero}).G_X = factor*(p-1)+5;
-            disp(['Anadida senhal ',posiciones{sensor},'.G_X']); 
+            disp(['Anadida senhal ',posiciones{numero},'.G_X']); 
             senhales.(posiciones{numero}).MG_Z = factor*(p-1)+10;
-            disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_Z']); 
             senhales.(posiciones{numero}).MG_Y = factor*(p-1)+9;
-            disp(['Anadida senhal ',posiciones{sensor},'.MG_Y']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_Y']); 
             senhales.(posiciones{numero}).MG_X = factor*(p-1)+8;
-            disp(['Anadida senhal ',posiciones{sensor},'.MG_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_Z']); 
             if (senhales.(posiciones{numero}).MG_Z&gt;senhales.NUMEROSENHALES)
                 senhales.NUMEROSENHALES=senhales.(posiciones{numero}).MG_Z;
             end    
@@ -249,7 +250,7 @@ function XBusMaster=gotoconfig(XBusMaster)
     fwrite(XBusMaster.puerto,msg,'uint8','async');
 
     <em class="mcom">%Ya deberiamos estar en modo config.</em>
-    <em class="mcom">%Permitimos comunicaciones</em>
+    <em class="mcom">%Permitimos comunicaciones</em>
     XBusMaster.puerto.RequestToSend='on';
     <em class="mcom">%y damos tiempo a que se termine cualquier trasmision en curso</em>
     pause(1);
@@ -307,8 +308,10 @@ function xbus=gotomeasurement(xbus)
     elseif (ack(3)~=17)
                 error('Error en la secuencia de mensajes durante el comando gotomeasurement');
     end
+    XBusMaster.puerto.RequestToSend='off';
     leerXBusDatahandle=@leerXBusData;
     xbus.puerto.BytesAvailableFcn={leerXBusDatahandle, xbus};
+    XBusMaster.puerto.RequestToSend='on';
 end
 
 
@@ -317,7 +320,7 @@ end
 function leerXBusData(obj,event,XBusMaster) <em class="mcom">%#ok&lt;INUSL&gt;</em>
     global SILOP_DATA_BUFFER;
 
-    data=fread(obj,[XBusMaster.DataLength XBusMaster.nm],'uint8');
+    data=fread(obj,[XBusMaster.DataLength XBusMaster.buffer],'uint8');
     <em class="mcom">% Procesar los datos de 1 mensaje</em>
     <em class="mcom">%checksum</em>
     if (any(mod(sum(data(2:end,:)),256)) )
@@ -332,15 +335,15 @@ function leerXBusData(obj,event,XBusMaster) <em class="mcom">%#ok&lt;INUSL&gt;<
     q=quantizer('Mode','single');
     SILOP_DATA_BUFFER=[];
     for k=1:XBusMaster.ns
-        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
-        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.nm])'); </em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); </em>
         SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
     end
     SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
@@ -569,7 +572,8 @@ function XBusMaster=SetMTOutputMode(XBusMaster, orientformat)
     end
     <em class="mcom">% Se actualiza la configuracion</em>
     XBusMaster=ReqConfiguration(XBusMaster);
-end</pre>
+end
+</pre>
 <hr size="3" noshade="noshade" />
 <!--navigate-->
 <!--copyright-->

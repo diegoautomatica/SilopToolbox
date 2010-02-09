@@ -4,7 +4,7 @@
 <meta name="author of conversion perl script" content="Hartmut Pohlheim" />
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
-<meta name="description" content=" ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientaci�n mediante la br�jula y el compas " />
+<meta name="description" content=" ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientacion mediante la br�jula y el compas " />
 <meta name="keywords" content=" orientacionkalman  " />
 <title>Documentation of  alg_est_orient_kalman</title>
 </head>
@@ -19,18 +19,18 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>resultado = alg_est_orient_kalman(previos, senhales, params, dependencias) %#ok<INUSD></pre>
+<pre>resultado = alg_est_orient_kalman(previos, senhales, params) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
-ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientaci�n mediante la br�jula y el compas
+ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientacion mediante la br�jula y el compas
 
-ALG_EST_ORIENT_KALMAN Algoritmo para la estimaci�n de la orientaci�n mediante la br�jula y el compas. 
- Este algoritmo actua como wrapper de la funci�n <a class="mfun" href="../orientacionkalman.html">orientacionkalman</a>.
+ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientacion mediante la br�jula y el compas. 
+ Este algoritmo actua como wrapper de la funcion <a class="mfun" href="../orientacionkalman.html">orientacionkalman</a>.
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_orien_kalman', 1, {'COG.G_Z','COG.MG_X','COG.MG_Y','COG.MG_Z'}, [], {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_orien_kalman', {'COG.Orient'}, {'COG.G_Z','COG.MG_X','COG.MG_Y','COG.MG_Z'}, []);
 
-Parametros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(se puede indicar 
+Parametros: como todos los alg_ resultados anteriores, senhales a usar, parametros(se puede indicar 
  unicamente la frecuencia de muestreo) y dependencias(vacia en este caso)
 </pre>
 <hr size="3" noshade="noshade" />
@@ -54,7 +54,7 @@ Parametros: como todos los alg_ resultados anteriores, se�ales a usar, paramet
 
 <em class="mcom">%Creado: 12-02-2008 por Diego</em>
 
-function resultado = alg_est_orient_kalman(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+function resultado = alg_est_orient_kalman(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
     Giro = senhales(:,1);
 	Campox = senhales(:,2);

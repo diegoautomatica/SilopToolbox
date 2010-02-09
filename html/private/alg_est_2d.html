@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2) %#ok<INUSL></pre>
+<pre>[resultadox, resultadoy] = alg_est_2d(previos, senhales, params)  %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -27,10 +27,10 @@ ALG_EST_2D Algoritmo para la estimacion de la posicion en 2d
 
 ALG_EST_2D Algoritmo para la estimacion de la posicion en 2d. 
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_2d', 2, [], [], {'alg_est_dist' , 'alg_est_orient'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_2d', {'P.X','P.Y'}, {'P.Dist','P.Orient'}, []);
 
-Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
- y dependencias (distancia recorrida en cada paso y orientacion).
+Parametros: como todos los alg_*. resultados anteriores, se�ales a usar(distancia recorrida en cada paso y orientacion),
+ y parametros(vacio en este caso).
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -53,10 +53,10 @@ Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, param
 
 <em class="mcom">%Creado: 01-02-2008 por Diego</em>
 
-function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params, dependencia1,dependencia2) <em class="mcom">%#ok&lt;INUSL&gt;</em>
+function [resultadox, resultadoy] = alg_est_2d(previos, senhales, params)  <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
-    distancias = dependencia1;
-    angulos = dependencia2;
+    distancias = senhales(:,1);
+    angulos = senhales(:,2);
 	
     resultadox=previos(:,1);
     resultadoy=previos(:,2);

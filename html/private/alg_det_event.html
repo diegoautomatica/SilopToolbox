@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>[resultadohs, resultadoto] = alg_det_event(previos, senhales, params, dependencias) %#ok<INUSD></pre>
+<pre>[resultadohs, resultadoto] = alg_det_event(previos, senhales, params) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -28,10 +28,9 @@ ALG_DET_EVENT Algoritmo para la deteccion de los eventos HS y TO
 ALG_DET_EVENT Algoritmo para la deteccion de los eventos HS y TO. Este algoritmo actua como 
 wrapper de la funcion <a class="mfun" href="../eventos_rt.html">eventos_RT</a>.
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_det_event', 2, {'COG.Acc_Z', 'COG.Acc.X}, [], {});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_det_event', {'COG.HS','COG.TO'}, {'COG.Acc_Z', 'COG.Acc.X}, []);
 
-Parametros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(vacio en este caso)
- y dependencias(vacia en este caso)
+Parametros: como todos los alg_ resultados anteriores, senhales a usar, parametros(vacio en este caso)
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -58,7 +57,7 @@ Parametros: como todos los alg_ resultados anteriores, se�ales a usar, paramet
 
 <em class="mcom">%Creado: 30-01-2008 por Diego</em>
 
-function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+function [resultadohs, resultadoto] = alg_det_event(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
         acel_z = senhales(:,1); <em class="mcom">%Hay dos se�ales </em>
 	acel_x = senhales(:,2);

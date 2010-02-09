@@ -1,0 +1,867 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" driver_MTiG implementa todo el código necesario para el correcto funcionamiento " />
+<meta name="keywords" content=" setobjectalignment  " />
+<title>Documentation of  driver_MTiG</title>
+</head>
+<body >
+<h1 >Documentation of  driver_MTiG</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[retorno,senhales]=driver_MTiG(operacion,parametros)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ driver_MTiG implementa todo el código necesario para el correcto funcionamiento
+ del dispositivo XSens MTi-G .
+ No está pensado para llamarse por si mismo, sino para ser usado desde el
+ sistema de captura de la toolbox.
+
+
+ driver_MTiG implementa todo el código necesario para el correcto funcionamiento
+ del dispositivo XSens MTi-G .
+ No está pensado para llamarse por si mismo, sino para ser usado desde el
+ sistema de captura de la toolbox.
+
+ Se definen 6 modos de funcionamiento en función de las señales que 
+ son procesadas y devueltas por el driver:
+
+       . 0: datos calibrados  
+       . 1: calibrados y orientados (cuaternas)
+       . 2: calibrados y orientados (euler)
+       . 3: calibrados y orientados (matrix)
+
+       .4: Posición(LLA) + Veloidad + Status (del GPS) 
+       .5: Calibrados+ Posición(LLA) + Velocidad + Status (del GPS)
+       .6: RAW Inertial+GPS 
+
+ (los cuatro primeros son análogos a los usados por el XBusMaster y los dispositivos MTx,
+   los tres últimos específicos del MTi-G)
+
+ NOTA: La selección de modo se realiza a través del quinto parámetro 
+       de entrada de la función <a class="mfun" href="../connectsilop.html">connectsilop</a>: driver_opt
+               <a class="mfun" href="../connectsilop.html">connectsilop</a>(driver, source, freq, updateeach, driver_opt);
+                                                                driver_opt=[bps modo];
+
+       Asimismo para seleccionar este driver como primer parámetro de
+       entrada de la función <a class="mfun" href="../connectsilop.html">connectsilop</a> (driver) hemos de indicarle:
+       MTiG 
+
+
+ Syntax: retorno=driver_MTiG(operacion, parametros)
+ 
+ Output parameters:
+
+ Examples:
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%"></th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="../private/SetObjectAlignment.html">SetObjectAlignment</a></li>
+</ul>
+</td><td></td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function driver_MTiG</h2>
+<pre>
+
+
+function [retorno,senhales]=driver_MTiG(operacion,parametros)
+    senhales=[];
+    switch operacion
+        case 'create'
+            retorno=creaMTiG(parametros);
+        case 'connect'
+            retorno=connectMTiG(parametros);
+        case 'configura'
+            [retorno,senhales]=configuraMTiG(parametros);
+        case 'gotoconfig'
+            retorno=gotoconfig(parametros);
+        case 'gotomeasurement'
+            retorno=gotomeasurement(parametros);
+        case 'destruye'
+            retorno=[];
+            destruyeMTiG(parametros);
+        otherwise
+            disp('error, el driver no soporta la operaciÃ³n indicada');
+            retorno=[];
+    end
+end
+
+function MTiG=creaMTiG(parametros)
+    source=parametros{1};
+    freq=parametros{2};
+    updateeach=parametros{3};
+    driver_opt=parametros{5};
+    if (length(driver_opt)&lt;1)
+        bps=460800;    
+    else
+         bps=driver_opt(1);
+    end
+    if (length(driver_opt)&lt;2)
+        modo=0;
+    else
+        modo=driver_opt(2);
+    end
+    <em class="mcom">% Calculamos el numero de muestras almacenadas en el buffer</em>
+    MTiG.freq=freq;
+    MTiG.buffer=updateeach*freq;
+    
+    try
+        MTiG.puerto=serial(source);
+    catch ME
+        disp ('Imposible conectarse al puerto serie');
+        rethrow (ME);
+    end
+    MTiG.modo=modo;
+    
+    switch (MTiG.modo)
+        case 0,                     <em class="mcom">% cal                                  </em>
+            MTiG.DataLength=36+2; 
+            MTiG.Data=1+9;
+        case 1,                     <em class="mcom">% cal+ cuat</em>
+            MTiG.DataLength=36+16+2;
+            MTiG.Data=1+9+4;
+        case 2,                     <em class="mcom">% cal+ euler</em>
+            MTiG.DataLength=36+12+2;
+            MTiG.Data=1+9+3;
+        case 3,                     <em class="mcom">% cal+ mat</em>
+            MTiG.DataLength=36+36+2;
+            MTiG.Data=1+9+9;
+        case 4,                     <em class="mcom">% LLA+Vel+St</em>
+            MTiG.DataLength=12+12+1+2;
+            MTiG.Data=1+3+3+1;
+        case 5,                     <em class="mcom">% cal + LLA+Vel+St</em>
+            MTiG.DataLength=36+12+12+1+2;
+            MTiG.Data=1+9+3+3+1;
+        case 6,                     <em class="mcom">% Raw inertial + gps</em>
+          MTiG.DataLength= 20+44+2;
+          MTiG.Data=1+10+13;
+        otherwise,
+            disp ('modo invalido');
+            delete (MTiG.puerto);
+						error ('Modo invalido')
+    end;
+    if (MTiG.DataLength&gt;254)
+        MTiG.DataLength=MTiG.DataLength+7; <em class="mcom">% se incluye la cabecera y el checksum</em>
+    else
+        MTiG.DataLength=MTiG.DataLength+5; <em class="mcom">% Se incluye la cabecera y el checksum</em>
+    end
+
+    MTiG.bps=bps;
+end
+
+function MTiG=connectMTiG(parametros)
+    MTiG=parametros;
+    <em class="mcom">% Configurar el objeto serie</em>
+    MTiG.puerto.BaudRate=MTiG.bps;
+    MTiG.puerto.DataBits=8;
+    MTiG.puerto.FlowControl='none';
+    MTiG.puerto.Parity='none';
+    MTiG.puerto.StopBits=2;
+    MTiG.puerto.ReadAsyncMode = 'continuous';
+    MTiG.puerto.ByteOrder = 'littleEndian';
+    MTiG.puerto.BytesAvailableFcnCount = MTiG.DataLength*MTiG.buffer;
+    MTiG.puerto.BytesAvailableFcnMode = 'byte';
+    MTiG.puerto.InputBufferSize = MTiG.DataLength*300;
+    MTiG.puerto.OutputBufferSize = 512;
+    MTiG.puerto.Tag = 'MTiG';
+    MTiG.puerto.DataTerminalReady='off';
+    MTiG.puerto.Timeout = 10;
+    <em class="mcom">% Abrir el puerto de comunicaciones</em>
+    fopen(MTiG.puerto);
+    
+%     <em class="mcom">% 9/10/2008: Pruebas de la Toolbox</em>
+%     <em class="mcom">% Activar la grabacion de la actividad del puerto</em>
+%     <em class="mcom">% 9/10/2008</em>
+<em class="mcom">%     xbus.puerto.RecordMode='index';</em>
+<em class="mcom">%     xbus.puerto.RecordDetail='compact';</em>
+<em class="mcom">%     xbus.puerto.RecordName='Pruebas1.txt';</em>
+<em class="mcom">%     record(xbus.puerto);</em>
+    
+end
+
+function [MTiG,senhales]=configuraMTiG(parametros)
+
+    MTiG=parametros{1};
+    senhales=parametros{2};
+    MTiG=SetPeriod(MTiG,MTiG.freq);
+    switch (MTiG.modo)
+        case 0,
+            MTiG=SetMTOutputMode(MTiG,0);
+        case 1,
+            MTiG=SetMTOutputMode(MTiG,1);
+        case 2,
+            MTiG=SetMTOutputMode(MTiG,2);
+        case 3,
+            MTiG=SetMTOutputMode(MTiG,3);
+        case 4,
+            MTiG=SetMTOutputMode(MTiG,4);
+        case 5,
+            MTiG=SetMTOutputMode(MTiG,5);
+        case 6,
+            MTiG=SetMTOutputMode(MTiG,6);
+    end    
+    
+    <em class="mcom">% Actualizar los valores de las seï¿½ales</em>
+    
+    <em class="mcom">% NOTA: Factor va a depender del tamaño del campo Data del msg MTData </em>
+        <em class="mcom">% ed, tiene el mismo valor</em>
+               
+    switch (MTiG.modo)        
+        case 0,         <em class="mcom">% cal</em>
+            factor=9;                           <em class="mcom">%#ok&lt;NASGU&gt;</em>
+        case 1,         <em class="mcom">% cal+ cuat</em>
+            factor=9+4;                         <em class="mcom">%#ok&lt;NASGU&gt;</em>
+        case 2,         <em class="mcom">% cal+ eul</em>
+            factor=9+3;                         <em class="mcom">%#ok&lt;NASGU&gt;</em>
+        case 3,         <em class="mcom">% cal+ mat</em>
+            factor=9+9;                         <em class="mcom">%#ok&lt;NASGU&gt;            </em>
+        case 4,         <em class="mcom">% LLA +Vel +St</em>
+            factor=3+3+1;                       <em class="mcom">%#ok&lt;NASGU&gt;                      </em>
+        case 5,         <em class="mcom">% cal +LLA +Vel +St</em>
+            factor=9+3+3+1;                     <em class="mcom">%#ok&lt;NASGU&gt;</em>
+        case 6,         <em class="mcom">% RAW in+gps</em>
+            factor=1+10+13;                     <em class="mcom">%#ok&lt;NASGU&gt;</em>
+    end; 
+   
+    
+    posiciones=fieldnames(senhales);   <em class="mcom">%Dve un vector d celdas con cadenas </em>
+            <em class="mcom">% d caracteres q recogen los nombres dlos campos la estructura senhales</em>
+
+    orden=senhales.(posiciones{2}).R;
+    Rot=zeros(3,3);
+    for k=1:3  
+        Rot(k,abs(orden(k)))=sign(orden(k));
+    end;
+            
+    <a class="mfun" href="../private/setobjectalignment.html">SetObjectAlignment</a>(MTiG,1,Rot);
+    
+    switch (MTiG.modo)
+       case 0,     <em class="mcom">% cal</em>
+            senhales.(posiciones{2}).Acc_Z = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Z']); 
+            senhales.(posiciones{2}).Acc_Y = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Y']); 
+            senhales.(posiciones{2}).Acc_X = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_X']); 
+            senhales.(posiciones{2}).G_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.G_Z']); 
+            senhales.(posiciones{2}).G_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.G_Y']); 
+            senhales.(posiciones{2}).G_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.G_X']); 
+            senhales.(posiciones{2}).MG_Z = 10;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            senhales.(posiciones{2}).MG_Y = 9;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Y']); 
+            senhales.(posiciones{2}).MG_X = 8;
+            disp(['Anadida senhal ',posiciones{2},'.MG_X']);     <em class="mcom">%#ok&lt;NASGU&gt;</em>
+            
+       case 1,     <em class="mcom">% cal +cuat  </em>
+            senhales.(posiciones{2}).Acc_Z = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Z']); 
+            senhales.(posiciones{2}).Acc_Y = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Y']); 
+            senhales.(posiciones{2}).Acc_X = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_X']); 
+            senhales.(posiciones{2}).G_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.G_Z']); 
+            senhales.(posiciones{2}).G_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.G_Y']); 
+            senhales.(posiciones{2}).G_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.G_X']); 
+            senhales.(posiciones{2}).MG_Z = 10;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            senhales.(posiciones{2}).MG_Y = 9;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Y']); 
+            senhales.(posiciones{2}).MG_X = 8;
+            disp(['Anadida senhal ',posiciones{2},'.MG_X']); 
+            
+            senhales.(posiciones{2}).Q_I = 11;
+            disp(['Anadida senhal ',posiciones{2},'.Q_I']); 
+            senhales.(posiciones{2}).Q_II = 12;
+            disp(['Anadida senhal ',posiciones{2},'.Q_II']);
+            senhales.(posiciones{2}).Q_III = 13;
+            disp(['Anadida senhal ',posiciones{2},'.Q_III']);
+            senhales.(posiciones{2}).Q_IV = 14;
+            disp(['Anadida senhal ',posiciones{2},'.Q_IV']);    <em class="mcom">%#ok&lt;NASGU&gt;</em>
+            
+       case 2,     <em class="mcom">% cal +eul </em>
+            senhales.(posiciones{2}).Acc_Z = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Z']); 
+            senhales.(posiciones{2}).Acc_Y = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Y']); 
+            senhales.(posiciones{2}).Acc_X = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_X']); 
+            senhales.(posiciones{2}).G_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.G_Z']); 
+            senhales.(posiciones{2}).G_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.G_Y']); 
+            senhales.(posiciones{2}).G_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.G_X']); 
+            senhales.(posiciones{2}).MG_Z = 10;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            senhales.(posiciones{2}).MG_Y = 9;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Y']); 
+            senhales.(posiciones{2}).MG_X = 8;
+            disp(['Anadida senhal ',posiciones{2},'.MG_X']); 
+            
+            senhales.(posiciones{2}).Roll = 11;
+            disp(['Anadida senhal ',posiciones{2},'.Roll']); 
+            senhales.(posiciones{2}).Pitch = 12;
+            disp(['Anadida senhal ',posiciones{2},'.Pitch']);
+            senhales.(posiciones{2}).Yaw = 13;
+            disp(['Anadida senhal ',posiciones{2},'.Yaw']);    <em class="mcom">%#ok&lt;NASGU&gt;</em>
+            
+       case 3,     <em class="mcom">% cal +mat</em>
+            senhales.(posiciones{2}).Acc_Z = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Z']); 
+            senhales.(posiciones{2}).Acc_Y = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Y']); 
+            senhales.(posiciones{2}).Acc_X = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_X']); 
+            senhales.(posiciones{2}).G_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.G_Z']); 
+            senhales.(posiciones{2}).G_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.G_Y']); 
+            senhales.(posiciones{2}).G_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.G_X']); 
+            senhales.(posiciones{2}).MG_Z = 10;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            senhales.(posiciones{2}).MG_Y = 9;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Y']); 
+            senhales.(posiciones{2}).MG_X = 8;
+            disp(['Anadida senhal ',posiciones{2},'.MG_X']); 
+            
+            senhales.(posiciones{2}).A = 11;
+            disp(['Anadida senhal ',posiciones{2},'.A']); 
+            senhales.(posiciones{2}).B = 12;
+            disp(['Anadida senhal ',posiciones{2},'.B']);
+            senhales.(posiciones{2}).C = 13;
+            disp(['Anadida senhal ',posiciones{2},'.C']);
+            senhales.(posiciones{2}).D = 14;
+            disp(['Anadida senhal ',posiciones{2},'.D']);
+            senhales.(posiciones{2}).E = 15;
+            disp(['Anadida senhal ',posiciones{2},'.E']);
+            senhales.(posiciones{2}).F = 16;
+            disp(['Anadida senhal ',posiciones{2},'.F']);
+            senhales.(posiciones{2}).G = 17;
+            disp(['Anadida senhal ',posiciones{2},'.G']);
+            senhales.(posiciones{2}).H = 18;
+            disp(['Anadida senhal ',posiciones{2},'.H']);
+            senhales.(posiciones{2}).I = 19;
+            disp(['Anadida senhal ',posiciones{2},'.I']);    <em class="mcom">%#ok&lt;NASGU&gt;</em>
+            
+       case 4,     <em class="mcom">%LLA +vel +stat</em>
+            <em class="mcom">% 12/11/2008 Añado los campos para las nuevas variables de los </em>
+            <em class="mcom">% nuevos modos Lat,Long,Alt,Vel_X,Vel_Y,Vel_Z</em>
+            senhales.(posiciones{2}).Lat = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Lat']); 
+            senhales.(posiciones{2}).Long = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Long']);
+            senhales.(posiciones{2}).Alt = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Alt']);
+            senhales.(posiciones{2}).Vel_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.Vel_X']);
+            senhales.(posiciones{2}).Vel_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.Vel_Y']);
+            senhales.(posiciones{2}).Vel_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.Vel_Z']);       
+            senhales.(posiciones{2}).Status = 8;
+            disp(['Anadida senhal ',posiciones{2},'.Status']);     <em class="mcom">%#ok&lt;NASGU&gt;</em>
+                                 
+       case 5,     <em class="mcom">% cal +LLA +vel +stat</em>
+            senhales.(posiciones{2}).Acc_Z = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Z']); 
+            senhales.(posiciones{2}).Acc_Y = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Y']); 
+            senhales.(posiciones{2}).Acc_X = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_X']); 
+            senhales.(posiciones{2}).G_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.G_Z']); 
+            senhales.(posiciones{2}).G_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.G_Y']); 
+            senhales.(posiciones{2}).G_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.G_X']); 
+            senhales.(posiciones{2}).MG_Z = 10;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            senhales.(posiciones{2}).MG_Y = 9;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Y']); 
+            senhales.(posiciones{2}).MG_X = 8;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            
+            senhales.(posiciones{2}).Lat = 11;
+            disp(['Anadida senhal ',posiciones{2},'.Lat']); 
+            senhales.(posiciones{2}).Long = 12;
+            disp(['Anadida senhal ',posiciones{2},'.Long']);
+            senhales.(posiciones{2}).Alt = 13;
+            disp(['Anadida senhal ',posiciones{2},'.Alt']);
+            senhales.(posiciones{2}).Vel_X = 14;
+            disp(['Anadida senhal ',posiciones{2},'.Vel_X']);
+            senhales.(posiciones{2}).Vel_Y = 15;
+            disp(['Anadida senhal ',posiciones{2},'.Vel_Y']);
+            senhales.(posiciones{2}).Vel_Z = 16;
+            disp(['Anadida senhal ',posiciones{2},'.Vel_Z']);
+            senhales.(posiciones{2}).Status = 17;
+            disp(['Anadida senhal ',posiciones{2},'.Status']);      <em class="mcom">%#ok&lt;NASGU&gt;</em>
+                 
+       case 6,     <em class="mcom">%RAW Inercial + GPS</em>
+            senhales.(posiciones{2}).Acc_Z = 4;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Z']); 
+            senhales.(posiciones{2}).Acc_Y = 3;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_Y']); 
+            senhales.(posiciones{2}).Acc_X = 2;
+            disp(['Anadida senhal ',posiciones{2},'.Acc_X']); 
+            senhales.(posiciones{2}).G_Z = 7;
+            disp(['Anadida senhal ',posiciones{2},'.G_Z']); 
+            senhales.(posiciones{2}).G_Y = 6;
+            disp(['Anadida senhal ',posiciones{2},'.G_Y']); 
+            senhales.(posiciones{2}).G_X = 5;
+            disp(['Anadida senhal ',posiciones{2},'.G_X']); 
+            senhales.(posiciones{2}).MG_Z = 10;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            senhales.(posiciones{2}).MG_Y = 9;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Y']); 
+            senhales.(posiciones{2}).MG_X = 8;
+            disp(['Anadida senhal ',posiciones{2},'.MG_Z']); 
+            
+            senhales.(posiciones{2}).Temp = 11;
+            disp(['Anadida senhal ',posiciones{2},'.Temp']); 
+            senhales.(posiciones{2}).Press = 12;
+            disp(['Anadida senhal ',posiciones{2},'.Press']);
+            senhales.(posiciones{2}).bPrs = 13;
+            disp(['Anadida senhal ',posiciones{2},'.bPrs']);
+            senhales.(posiciones{2}).ITOW = 14;
+            disp(['Anadida senhal ',posiciones{2},'.ITOW']);
+            senhales.(posiciones{2}).LAT = 15;
+            disp(['Anadida senhal ',posiciones{2},'.LAT']);
+            senhales.(posiciones{2}).LONG = 16;
+            disp(['Anadida senhal ',posiciones{2},'.LONG']);
+            senhales.(posiciones{2}).ALT = 17;
+            disp(['Anadida senhal ',posiciones{2},'.ALT']);
+            senhales.(posiciones{2}).VELE = 18;
+            disp(['Anadida senhal ',posiciones{2},'.VELE']);
+            senhales.(posiciones{2}).VELN = 19;
+            disp(['Anadida senhal ',posiciones{2},'.VELN']);
+            senhales.(posiciones{2}).VELD = 20;
+            disp(['Anadida senhal ',posiciones{2},'.VELD']);
+            senhales.(posiciones{2}).Hacc = 21;
+            disp(['Anadida senhal ',posiciones{2},'.Hacc']);
+            senhales.(posiciones{2}).Vacc = 22;
+            disp(['Anadida senhal ',posiciones{2},'.Vacc']);
+            senhales.(posiciones{2}).bGPS = 23;
+            disp(['Anadida senhal ',posiciones{2},'.bGPS']);      <em class="mcom">%#ok&lt;NASGU&gt;</em>
+           
+    end; 
+ 
+end
+
+function MTiG=destruyeMTiG(MTiG)
+
+    try 
+        fclose(MTiG.puerto);
+    catch <em class="mcom">%#ok&lt;CTCH&gt;</em>
+    end
+    delete(MTiG.puerto);
+    clear MTiG
+    MTiG=[];
+end
+
+function MTiG=gotoconfig(MTiG)
+
+    <em class="mcom">% Envia el mensaje GoToConfig al objeto MTiG</em>
+    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum) gotoconfig ###</em>
+    msg=[250,255,48,0];
+    <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    <em class="mcom">% Se envia por el puerto serie </em>
+    fwrite(MTiG.puerto,msg,'uint8','async');
+
+    <em class="mcom">%Ya deberiamos estar en modo config.</em>
+    <em class="mcom">%Permitimos comunicaciones</em>
+    MTiG.puerto.RequestToSend='on';
+    <em class="mcom">%y damos tiempo a que se termine cualquier trasmision en curso</em>
+    pause(1);
+
+    <em class="mcom">%Limpiamos todo lo que puede quedar en el buffer de medidas anteriores</em>
+    MTiG.puerto.Timeout=10;
+    while (MTiG.puerto.BytesAvailable&gt;0)
+        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(MTiG.puerto.BytesAvailable) ' datos']);
+        fread(MTiG.puerto,MTiG.puerto.BytesAvailable,'uint8');
+    end
+
+    <em class="mcom">%Reenviamos el mensaje y esta vez comprobamos la respuesta.</em>
+    fwrite(MTiG.puerto,msg,'uint8','async');
+    <em class="mcom">% Se espera a recibir la contestacion</em>
+    [ack,cnt,msg]=fread(MTiG.puerto,5,'uint8');
+    if (~isempty(msg))
+        error('no se ha recibido la respuesta al comando gotoconfig');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante gotoconfig');
+        else
+            if (ack(3)~=49)
+                error ('mensaje incorrecto recibido durante gotoconfig');
+            end
+        end
+    end
+end
+
+<em class="mcom">%Funcion para el paso a modo medida</em>
+function MTiG=gotomeasurement(MTiG)
+    global SILOP_DATA_BUFFER;
+    SILOP_DATA_BUFFER=[];
+
+    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum) gotomeasurement ###</em>
+    msg=[250,255,16,0];
+    <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    <em class="mcom">% Se envia por el puerto serie </em>
+    if (MTiG.puerto.BytesAvailable&gt;0)
+        <em class="mcom">% Vaciar el puerto </em>
+        <em class="mcom">% OJO!!! Los datos se perderan</em>
+        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(MTiG.puerto.BytesAvailable) ' datos']);
+        fread(MTiG.puerto, MTiG.puerto.BytesAvailable,'uint8');
+    end
+    <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+    MTiG.puerto.Timeout=1;
+    fwrite(MTiG.puerto,msg,'uint8');
+    <em class="mcom">% Se espera a recibir la contestacion</em>
+    [ack,cnt,msg]=fread(MTiG.puerto,5,'uint8');
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido respuesta al mensaje gotomeasurement');
+    elseif (mod(sum(ack(2:end)),256)~=0)
+        error('Error de checksum durante el comando gotomeasurement');
+    elseif (ack(3)~=17)
+                error('Error en la secuencia de mensajes durante el comando gotomeasurement');
+    end
+    MTiG.puerto.RequestToSend='off'; <em class="mcom">% 9/10/2008</em>
+    leerMTiGDatahandle=@leerMTiGData;
+    MTiG.puerto.BytesAvailableFcn={leerMTiGDatahandle, MTiG};
+    MTiG.puerto.RequestToSend='on'; <em class="mcom">% 9/10/2008</em>
+end
+
+
+<em class="mcom">% LEERMTiGDATA Lee datos desde el dispositivo MTiG</em>
+<em class="mcom">% Lee datos del buffer. Llamada por una callback</em>
+function leerMTiGData(obj,event,MTiG)            <em class="mcom">%#ok&lt;INUSL&gt;</em>
+    global SILOP_DATA_BUFFER;
+    
+    data=fread(obj,[MTiG.DataLength MTiG.buffer],'uint8');
+       
+    <em class="mcom">% Procesar los datos de 1 mensaje</em>
+    <em class="mcom">% checksum</em>
+    if (any(mod(sum(data(2:end,:)),256)) )
+        disp('&gt;&gt;&gt;&gt; ERROR de checksum durante la captura de datos');
+    end
+    <em class="mcom">%tipo de mensaje</em>
+    if (any(data(3,:)-50))
+        disp('&gt;&gt;&gt;&gt; ERROR de tipo de mensaje durante la captura de datos');
+    end
+    
+    <em class="mcom">% procesar la informacion</em>
+     q=quantizer('Mode','single');
+    SILOP_DATA_BUFFER=[]; 
+    
+    <em class="mcom">%     OJO!!</em>
+<em class="mcom">%     Trabajando con el XBusMaster y los sensores MTx </em>
+<em class="mcom">%     el  nº de muestras lo coloca en los campos 5 y 6</em>
+<em class="mcom">%      (al principio del campo MTData del msg)</em>
+<em class="mcom">%</em>
+<em class="mcom">%     Con el sensor MTi-G lo coloca en los campos 41 y 42</em>
+<em class="mcom">%      (al final del campo MTData del msg)</em>
+
+<em class="mcom">%    --&gt; hay que cambiar los índices de data (donde se almacena la</em>
+<em class="mcom">%    lectura del puerto) -- Se &quot;adelantan&quot; dos</em>
+    
+  switch (MTiG.modo)
+      case 0     <em class="mcom">% cal</em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:8),:)),[8 MTiG.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:12),:)),[8 MTiG.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:16),:)),[8 MTiG.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:20),:)),[8 MTiG.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:24),:)),[8 MTiG.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:28),:)),[8 MTiG.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((29:32),:)),[8 MTiG.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((33:36),:)),[8 MTiG.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((37:40),:)),[8 MTiG.buffer])');</em>
+        
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(41:42,:))';
+         
+      case 1     <em class="mcom">% cal +cuat</em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:8),:)),[8 MTiG.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:12),:)),[8 MTiG.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:16),:)),[8 MTiG.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:20),:)),[8 MTiG.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:24),:)),[8 MTiG.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:28),:)),[8 MTiG.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((29:32),:)),[8 MTiG.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((33:36),:)),[8 MTiG.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((37:40),:)),[8 MTiG.buffer])');</em>
+        
+        qi=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((41:44),:)),[8 MTiG.buffer])'); </em>
+        qii=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((45:48),:)),[8 MTiG.buffer])'); </em>
+        qiii=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((49:52),:)),[8 MTiG.buffer])'); </em>
+        qiv=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((53:56),:)),[8 MTiG.buffer])'); </em>
+            
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz qi qii qiii qiv]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(57:58,:))';
+       
+      case 2     <em class="mcom">% cal +eul</em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:8),:)),[8 MTiG.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:12),:)),[8 MTiG.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:16),:)),[8 MTiG.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:20),:)),[8 MTiG.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:24),:)),[8 MTiG.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:28),:)),[8 MTiG.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((29:32),:)),[8 MTiG.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((33:36),:)),[8 MTiG.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((37:40),:)),[8 MTiG.buffer])');</em>
+        
+        roll=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((41:44),:)),[8 MTiG.buffer])'); </em>
+        pitch=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((45:48),:)),[8 MTiG.buffer])'); </em>
+        yaw=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((49:52),:)),[8 MTiG.buffer])'); </em>
+  
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz roll pitch yaw]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(53:54,:))';
+     
+      case 3     <em class="mcom">% cal +mat</em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:8),:)),[8 MTiG.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:12),:)),[8 MTiG.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:16),:)),[8 MTiG.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:20),:)),[8 MTiG.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:24),:)),[8 MTiG.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:28),:)),[8 MTiG.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((29:32),:)),[8 MTiG.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((33:36),:)),[8 MTiG.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((37:40),:)),[8 MTiG.buffer])');</em>
+        
+        a=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((41:44),:)),[8 MTiG.buffer])'); </em>
+        b=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((45:48),:)),[8 MTiG.buffer])'); </em>
+        c=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((49:52),:)),[8 MTiG.buffer])'); </em>
+        d=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((53:56),:)),[8 MTiG.buffer])'); </em>
+        e=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((57:60),:)),[8 MTiG.buffer])'); </em>
+        f=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((61:64),:)),[8 MTiG.buffer])'); </em>
+        g=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((65:68),:)),[8 MTiG.buffer])'); </em>
+        h=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((69:72),:)),[8 MTiG.buffer])');</em>
+        i=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((73:76),:)),[8 MTiG.buffer])'); </em>
+
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz a b c d e f g h i]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(77:78,:))';
+  
+      case 4      <em class="mcom">% LLA +Vel +Status</em>
+        lat=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:8),:)),[8 MTiG.buffer])'); </em>
+        long=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:12),:)),[8 MTiG.buffer])'); </em>
+        alt=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:16),:)),[8 MTiG.buffer])'); </em>
+        vx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:20),:)),[8 MTiG.buffer])'); </em>
+        vy=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:24),:)),[8 MTiG.buffer])'); </em>
+        vz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:28),:)),[8 MTiG.buffer])'); </em>
+        status=data(29,:)';
+        
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER lat long alt vx vy vz status]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(30:31,:))';
+        
+     case 5      <em class="mcom">% cal + LLA+Vel+St</em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:8),:)),[8 MTiG.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:12),:)),[8 MTiG.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:16),:)),[8 MTiG.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:20),:)),[8 MTiG.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:24),:)),[8 MTiG.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:28),:)),[8 MTiG.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((29:32),:)),[8 MTiG.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((33:36),:)),[8 MTiG.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((37:40),:)),[8 MTiG.buffer])');</em>
+        
+        lat=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((41:44),:)),[8 MTiG.buffer])'); </em>
+        long=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((45:48),:)),[8 MTiG.buffer])'); </em>
+        alt=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((49:52),:)),[8 MTiG.buffer])'); </em>
+        vx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((53:56),:)),[8 MTiG.buffer])'); </em>
+        vy=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((57:60),:)),[8 MTiG.buffer])'); </em>
+        vz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((61:64),:)),[8 MTiG.buffer])'); </em>
+        status=data(65,:)';
+        
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz lat long alt vx vy vz status]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(66:67,:))';        
+        
+    case 6      <em class="mcom">% RAW in+gps</em>
+        <em class="mcom">% Aún por realizar las transformaciones necesarias para que estos</em>
+        <em class="mcom">% datos sin calibrar (RAW), se puedan sacar del driver calibrados</em>
+        ax=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((5:6),:)),[4 MTiG.buffer])'); </em>
+        ay=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((7:8),:)),[4 MTiG.buffer])'); </em>
+        az=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((9:10),:)),[4 MTiG.buffer])'); </em>
+        rx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((11:12),:)),[4 MTiG.buffer])'); </em>
+        ry=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((13:14),:)),[4 MTiG.buffer])'); </em>
+        rz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((15:16),:)),[4 MTiG.buffer])'); </em>
+        mx=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((17:18),:)),[4 MTiG.buffer])'); </em>
+        my=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((19:20),:)),[4 MTiG.buffer])'); </em>
+        mz=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((21:22),:)),[4 MTiG.buffer])');</em>
+        temp=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((23:24),:)),[4 MTiG.buffer])');</em>
+        
+        press=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((25:26),:)),[4 MTiG.buffer])');</em>
+        bprs=data((27:28),:)';
+        itow=hex2num(q,reshape(sprintf('%02X',data((29:32),:)),[8 MTiG.buffer])'); <em class="mcom">% ojo i4 </em>
+        lat=hex2num(q,reshape(sprintf('%02X',data((33:36),:)),[8 MTiG.buffer])'); <em class="mcom">% ojo i4</em>
+        long=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((37:40),:)),[8 MTiG.buffer])'); </em>
+        alt=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((41:44),:)),[8 MTiG.buffer])'); </em>
+        vn=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((45:48),:)),[8 MTiG.buffer])'); </em>
+        ve=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((48:51),:)),[8 MTiG.buffer])'); </em>
+        vd=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((52:55),:)),[8 MTiG.buffer])'); </em>
+        hacc=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((56:59),:)),[8 MTiG.buffer])'); </em>
+        vacc=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((60:63),:)),[8 MTiG.buffer])'); </em>
+        sacc=hex2num(q,reshape(sprintf('<em class="mcom">%02X',data((64:67),:)),[8 MTiG.buffer])'); </em>
+        bgps=data(68,:)'; 
+
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz temp press itow bprs lat long alt vn ve vd hacc vacc sacc bgps]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+        muestra=([256 1]*data(69:70,:))';
+  end
+
+  SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
+  disp(['leidos ' num2str([muestra(1) muestra(end)])])
+end
+
+function MTiG=SetPeriod(MTiG,freq)
+    <em class="mcom">% Envia el mensaje SetPeriod al objeto MTiG  ###</em>
+    <em class="mcom">% El proceso se queda bloqueado hasta recibir la informacion</em>
+    <em class="mcom">% Calcular la frecuencia de muestreo</em>
+    fm=[fix(115200/freq/256) mod(115200/freq,256)];
+    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+    msg=[250,255,4,2,fm];
+    <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    <em class="mcom">% Se envia por el puerto serie </em>
+    if (MTiG.puerto.BytesAvailable&gt;0)
+        <em class="mcom">% Vaciar el puerto </em>
+        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(MTiG.puerto.BytesAvailable) ' datos']);
+        fread(MTiG.puerto,MTiG.puerto.BytesAvailable,'uint8');
+    end
+    <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+    MTiG.puerto.timeOut=1;
+    fwrite(MTiG.puerto,msg,'uint8','async');
+    <em class="mcom">% Se espera a recibir la contestacion</em>
+    [ack,cnt,msg]=fread(MTiG.puerto,5,'uint8');
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido respuesta al comando setperiod');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante el comando setperiod');
+        else
+            if (ack(3)~=5)
+                error('Error en la secuencia de mensajes durante el comando setperiod');
+            end
+        end
+    end
+    
+end
+
+function MTiG=SetMTOutputMode(MTiG, orientformat)
+   switch (orientformat)
+       case 0
+           outmode=[0 2];          <em class="mcom">% datos calibrados</em>
+           outsett=[0 7 192 1];      
+       case 1         
+           outmode=[0 6];          <em class="mcom">% datos calibrados y orientados</em>
+           outsett=[0 0 0 1];      <em class="mcom">%  (cuaternas)</em>
+       case 2
+           outmode=[0 6];          <em class="mcom">% datos calibrados y orientados</em>
+           outsett=[0 0 0 5];      <em class="mcom">%  (ang d Euler)</em>
+       case 3
+           outmode=[0 6];          <em class="mcom">% datos calibrados y orientados</em>
+           outsett=[0 0 0 9];      <em class="mcom">%  (matrix)</em>
+            
+       case 4                      <em class="mcom">% Posición+Vel+Status /B/                                 </em>
+           outmode=[8 48];         <em class="mcom">% 4,5,11 a 1</em>
+           outsett=[0 0 0 1];         
+       case 5                      <em class="mcom">% Calibrado+ (Posición+Vel+Status)                                       </em>
+           outmode=[8 50];
+           outsett=[0 0 0 1];
+       case 6                      <em class="mcom">% El RAW = RAW Inertial + RAW GPS  </em>
+           outmode=[80 0];
+           outsett=[0 0 0 1];                                
+   end
+   
+   <em class="mcom">% Enviar el mensaje SetOutputMode ###</em>
+   <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+   msg=[250,255,208,2,outmode];
+   <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+   msg=[msg 256-mod(sum(msg(2:end)),256)]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+   <em class="mcom">% Se envia por el puerto serie </em>
+   if (MTiG.puerto.BytesAvailable&gt;0)
+       <em class="mcom">% Vaciar el puerto </em>
+       disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(MTiG.puerto.BytesAvailable) ' datos']);
+       fread(MTiG.puerto,MTiG.puerto.BytesAvailable,'uint8');
+   end
+   <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+   MTiG.puerto.Timeout=1;
+   fwrite(MTiG.puerto,msg,'uint8','async');
+   <em class="mcom">% Se espera a recibir la contestacion</em>
+   [ack,cnt,msg]=fread(MTiG.puerto,5,'uint8');
+   if (~isempty(msg))
+       error('no se ha recibido respuesta al comando setmtoutputmode');
+   else
+       if (mod(sum(ack(2:end)),256)~=0)
+           error('Error de checksum durante el comando setmtoutputmode');
+       else
+           if (ack(3)~=209)
+               error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
+           end
+       end
+   end
+
+   <em class="mcom">% Enviar el mensaje SetOutputSettings ###</em>
+   <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+   msg=[250,255,210,4,outsett];
+   <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
+   msg=[msg 256-mod(sum(msg(2:end)),256)]; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+   <em class="mcom">% Se envia por el puerto serie </em>
+   if (MTiG.puerto.BytesAvailable&gt;0)
+       <em class="mcom">% Vaciar el puerto </em>
+       disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(MTiG.puerto.BytesAvailable) ' datos']);
+       fread(MTiG.puerto,MTiG.puerto.BytesAvailable,'uint8');
+   end
+   <em class="mcom">% El valor del TimeOut se fija a 1 segundo</em>
+   MTiG.puerto.Timeout=1;
+   fwrite(MTiG.puerto,msg,'uint8','async');
+   <em class="mcom">% Se espera a recibir la contestacion</em>
+   [ack,cnt,msg]=fread(MTiG.puerto,5,'uint8');
+   if (~isempty(msg))
+       disp(msg);
+       error('no se ha recibido respuesta durante el comando setmtoutputmode');
+   else
+       if (mod(sum(ack(2:end)),256)~=0)
+           error('Error de checksum durante el comando setmtoutputmode');
+       else
+           if (ack(3)~=211)
+               error('Error en la secuencia de mensajes durante el comando setmtoutputmode');
+           end
+       end
+   end
+   
+end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

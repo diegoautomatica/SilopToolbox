@@ -78,7 +78,6 @@ k=p;
     <em class="mcom">% Se calcula el cheksum y se coloca al final</em>
     msg=[msg 256-mod(sum(msg(2:end)),256)];
     <em class="mcom">% Se envia por el puerto serie </em>
-    <em class="mcom">%XBusMaster.puerto.RequestToSend='off';</em>
     while (XBusMaster.puerto.BytesAvailable&gt;0)
         <em class="mcom">% Vaciar el puerto </em>
         <em class="mcom">% OJO!!! Los datos se perderan</em>

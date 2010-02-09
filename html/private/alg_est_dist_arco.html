@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>resultado = alg_est_dist_arco(previos, senhales, params, dependencias)</pre>
+<pre>resultado = alg_est_dist_arco(previos, senhales, params) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -28,10 +28,9 @@ ALG_EST_DIST_ARCO Algoritmo para la estimacion de la longitud de los pasos media
 ALG_EST_DIST_ARCO Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
 wrapper de la funcion <a class="mfun" href="../distancia_arco.html">distancia_arco</a>
 Se puede configurar mediante:
-    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_dist_arco', 1, {'COG.Acc_Z'}, [freq,pierna], {'<a class="mfun" href="../private/alg_det_event.html">alg_det_event</a>'});
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_est_dist_arco', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,pierna]);
 
-Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
- y dependencias.
+Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, y parametros y dependencias.
 </pre>
 <hr size="3" noshade="noshade" />
 <h2 >Cross-Reference Information</H2>
@@ -54,9 +53,10 @@ Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, param
 
 <em class="mcom">%Creado: 01-02-2008 por Diego</em>
 
-function resultado = alg_est_dist_arco(previos, senhales, params, dependencias)
+function resultado = alg_est_dist_arco(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
-        acel_z = senhales;
+        acel_z = senhales(:,1);
+        heelstrikes= senhales(:,2);
 	resultado = previos;
         
 	if (length(params)&lt;2)
@@ -67,7 +67,7 @@ function resultado = alg_est_dist_arco(previos, senhales, params, dependencias)
 		end
 	else pierna=params(2);
 	end
-        eventos_hs=find(dependencias(1:end,1));
+    eventos_hs=find(heelstrikes(:,1));
 	eventos_hs=eventos_hs';
 	if (~isempty(eventos_hs))
 		viejoevento=eventos_hs(1);

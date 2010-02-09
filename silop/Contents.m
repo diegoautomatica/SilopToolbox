@@ -1,5 +1,5 @@
 % InerSens Toolbox
-% Version 0.11 06-Ago-2008
+% Version 0.12 08-02-2010
 %Copyright (C) 2007-2008 Universidad de Oviedo
 %Todos los derechos reservados
 %
@@ -40,6 +40,7 @@
 % orientaciongiroscopo - ORIENTACIONGIROSCOPO Calcula la orientación en base a los datos de un giróscopo situado en el COG
 % orientacionkalman - ORIENTACIONKALMAN Calcula la orientación en base a los datos de un giróscopo y un compás situados en el COG
 % playsilop     - PLAYSILOP Realiza el procesamiento de acuerdo a los IMUS y algoritmos indicados
+% savesilop     - SAVESILOP Guarda los datos en un fichero de almacenamiento .sl.
 % silopdemo     - % SILOPDEMO Demostración de las capacidades de la toolbox
 % stopsilop     - STOPSILOP Detiene el procesamiento de las señales, así como las comunicaciones con los buses 
 
