@@ -3,16 +3,15 @@
 %ALG_EST_DIST_SIMUR Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
 %wrapper de la funcion distancia_penduloparcial
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_dist_simur', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,hsensor,pie], {});
+%    addalgoritmo('alg_est_dist_simur', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,hsensor,pie]);
 %
-%Parametros: como todos los alg_*. resultados anteriores, senhales a usar,
-%parametros y dependencias.
+%Parametros: como todos los alg_*. resultados anteriores, senhales a usar y parametros.
 %NOTA IMPORTANTE. UPTODATE el algoritmo ignora la deteccion del TO, en
 %contra de los especificado en distanciapenduloparcial.
 
 %Creado: 01-02-2008 por Diego
 
-function resultado = alg_est_dist_simur(previos, senhales, params, dependencias) %#ok<INUSD>
+function resultado = alg_est_dist_simur(previos, senhales, params) %#ok<INUSD>
 
         acel_z = senhales(:,1);
 	resultado = previos;

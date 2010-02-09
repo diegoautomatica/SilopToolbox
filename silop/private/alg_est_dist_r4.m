@@ -3,14 +3,13 @@
 %ALG_EST_DIST_R4 Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
 %wrapper de la funcion distancia_raizcuarta
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_dist_r4', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [], {});
+%    addalgoritmo('alg_est_dist_r4', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, []);
 %
-%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso)
-% y dependencias.
+%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, parametros(vacio en este caso).
 
 %Creado: 01-02-2008 por Diego
 
-function resultado = alg_est_dist_r4(previos, senhales, params, dependencias) %#ok<INUSD,INUSL>
+function resultado = alg_est_dist_r4(previos, senhales, params) %#ok<INUSD,INUSL>
 
         acel_z = senhales(:,1);
 	resultado = previos;

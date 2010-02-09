@@ -2,16 +2,16 @@
 %
 %ALG_DET_MOV Algoritmo para la deteccion del movimiento basado en la aceleracion vertical del COG.
 %Se puede configurar mediante:
-%    addalgoritmo('alg_det_mov', {'COG.Mov'}, {'COG.Acc_Z'}, [], {});
+%    addalgoritmo('alg_det_mov', {'COG.Mov'}, {'COG.Acc_Z'}, []);
 %
-%Parametros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(vacio en este caso)
-% y dependencias(vacia en este caso)
+%Parametros: como todos los alg_ resultados anteriores, se�ales a usar,
+%parametros(vacio en este caso
 
 %Creado: xx-01-2008 Antonio L�pez
 %        30-01-2008 Incorporado, editado y renombrado por Diego
 %        06-02-2008 Revisado y comprobado por Diego, corregido para buscar contra la media.
 
-function resultado = alg_det_mov(previos, senhales, params, dependencias) %#ok<INUSD>
+function resultado = alg_det_mov(previos, senhales, params) %#ok<INUSD>
 
         acel_z = senhales; %Hay una sola se�al que es la aceleraci�n Z del COG
         resultado = previos;

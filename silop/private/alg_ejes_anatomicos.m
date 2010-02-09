@@ -6,12 +6,12 @@
 %  calibracion fina se deben emplear ficheros .tana o .sl, que ya están
 %  correctamente calibrados.
 %Se puede configurar mediante:
-%    addalgoritmo('alg_ejes_anatomicos', 0, {'COG.Acc_X','COG.Acc_Y','COG.Acc_Z'}, {'COG'}, {});
+%    addalgoritmo('alg_ejes_anatomicos', 0, {'COG.Acc_X','COG.Acc_Y','COG.Acc_Z'}, {'COG'});
 %
 %Parametros: como todos los alg_ resultados anteriores, 
 % señales a usar (las tres aceleraciones de cada sensor a calibrar)
-% parametros(lista con los nombres de los sensores a calibrar, en el mismo orden que las señales) 
-% y dependencias(vacia en este caso)
+% parametros(lista con los nombres de los sensores a calibrar, en el mismo
+% orden que las señales). 
 
 %Creado: 19-02-2008 by Diego �lvarez
 
@@ -20,7 +20,7 @@
 %necesitar acceso al dispositivo XbusMaster. No se debe usar como modelo de
 %programación de algoritmos.
 
-function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias) %#ok<STOUT,INUSD,INUSL>
+function corregido = alg_ejes_anatomicos(previos, senhales, params) %#ok<STOUT,INUSD,INUSL>
 
     global SILOP_CONFIG
     persistent done
@@ -42,7 +42,7 @@ function corregido = alg_ejes_anatomicos(previos, senhales, params, dependencias
         if (isfield(SILOP_CONFIG.BUS,'Xbus'))
             id_disp=zeros(1,SILOP_CONFIG.BUS.Xbus.ndisp);
             for k=1:SILOP_CONFIG.BUS.Xbus.ndisp
-                id_disp(k)=SILOP_CONFIG.BUS.Xbus.sensores.(Cadena(:,k));
+                id_disp(k)=SILOP_CONFIG.BUS.Xbus.sensores.Cadena(:,k);
             end
     	
             num_sensor=1;

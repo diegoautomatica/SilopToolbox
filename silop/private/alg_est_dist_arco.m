@@ -3,14 +3,13 @@
 %ALG_EST_DIST_ARCO Algoritmo para la estimacion de la longitud de los pasos.Este algoritmo actua como 
 %wrapper de la funcion distancia_arco
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_dist_arco', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,pierna], {});
+%    addalgoritmo('alg_est_dist_arco', {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [freq,pierna]);
 %
-%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar,
-%parametros y dependencias.
+%Parametros: como todos los alg_*. resultados anteriores, se�ales a usar, y parametros y dependencias.
 
 %Creado: 01-02-2008 por Diego
 
-function resultado = alg_est_dist_arco(previos, senhales, params, dependencias) %#ok<INUSD>
+function resultado = alg_est_dist_arco(previos, senhales, params) %#ok<INUSD>
 
         acel_z = senhales(:,1);
         heelstrikes= senhales(:,2);

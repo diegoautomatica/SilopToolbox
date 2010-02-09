@@ -157,18 +157,6 @@ function comandos = creacomandos(C)
 
           subcad = [subcad cad_params]; %#ok<AGROW>
 
-          if(~isempty(alg.dependencias))
-              l = length(alg.dependencias);
-                vsen='';
-               for t=1:l
-                   deps = alg.dependencias{t};
-                   vsen = [vsen,sprintf('%d, ', deps)]; %#ok<AGROW>
-                   
-               end;
-               subcad = [subcad sprintf(', VENTANA(:,[ %s])', vsen(1:end-2))]; %#ok<AGROW>
-
-          end;
-
           subcad = [subcad ');']; %#ok<AGROW>
 
           comandos{k} = subcad;

@@ -2,14 +2,16 @@
 %
 %ALG_PLOT_SENHALES Algoritmo para la representacion de la posicion en 2d
 %Se puede configurar mediante:
-%    addalgoritmo('alg_plot_pos2d', 0, [], [], {'alg_est_2d'});
+%    addalgoritmo('alg_plot_pos2d', 1, {'Punto.X','Punto.Y'}, []);
 %
-%Parámetros: como todos los alg_*. resultados anteriores, señales a usar{vacio en este caso}, 
-% parametros(vacio en este caso) y dependencias{'alg_est_2d'}.
+%Parámetros: como todos los alg_*. resultados anteriores, señales a usar{coordenadas x e y estimadas} 
+% parametros(vacio en este caso) y dependencias.
+% El dato devuelto es para consumo propio (no redibujar puntos ya
+% dibujados)
 
 %Creado: 06-02-2008 por Diego
 
-function yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) %#ok<INUSL>
+function yadibujado=alg_plot_pos2d(resultados, senhales, params) %#ok<INUSD,INUSL>
 
 
 
@@ -25,11 +27,11 @@ function yadibujado=alg_plot_pos2d(resultados, senhales, params, dependencias) %
     if (isempty(ultimodibujado))
         ultimodibujado=1;
     end
-    indices=find(~isnan(dependencias(ultimodibujado+1:end,1)))+ultimodibujado;
+    indices=find(~isnan(senhales(ultimodibujado+1:end,1)))+ultimodibujado;
     yadibujado=resultados;
     if (~isempty(indices))
         yadibujado(1:max(indices))=1;
-        midata=[midata;dependencias(indices,1), dependencias(indices,2)];
+        midata=[midata;senhales(indices,1), senhales(indices,2)];
         plot(midata(:,1),midata(:,2));
         drawnow;
     end

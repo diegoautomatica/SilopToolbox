@@ -3,14 +3,14 @@
 %ALG_EST_ORIENT_COMPAS Algoritmo para la estimacion de la orientacion mediante la br�jula. 
 % Este algoritmo actua como wrapper de la funcion orientacionbrujula.
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_orien_compast', {'COG.Orient'}, {'COG.MG_X','COG.MG_Y','COG.MG_Z'}, [], {});
+%    addalgoritmo('alg_est_orien_compast', {'COG.Orient'}, {'COG.MG_X','COG.MG_Y','COG.MG_Z'}, []);
 %
 %Parametros: como todos los alg_ resultados anteriores, senhales a usar, parametros(se puede indicar 
-% unicamente la frecuencia de muestreo) y dependencias(vacia en este caso)
+% unicamente la frecuencia de muestreo)
 
 %Creado: 12-02-2008 por Diego
 
-function resultado = alg_est_orient_compas(previos, senhales, params, dependencias) %#ok<INUSD>
+function resultado = alg_est_orient_compas(previos, senhales, params) %#ok<INUSD>
 
     Campox = senhales(:,1);
     Campoy = senhales(:,2);

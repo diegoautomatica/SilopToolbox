@@ -20,8 +20,8 @@
 % addalgoritmo('alg_det_event', {'COG.HS','COG.TO'}, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
 % addalgoritmo('alg_est_dist_pendulo' , {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [], {});
 % addalgoritmo('alg_est_orient_gyro', {'COG.Orient'}, {'COG.G_Z'}, [], {});
-% addalgoritmo('alg_est_2d', {'P.X','P.Y'}, {'COG.Dist','COG.Orient'}, [], {});
-% addalgoritmo('alg_plot_pos2d', 0, [], [], {'alg_est_2d'});
+% addalgoritmo('alg_est_2d', {'COG.X','COG.Y'}, {'COG.Dist','COG.Orient'}, [], {});
+% addalgoritmo('alg_plot_pos2d', 1, {'COG.X','COG.Y'}, [], {});
 %   
 % See also: 
 
@@ -54,21 +54,6 @@ function addalgoritmo(nombre, retornos, senhales, params, dependencias)
 
     alg.parametros = params;    
     
-    if(isempty(dependencias))
-        alg.dependencias = {};
-    else
-        l=length(dependencias);
-        alg.dependencias = cell(l, 1);
-        for k=1:l
-            pos=buscaposiciones(SILOP_CONFIG, dependencias{k});
-            if(isempty(pos))
-                error('No se encuentra la dependencia %s indicada',dependencias{k});
-            else
-                alg.dependencias{k} = pos;
-            end;
-        end;
-    end;
-     
     %Punto en el que se insertaran las señales nuevas
     col_disp = SILOP_CONFIG.GLOBAL.COLUMNADISPONIBLE;
     if(col_disp == -1)
@@ -99,6 +84,8 @@ function addalgoritmo(nombre, retornos, senhales, params, dependencias)
                 [punto,dato]=strtok(senhal{1},'.'); %Rompo por el punto
                 dato=dato(2:end); %Quito el punto
                 SILOP_CONFIG.SENHALES.(punto).(dato)=col_disp+indice;
+                disp(['Anadida senhal ',punto,'.',dato]); 
+            
                 SILOP_CONFIG.SENHALES.NUMEROSENHALES=SILOP_CONFIG.SENHALES.NUMEROSENHALES+1;
                 indice=indice+1;
             end
@@ -115,24 +102,3 @@ function addalgoritmo(nombre, retornos, senhales, params, dependencias)
     
     SILOP_CONFIG.ALGORITMOS = [SILOP_CONFIG.ALGORITMOS alg];
 
-
-
-
-
-%%%%Función para localizar un algoritmo.
-function posiciones = buscaposiciones(CONFIG, nombre)
-
-    vec = CONFIG.ALGORITMOS;
-    if(~isempty(vec))
-        k=1;
-        while ((k<=length(vec))&&(~strcmp(nombre, vec(k).nombre)))
-            k = k+1;
-        end;
-        if(k<=length(vec))
-            posiciones = vec(k).posiciones;
-        else
-            posiciones = [];
-        end;
-    else
-        error('Aún no existe ningún algoritmo del que depender');
-    end;

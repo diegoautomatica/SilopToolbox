@@ -1,11 +1,13 @@
-ToDo:
-Para el 1.0
+Bugs:
+	El driver Xbus no funciona cuando tiene dos IMUS y se le pide leer solo uno. Notificarlo.
 	Documentar la función eventosPiernaG. 
 		el parametro sin documentar fh no se respeta.
 	eventospierectoff tiene documentacion que no coincide con lo que hace la funcion.
 		el parámetro frecuencia no se respeta.
+    alg_est_dist_simur ignora los TO. Volver a usarlos ahora que tenemos un metodo de deteccion fiable.
+
+ToDo:
 	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
-  alg_est_dist_simur ignora los TO. Volver a usarlos ahora que tenemos un metodo de deteccion fiable.
 	alg_ejes_anatomicos es muy rara, y usa cosas del xbus externas al driver.
 
 Para el futuro:
@@ -16,27 +18,53 @@ Para el futuro:
 
 	SO:
 		Que funcione en osx
-
 	Funcionalidad:	
 		Implementar removeimu, para eliminar imus añadidos por addimu
 		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
 		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
-	  Modo de simulación a la máxima velocidad posible del ordenador.
+        Modo de simulación a la máxima velocidad posible del ordenador.
+        No tienen mucho sentido las 2 formas de grabar. Salvo para simulaciones?
+        Unificar el uso de COLUMNADISPONIBLE y NUMEROSENHALES en solo una variable
 
 	Nuevos sensores
 		añadir drivers
 		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
+        Incorporar el MiTG de Maria Jose definitivaente.
+        Incluir rotaciones por software en los drivers que no las soportan por hardware.
 
 -------------------------------------------------------------------------------------------
 
 Done: 
-v0.11 Correccion de errores. Cambios de uso en connectsilop
-		Los nombres de las señales Acc_X, etc son dependientes del driver, y pueden ser cualquiera.
-		terminada la estructura de drivers.
-		eliminada la referencia global a SILOP_CONFIG en los drivers.
+v0.12 Corrección de errores
+    Eliminado el codigo que usa dependencias en todas partes
+    Eliminada alg_bar_dependencias y alg_plot_dependencias
+    Añadida alg_bar_senhales		
+    addalgoritmo ya no añade dependencias a los algoritmos.
+    playsilop ya no busca cuales son las dependencias, ni las añade al procesamiento
+    silopdemo se ha adaptado totalmente a la nueva estructura de senhales.
+    retocado alg_plot_pos2d para usar señales en lugar de dependencias.
+    retocado alg_est_distancia_simur para usar señales en lugar de dependencias.
+    retocado alg_est_distancia_r4 para usar señales en lugar de dependencias.
+    retocado alg_est_distancia_pendulo para usar señales en lugar de dependencias.
+    retocado alg_est_distancia_arco para usar señales en lugar de dependencias.
+    retocado alg_est_2d para usar señales en lugar de dependencias.
+    corregido error en alg_plot_pos_2d. Tenia las dos dependencias como variables distintas.
+    si n_valores_retorno es un cell array , las salidas del algoritmo se añaden a la lista de señales
+    n_valores_retorno en addalgoritmo() puede ser un número o un cell array de señales {'punto.dato'}
+    Incluida savesilop(), que permite guardar datos en un fichero .sl despúes de haberlos modificado
+    Error en la documentacion de alg_det_event corregido
+    Actualizada la documentación sobre como escribir un driver
+    Corregido un error en connectsilop(). No borraba el driver de la lista despues de destruirlo (al detectar errores)
+    Corregido un error en stopsilop(). Acepta que el dispositivo se haya desenchufado a lo bestia al intentar detenerlo.
+    Corregido un error en playsilop()/creacomando que impedia añadir más de una dependencia en un algoritmo
+
+v0.11 Correccion de errores. Cambios de uso en connectsilop. Estructura de drivers.
+	Los nombres de las señales Acc_X, etc son dependientes del driver, y pueden ser cualquiera.
+	terminada la estructura de drivers.
+	eliminada la referencia global a SILOP_CONFIG en los drivers.
     driver_Xbus incorpora toda la funcionalidad. connectsilop la usa. Eliminadas todas sus funciones auxiliares
-		driver_SF_3D incorpora la funcionalidad de sf3dsetperiod y 'configura'. Eliminada sf3dsetperiod.m
-		driver_SF_3D incorpora la funcionalidad 'connect' y 'configura'(parcial). Connectsilop la usa. Se elimina creasf3d.m
+	driver_SF_3D incorpora la funcionalidad de sf3dsetperiod y 'configura'. Eliminada sf3dsetperiod.m
+	driver_SF_3D incorpora la funcionalidad 'connect' y 'configura'(parcial). Connectsilop la usa. Se elimina creasf3d.m
     driver_SF_3D incorpora la funcionalidad 'create'. connectsilop la usa. Eliminada esa funcionalidad de creasf3d.m
     driver_temporizador incorpora la callback de 'muestreo'. Eliminada simula_muestreo.m
     driver_temporizador incorpora la funcionalidad 'create', 'connect' y 'configura'. connectsilop usa el driver.

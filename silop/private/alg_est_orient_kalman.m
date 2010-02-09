@@ -1,16 +1,16 @@
-%ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientaci�n mediante la br�jula y el compas
+%ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientacion mediante la br�jula y el compas
 %
-%ALG_EST_ORIENT_KALMAN Algoritmo para la estimaci�n de la orientaci�n mediante la br�jula y el compas. 
-% Este algoritmo actua como wrapper de la funci�n orientacionkalman.
+%ALG_EST_ORIENT_KALMAN Algoritmo para la estimacion de la orientacion mediante la br�jula y el compas. 
+% Este algoritmo actua como wrapper de la funcion orientacionkalman.
 %Se puede configurar mediante:
-%    addalgoritmo('alg_est_orien_kalman', 1, {'COG.G_Z','COG.MG_X','COG.MG_Y','COG.MG_Z'}, [], {});
+%    addalgoritmo('alg_est_orien_kalman', {'COG.Orient'}, {'COG.G_Z','COG.MG_X','COG.MG_Y','COG.MG_Z'}, []);
 %
-%Parametros: como todos los alg_ resultados anteriores, se�ales a usar, parametros(se puede indicar 
+%Parametros: como todos los alg_ resultados anteriores, senhales a usar, parametros(se puede indicar 
 % unicamente la frecuencia de muestreo) y dependencias(vacia en este caso)
 
 %Creado: 12-02-2008 por Diego
 
-function resultado = alg_est_orient_kalman(previos, senhales, params, dependencias) %#ok<INUSD>
+function resultado = alg_est_orient_kalman(previos, senhales, params) %#ok<INUSD>
 
     Giro = senhales(:,1);
 	Campox = senhales(:,2);
