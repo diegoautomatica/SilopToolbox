@@ -12,13 +12,17 @@ function alg_plot_senhales(valores_actuales, senhales, params) %#ok<INUSD,INUSL>
 %    C = AddAlgoritmo(C, 'alg_plot_senhales', 0, [COG.Acc_X COG.Acc_Y COG.Acc_Z], [], {'det_mov_pot_acc_v_cog'}); 
 
 
-	persistent mifigura
-	if (isempty(mifigura))
+    if (isempty(params))
+        persistent mifigura
+    %axes(params)
+        if (isempty(mifigura))
     		mifigura=figure;
-	end
+        end
+        figure(mifigura);    
+    else
+        axes(params)
+    end
 
-
-    figure(mifigura);    
     %subplot(211)
     plot(senhales(:,:));%, hold on, plot(senhales(:,2), 'r'), plot(senhales(:,3), 'g');
     
