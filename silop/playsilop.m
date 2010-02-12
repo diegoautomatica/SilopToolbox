@@ -25,7 +25,7 @@
 %           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante iniciacaptura().
 
 
-function playsilop(salvar,fichero)
+function playsilop(salvar,fichero,stop)
 
 
 global SILOP_CONFIG
@@ -57,8 +57,17 @@ try
     end
     driverfunction=str2func(['driver_',drivername{1}]);
     SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
-    
-    while(getkey()~=27) %tecla ESC
+    parar=0;
+    while(parar==0)%getkey()~=27) %tecla ESC
+        if (nargin>2)
+            uiwait(stop.figure1,0.02) ;
+            stop=guidata(gcbo);
+            if (isfield(stop,'parar'))
+                parar=stop.parar;
+            end;
+        else
+            parar=(getkey()==27);
+        end
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
         if(hay_datos)
        		if(isnan(SILOP_DATA_BUFFER)) 
