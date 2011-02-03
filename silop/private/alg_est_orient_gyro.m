@@ -10,7 +10,7 @@
 
 %Creado: 01-02-2008 por Diego
 
-function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias) %#ok<INUSD>
+function resultado = alg_est_orient_gyro(previos, senhales, params) %#ok<INUSD>
 
         giro = senhales;
 	resultado = previos;
@@ -20,8 +20,8 @@ function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias
         
 	if (isempty(params))
 		resultado(mov_sin_calcular)=orientaciongiroscopo(giro(mov_sin_calcular));        
-	else 
-		resultado(mov_sin_calcular)=orientaciongiroscopo(giro(mov_sin_calcular),params); 
+    else
+        resultado(mov_sin_calcular)=orientaciongiroscopo(giro(mov_sin_calcular),giro(mov_sin_calcular(1)-1),params); 
 	end       
 	end
         
