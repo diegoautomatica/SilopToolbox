@@ -5,13 +5,18 @@
 % con extension .sl
 % 
 % Syntax: 
-%   playsilop(salvar,fichero);
+%   playsilop(salvar,fichero,handles);
 %
 %   Parametros de entrada: 
 %	    salvar  Indica si se deben guardar los datos a un archivo, 0=no, 1=las señales, 2=todos.
 %               Por defecto no se guardan.
 %       fichero Si se salvan los datos, este parametro permite especificar el fichero en el que se
 %           guardaran los datos. Por defecto se guardan en datos.sl
+%       handles Parámetro opcional. Si no se proporciona se crea una figura
+%           invisible desde la que detener el programa al pulsar ESC. En caso
+%           contrario se espera que este parametro sean los handles de una
+%           figura, en la que se pondrá el valor handles.parar=1 cuando se
+%           desee detener el procesamiento.
 %
 %   Parametros de salida: Ninguno 
 %
@@ -25,7 +30,7 @@
 %           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante iniciacaptura().
 
 
-function playsilop(salvar,fichero,stop)
+function playsilop(salvar,fichero,stop,tiempo)
 
 
 global SILOP_CONFIG
@@ -58,14 +63,22 @@ try
     driverfunction=str2func(['driver_',drivername{1}]);
     SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
     parar=0;
+    if (nargin==4)
+      tic
+    end
     while(parar==0)%getkey()~=27) %tecla ESC
-        if (nargin>2)
-            uiwait(stop.figure1,0.02) ;
+        if (nargin==4)
+            uiwait(stop.figure1,0.1) ;
+            parar=(toc>tiempo);
+        end
+        if (nargin==3)
+            uiwait(stop.figure1,0.1) ;
             stop=guidata(gcbo);
             if (isfield(stop,'parar'))
                 parar=stop.parar;
             end;
-        else
+        end
+        if (nargin<3)
             parar=(getkey()==27);
         end
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
