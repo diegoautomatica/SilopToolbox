@@ -179,7 +179,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     end
 end
 
-function XBusMaster=destruyexbusmaster(xb)
+function xbus=destruyexbusmaster(xb)
 
     try 
         fclose(xb.puerto);
@@ -187,7 +187,7 @@ function XBusMaster=destruyexbusmaster(xb)
     end
     delete(xb.puerto);
     clear xb
-    XBusMaster=[];
+    xbus=[];
 end
 
 function XBusMaster=gotoconfig(XBusMaster)
@@ -202,6 +202,7 @@ function XBusMaster=gotoconfig(XBusMaster)
 
     %Ya deberiamos estar en modo config.
     %Permitimos comunicaciones
+    pause(0.1);
     XBusMaster.puerto.RequestToSend='on';
     %y damos tiempo a que se termine cualquier trasmision en curso
     pause(1);
@@ -270,16 +271,37 @@ end
 %Lee datos del buffer. Llamada por una callback
 function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     global SILOP_DATA_BUFFER;
-
+    %persistent restantes;
+    %if (isempty(restantes))
+    %    restantes=[];
+    %end
     data=fread(obj,[XBusMaster.DataLength XBusMaster.buffer],'uint8');
+    %newdata=fread(obj,XBusMaster.DataLength*XbusMaster.buffer-length(restantes),'uint8');
+    %data=reshape([restantes;newdata],XbusMaster.DataLength*XbusMaster.buffer,'uint');
+    
+    % tipo de mensaje
+    if (any(data(3,:)-50))
+        disp('>>>> ERROR durante la captura de datos');
+        %errorinterno=find(data(3,:)==66);
+        %if (errorinterno)
+        %    disp('El error ha sido en el Xbus')
+        %end
+        %fila=find(data(3,:)==66);
+        %fila=fila(1);
+        %previos=data(:,1:fila-1);
+        %filamal=data(7:end,fila);
+        %posteriores=data(:,fila+1:end);
+        %restantes=data(7:end,end);
+        %[tama,tamb]=size(posteriores);
+        %posteriores=reshape(posteriores,tama*tamb,1);
+        %posteriores=reshape([filamal;posteriores(1:end-tama+6)],tama,tamb);
+        %data=[previos;posteriores]
+    end
+    
     % Procesar los datos de 1 mensaje
     %checksum
     if (any(mod(sum(data(2:end,:)),256)) )
         disp('>>>> ERROR de checksum durante la captura de datos');
-    end
-    % tipo de mensaje
-    if (any(data(3,:)-50))
-        disp('>>>> ERROR de tipo de mensaje durante la captura de datos');
     end
     % procesar la informacion
     muestra=([256 1]*data(5:6,:))';
