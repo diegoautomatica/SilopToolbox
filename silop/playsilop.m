@@ -30,7 +30,7 @@
 %           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante iniciacaptura().
 
 
-function playsilop(salvar,fichero,stop,tiempo)
+function timeoffirstdata=playsilop(salvar,fichero,stop,tiempodecaptura)
 
 
 global SILOP_CONFIG
@@ -63,13 +63,14 @@ try
     driverfunction=str2func(['driver_',drivername{1}]);
     SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
     parar=0;
-    if (nargin==4)
-      tic
-    end
+    %if (nargin==4)
+    %    tic();
+    %end
+    timeoffirstdata=0;
     while(parar==0)%getkey()~=27) %tecla ESC
         if (nargin==4)
-            uiwait(stop.figure1,0.1) ;
-            parar=(toc>tiempo);
+            parar=(toc()>tiempodecaptura);
+            uiwait(stop.figure1,0.1);
         end
         if (nargin==3)
             uiwait(stop.figure1,0.1) ;
@@ -83,13 +84,16 @@ try
         end
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
         if(hay_datos)
+            if (timeoffirstdata==0)
+                timeoffirstdata=toc();
+            end
        		if(isnan(SILOP_DATA_BUFFER)) 
 			%En caso de emulación, el proceso simulado de muestro hace NaN la variable
 			%cuando se acaban los datos
        			break;
        		end;
    
-        	disp('procesando datos ...');
+        	%disp('procesando datos ...');
   
        		%%Lo primero que se hace es almacenar la captura en una variable
        		%%auxiliar y vaciar el buffer para dejar espacio a nuevas capturas.
