@@ -1,21 +1,21 @@
 Bugs:
-	El driver Xbus no funciona cuando tiene dos IMUS y se le pide leer solo uno. Notificarlo.
 	Documentar la función eventosPiernaG. 
 		el parametro sin documentar fh no se respeta.
 	eventospierectoff tiene documentacion que no coincide con lo que hace la funcion.
 		el parámetro frecuencia no se respeta.
     alg_est_dist_simur ignora los TO. Volver a usarlos ahora que tenemos un metodo de deteccion fiable.
-
+	alg_ejes_anatomicos es muy rara, usa cosas del xbus externas al driver, y solo va con los Xbus
+    eventospiernaG solo funciona a una frecuencia, sin indicarla
+    eventos_RT y alg_det_event solo van a 100Hz
+    entrena_ident_act solo va a 50Hz. ident_act lo mismo.
+    alg_det_mov solo funciona a una frecuencia, sin indicarla
+	El driver Xbus no funciona cuando tiene dos IMUS y se le pide leer solo uno. Notificarlo.
 ToDo:
-	Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
-	alg_ejes_anatomicos es muy rara, y usa cosas del xbus externas al driver.
-
-Para el futuro:
 	Algoritmos
 		Añadir dependencia de alg_est_mov a alg_det_event
 		Implementar el resto de algoritmos posibles (v?): actividad, saltos, sentadillas, biceps, piraguas, 
 			paso desde pie/pierna... 
-
+        Incluir las funciones de JC para el pie + ¿orientaciones por defecto?
 	SO:
 		Que funcione en osx
 	Funcionalidad:	
@@ -25,9 +25,8 @@ Para el futuro:
         Modo de simulación a la máxima velocidad posible del ordenador.
         No tienen mucho sentido las 2 formas de grabar. Salvo para simulaciones?
         Unificar el uso de COLUMNADISPONIBLE y NUMEROSENHALES en solo una variable
-
 	Nuevos sensores
-		añadir drivers
+		añadir drivers logomatic
 		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
         Incorporar el MiTG de Maria Jose definitivaente.
         Incluir rotaciones por software en los drivers que no las soportan por hardware.
@@ -35,6 +34,15 @@ Para el futuro:
 -------------------------------------------------------------------------------------------
 
 Done: 
+v0.13  Falta documentar los cambios
+    Documentar la dependencia de esta característica de la función tic() externa.
+    Modificación a playsilop para que informe del instante en el que se recibe el primer bloque de datos
+    Modificaciones varias a playsilop, para ejecutarse por duraciones fijas, dependiendo de una ventana
+    Añadido alg_calib
+    Añadido driver_SF_6D.
+    Modificada playsilop para permitir que se la pase una figura desde la que controlar la ejecución
+        con un boton de Stop. Permite refrescos mucho más rápido.
+    Modificada alg_plot_senhales para que pueda recibir unos ejes sobre los que dibujar
 v0.12 Corrección de errores
     Eliminado el codigo que usa dependencias en todas partes
     Eliminada alg_bar_dependencias y alg_plot_dependencias
