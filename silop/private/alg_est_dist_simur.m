@@ -16,13 +16,13 @@ function resultado = alg_est_dist_simur(previos, senhales, params) %#ok<INUSD>
         acel_z = senhales(:,1);
 	resultado = previos;
         
-	if (length(params)<3)
+    if (length(params)<3)
 		pie=0.15;
     else
         pie=params(3);
     end
-    
-	if (length(params)<2)
+
+    if (length(params)<2)
 		hsensor=0.8;
     else
         hsensor=params(2);
@@ -32,7 +32,7 @@ function resultado = alg_est_dist_simur(previos, senhales, params) %#ok<INUSD>
 		freq=100;
     else
         freq=params(1);
-	end
+    end
 	 
 
     eventos_hs=find(senhales(:,2));
