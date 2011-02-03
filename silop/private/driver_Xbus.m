@@ -116,6 +116,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     xbus=InitBus(xbus);
     xbus=ReqConfiguration(xbus);
     xbus=SetPeriod(xbus,xbus.freq);
+    xbus=SetErrorMode(xbus);
     switch (xbus.modo)
         case 0,
             xbus=SetMTOutputMode(xbus,0);
@@ -148,11 +149,16 @@ function [xbus,senhales]=configuraxbus(parametros)
         if (isempty(p))
             error('SilopToolbox:connectsilop',['El numero de serie del sensor asignado al ',posiciones{numero},' no ha sido encontrado']);
         else
+            
             orden=senhales.(posiciones{numero}).R;
-            Rot=zeros(3,3);
-            for k=1:3
-                Rot(k,abs(orden(k)))=sign(orden(k));
-            end;
+            if (all(size(orden)==[3,3])) %es una matriz 3x3
+                Rot=orden;
+            else 
+                Rot=zeros(3,3);
+                for k=1:3
+                    Rot(k,abs(orden(k)))=sign(orden(k));
+                end;
+            end
             SetObjectAlignment(xbus,p,Rot);
             senhales.(posiciones{numero}).Acc_Z = factor*(p-1)+4;
             disp(['Anadida senhal ',posiciones{numero},'.Acc_Z']); 
@@ -171,7 +177,7 @@ function [xbus,senhales]=configuraxbus(parametros)
             senhales.(posiciones{numero}).MG_Y = factor*(p-1)+9;
             disp(['Anadida senhal ',posiciones{numero},'.MG_Y']); 
             senhales.(posiciones{numero}).MG_X = factor*(p-1)+8;
-            disp(['Anadida senhal ',posiciones{numero},'.MG_Z']); 
+            disp(['Anadida senhal ',posiciones{numero},'.MG_X']); 
             if (senhales.(posiciones{numero}).MG_Z>senhales.NUMEROSENHALES)
                 senhales.NUMEROSENHALES=senhales.(posiciones{numero}).MG_Z;
             end    
@@ -179,7 +185,7 @@ function [xbus,senhales]=configuraxbus(parametros)
     end
 end
 
-function xbus=destruyexbusmaster(xb)
+function XBusMaster=destruyexbusmaster(xb)
 
     try 
         fclose(xb.puerto);
@@ -187,7 +193,7 @@ function xbus=destruyexbusmaster(xb)
     end
     delete(xb.puerto);
     clear xb
-    xbus=[];
+    XBusMaster=[];
 end
 
 function XBusMaster=gotoconfig(XBusMaster)
@@ -202,7 +208,6 @@ function XBusMaster=gotoconfig(XBusMaster)
 
     %Ya deberiamos estar en modo config.
     %Permitimos comunicaciones
-    pause(0.1);
     XBusMaster.puerto.RequestToSend='on';
     %y damos tiempo a que se termine cualquier trasmision en curso
     pause(1);
@@ -260,10 +265,10 @@ function xbus=gotomeasurement(xbus)
     elseif (ack(3)~=17)
                 error('Error en la secuencia de mensajes durante el comando gotomeasurement');
     end
-    XBusMaster.puerto.RequestToSend='off';
+    xbus.puerto.RequestToSend='off';
     leerXBusDatahandle=@leerXBusData;
     xbus.puerto.BytesAvailableFcn={leerXBusDatahandle, xbus};
-    XBusMaster.puerto.RequestToSend='on';
+    xbus.puerto.RequestToSend='on';
 end
 
 
@@ -271,33 +276,34 @@ end
 %Lee datos del buffer. Llamada por una callback
 function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     global SILOP_DATA_BUFFER;
-    %persistent restantes;
-    %if (isempty(restantes))
-    %    restantes=[];
-    %end
-    data=fread(obj,[XBusMaster.DataLength XBusMaster.buffer],'uint8');
-    %newdata=fread(obj,XBusMaster.DataLength*XbusMaster.buffer-length(restantes),'uint8');
-    %data=reshape([restantes;newdata],XbusMaster.DataLength*XbusMaster.buffer,'uint');
-    
-    % tipo de mensaje
-    if (any(data(3,:)-50))
-        disp('>>>> ERROR durante la captura de datos');
-        %errorinterno=find(data(3,:)==66);
-        %if (errorinterno)
-        %    disp('El error ha sido en el Xbus')
-        %end
-        %fila=find(data(3,:)==66);
-        %fila=fila(1);
-        %previos=data(:,1:fila-1);
-        %filamal=data(7:end,fila);
-        %posteriores=data(:,fila+1:end);
-        %restantes=data(7:end,end);
-        %[tama,tamb]=size(posteriores);
-        %posteriores=reshape(posteriores,tama*tamb,1);
-        %posteriores=reshape([filamal;posteriores(1:end-tama+6)],tama,tamb);
-        %data=[previos;posteriores]
+    persistent restantes;
+    if (isempty(restantes))
+        restantes=[];
     end
     
+    %Se leen los datos y se amoldan al formato de la matriz
+    newdata=fread(obj,XBusMaster.DataLength*XBusMaster.buffer-length(restantes),'uint8');
+    data=reshape([restantes;newdata],XBusMaster.DataLength,XBusMaster.buffer);
+    restantes=[];
+    % tipo de mensaje
+    if (any(data(3,:)-50))
+        disp('>>>> ERROR de tipo de mensaje durante la captura de datos');
+        errorinterno=find(data(3,:)==66);
+        if (errorinterno)
+            disp('El Xbus a tenido un fallo de transmision');
+            fila=find(data(3,:)==66);
+            fila=fila(1);%localizamos la fila con el error
+            previos=data(:,1:fila-1);%Los datos previos son correctos
+            filamal=data(7:end,fila);%Datos correctos posteriores al mensaje de error
+            posteriores=data(:,fila+1:end);%Datos posteriores al error
+            restantes=data(7:end,end);%Los ultimos han quedado incompletos, y se uniran al siguiente bloque
+            [tama,tamb]=size(posteriores);
+            posteriores=reshape(posteriores,tama*tamb,1);
+            posteriores=reshape([filamal;posteriores(1:end-tama+6)],tama,tamb);%Juntamos todos los datos completos posteriores al error
+            data=[previos;posteriores];
+            disp('se ha intentado recuperar todos los datos');
+        end
+    end
     % Procesar los datos de 1 mensaje
     %checksum
     if (any(mod(sum(data(2:end,:)),256)) )
@@ -465,6 +471,40 @@ function XBusMaster=SetPeriod(XBusMaster,freq)
         else
             if (ack(3)~=5)
                 error('Error en la secuencia de mensajes durante el comando setperiod');
+            end
+        end
+    end
+    % Se actualiza la configuracion
+    XBusMaster=ReqConfiguration(XBusMaster);
+end
+
+function XBusMaster=SetErrorMode(XBusMaster)
+    % Envia el mensaje SetErrorMode al objeto XBusMaster
+    % El proceso se queda bloqueado hasta recibir la informacion
+    % Cuerpo del mensaje (excepto el byte de checksum)
+    msg=[250,255,26,2,0, 0];
+    % Se calcula el cheksum y se coloca al final
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    % Se envia por el puerto serie 
+    if (XBusMaster.puerto.BytesAvailable>0)
+        % Vaciar el puerto 
+        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+    % El valor del TimeOut se fija a 1 segundo
+    XBusMaster.puerto.timeOut=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+    % Se espera a recibir la contestacion
+    [ack,cnt,msg]=fread(XBusMaster.puerto,6,'uint8');
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido respuesta al comando seterrormode');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante el comando seterrormode');
+        else
+            if (ack(3)~=27)
+                error('Error en la secuencia de mensajes durante el comando seterrormode');
             end
         end
     end
