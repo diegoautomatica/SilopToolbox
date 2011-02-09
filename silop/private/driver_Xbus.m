@@ -311,19 +311,33 @@ function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     end
     % procesar la informacion
     muestra=([256 1]*data(5:6,:))';
-    q=quantizer('Mode','single');
+    %q=quantizer();
+    %q.DataMode='single';
+    %q=quantizer('mode','single');
     SILOP_DATA_BUFFER=[];
     for k=1:XBusMaster.ns
-        ax=hex2num(q,reshape(sprintf('%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        ay=hex2num(q,reshape(sprintf('%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        az=hex2num(q,reshape(sprintf('%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        rx=hex2num(q,reshape(sprintf('%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        ry=hex2num(q,reshape(sprintf('%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        rz=hex2num(q,reshape(sprintf('%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
-        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; %#ok<AGROW>
+%         ax=hex2num(q,reshape(sprintf('%02X',data((7:10)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         ay=hex2num(q,reshape(sprintf('%02X',data((11:14)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         az=hex2num(q,reshape(sprintf('%02X',data((15:18)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         rx=hex2num(q,reshape(sprintf('%02X',data((19:22)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         ry=hex2num(q,reshape(sprintf('%02X',data((23:26)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         rz=hex2num(q,reshape(sprintf('%02X',data((27:30)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         mx=hex2num(q,reshape(sprintf('%02X',data((31:34)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         my=hex2num(q,reshape(sprintf('%02X',data((35:38)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+%         mz=hex2num(q,reshape(sprintf('%02X',data((39:42)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:)),[8 XBusMaster.buffer])'); 
+
+        ax=double(typecast(uint8(reshape(data((10:-1:7)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        ay=double(typecast(uint8(reshape(data((14:-1:11)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        az=double(typecast(uint8(reshape(data((18:-1:15)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        rx=double(typecast(uint8(reshape(data((22:-1:19)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        ry=double(typecast(uint8(reshape(data((26:-1:23)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        rz=double(typecast(uint8(reshape(data((30:-1:27)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        mx=double(typecast(uint8(reshape(data((34:-1:31)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        my=double(typecast(uint8(reshape(data((38:-1:35)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single')); 
+        mz=double(typecast(uint8(reshape(data((42:-1:39)+(k-1)*XBusMaster.Conf.Dev(1).DataLength,:),[4*XBusMaster.buffer 1])),'single'));
+ 
+       SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER ax ay az rx ry rz mx my mz]; %#ok<AGROW>
+       
     end
     SILOP_DATA_BUFFER=[muestra SILOP_DATA_BUFFER];
     disp(['leidos ' num2str([muestra(1) muestra(end)])])

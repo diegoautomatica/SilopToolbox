@@ -12,16 +12,15 @@
 %	n_valores_retorno -> Número de datos calculados por el algoritmo
 %	senhales -> Nombre de las señales que va a emplear el algoritmo. Ej: COG.Acc_X
 %	params  -> parametros de configuración del algoritmo
-%	dependencias -> nombres de otros algoritmos, cuyos resultados son necesarios
 %
 %   Parámetros de salida: Ninguno
 % 
 % Examples: 
-% addalgoritmo('alg_det_event', {'COG.HS','COG.TO'}, {'COG.Acc_Z', 'COG.Acc_X'}, [], {});
-% addalgoritmo('alg_est_dist_pendulo' , {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, [], {});
-% addalgoritmo('alg_est_orient_gyro', {'COG.Orient'}, {'COG.G_Z'}, [], {});
-% addalgoritmo('alg_est_2d', {'COG.X','COG.Y'}, {'COG.Dist','COG.Orient'}, [], {});
-% addalgoritmo('alg_plot_pos2d', 1, {'COG.X','COG.Y'}, [], {});
+% addalgoritmo('alg_det_event', {'COG.HS','COG.TO'}, {'COG.Acc_Z', 'COG.Acc_X'}, []);
+% addalgoritmo('alg_est_dist_pendulo' , {'COG.Dist'}, {'COG.Acc_Z','COG.HS'}, []);
+% addalgoritmo('alg_est_orient_gyro', {'COG.Orient'}, {'COG.G_Z'}, []);
+% addalgoritmo('alg_est_2d', {'COG.X','COG.Y'}, {'COG.Dist','COG.Orient'}, []);
+% addalgoritmo('alg_plot_pos2d', 1, {'COG.X','COG.Y'}, []);
 %   
 % See also: 
 
@@ -30,7 +29,7 @@
 %           25.01.2008 Incorporado a la toolbox
 %           01.02.2008 se busca con buscaposiciones{k} y no de {l}. Necesario para dependencias multiples   
 
-function addalgoritmo(nombre, retornos, senhales, params, dependencias)
+function addalgoritmo(nombre, retornos, senhales, params)
 
     global SILOP_CONFIG;
     
