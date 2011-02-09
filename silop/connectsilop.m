@@ -65,6 +65,7 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         error('no se ha indicado ningún IMU mediante addimu');
     end
     
+    funcionnecesaria=@driver_Xbus;%Para que se compile al usar mcc
     driverfunction=str2func(['driver_',driver]);
     try
         SILOP_CONFIG.BUS.(driver)=driverfunction('create',{source,freq,updateeach,numerodeimus,driver_opt});
