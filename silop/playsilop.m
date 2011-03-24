@@ -61,12 +61,12 @@ try
         error('solo se puede emplear un driver simultaneamente');
     end
     driverfunction=str2func(['driver_',drivername{1}]);
+    SILOP_CONFIG.GLOBAL.FIRST_DATA=[];
     SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
     parar=0;
     %if (nargin==4)
     %    tic();
     %end
-    timeoffirstdata=0;
     while(parar==0)%getkey()~=27) %tecla ESC
         if (nargin==4)
             parar=(toc()>tiempodecaptura);
@@ -84,14 +84,11 @@ try
         end
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
         if(hay_datos)
-            if (timeoffirstdata==0)
-                timeoffirstdata=toc();
-            end
-       		if(isnan(SILOP_DATA_BUFFER)) 
+            if(isnan(SILOP_DATA_BUFFER)) 
 			%En caso de emulación, el proceso simulado de muestro hace NaN la variable
 			%cuando se acaban los datos
        			break;
-       		end;
+            end;
    
         	%disp('procesando datos ...');
   
@@ -134,7 +131,7 @@ catch %#ok<CTCH>
     stopsilop();
     rethrow(s);
 end
-
+timeoffirstdata=SILOP_CONFIG.GLOBAL.FIRST_DATA;
 stopsilop();
 
 
