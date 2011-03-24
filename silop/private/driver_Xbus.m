@@ -97,7 +97,7 @@ function xbus=connectxbus(parametros)
     xbus.puerto.DataBits=8;
     xbus.puerto.FlowControl='none';
     xbus.puerto.Parity='none';
-    xbus.puerto.StopBits=2;
+    %xbus.puerto.StopBits=2;
     xbus.puerto.ReadAsyncMode = 'continuous';
     xbus.puerto.ByteOrder = 'littleEndian';
     xbus.puerto.BytesAvailableFcnCount = xbus.DataLength*xbus.buffer;
@@ -276,9 +276,13 @@ end
 %Lee datos del buffer. Llamada por una callback
 function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
     global SILOP_DATA_BUFFER;
+    global SILOP_CONFIG;
     persistent restantes;
     if (isempty(restantes))
         restantes=[];
+    end
+    if (isempty(SILOP_CONFIG.GLOBAL.FIRST_DATA))
+        SILOP_CONFIG.GLOBAL.FIRST_DATA=toc();
     end
     
     %Se leen los datos y se amoldan al formato de la matriz
