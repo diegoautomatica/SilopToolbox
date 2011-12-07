@@ -11,6 +11,7 @@ Bugs:
     alg_det_mov solo funciona a una frecuencia, sin indicarla
 	El driver Xbus no funciona cuando tiene dos IMUS y se le pide leer solo uno. Notificarlo.
 ToDo:
+	Eliminar la función eval() en playsilop(). Necesita cambios en addalgoritmo
 	Algoritmos
 		Añadir dependencia de alg_est_mov a alg_det_event
 		Implementar el resto de algoritmos posibles (v?): actividad, saltos, sentadillas, biceps, piraguas, 
@@ -23,7 +24,6 @@ ToDo:
 		Implementar removealgoritmo, para eliminar algoritmos añadidos por addalgoritmo
 		Implementar siloptool, herrapiemta grafica de creacions de silopprogramas
         Modo de simulación a la máxima velocidad posible del ordenador.
-        No tienen mucho sentido las 2 formas de grabar. Salvo para simulaciones?
         Unificar el uso de COLUMNADISPONIBLE y NUMEROSENHALES en solo una variable
 	Nuevos sensores
 		añadir drivers logomatic
