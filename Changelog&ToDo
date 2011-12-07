@@ -27,14 +27,30 @@ ToDo:
         Unificar el uso de COLUMNADISPONIBLE y NUMEROSENHALES en solo una variable
 	Nuevos sensores
 		añadir drivers logomatic
-		Permitir capturar simultaneamente de dos fuentes y sincronizarlas correctamente.
         Incorporar el MiTG de Maria Jose definitivaente.
         Incluir rotaciones por software en los drivers que no las soportan por hardware.
 
 -------------------------------------------------------------------------------------------
 
 Done: 
-v0.13  Falta documentar los cambios
+v0.13  
+    Añadido algoritmo alg_est_hombro_prevencion2_izq para estimar flexión, abduccion y pronacion del hombro izquierdo.
+         flexion y abduccion se calculan en base a las proyecciones anatómicas del brazo
+    Añadido algoritmo alg_est_hombro_prevencion2 para estimar flexión, abduccion y pronacion del hombro derecho.
+         flexion y abduccion se calculan en base a las proyecciones anatómicas del brazo
+    Añadido algoritmo alg_est_hombro_prevencion_izq para estimar flexión, abduccion y pronacion del hombro izquierdo.
+         flexion y abduccion se calculan repartiendo la desviacion respecto a la vertical. limitado a 125º
+    Añadido algoritmo alg_est_hombro_prevencion para estimar flexión, abduccion y pronacion del hombro derecho.
+         flexion y abduccion se calculan repartiendo la desviacion respecto a la vertical. limitado a 125º
+    Añadido algoritmo alg_est_muneca para estimar flexión y desviacion lateral de la muñeca izquierda.
+    Añadido algoritmo alg_est_codo_izq para estimar flexión y pronación del codo izquierdo.
+    Eliminados los cambios para que playsilop() informe del 1º segundo de captura. Movidos al driver Xbus.
+         Se depende de la función tic() toc(), pero su uso es totalmente opcional.
+    Añadido algoritmo alg_est_hombro para estimar flexión, abduccion y pronacion de un hombro robotico (los ángulos
+           no coinciden con los médicos)
+    Añadido algoritmo alg_est_muneca para estimar flexión y desviacion lateral de la muñeca.
+    Añadido algoritmo alg_est_codo para estimar flexión y pronación del codo.
+    Añadido algoritmo alg_desp_acc Para desplazar las medidas según ecuaciones de solido rigido
     Documentar la dependencia de esta característica de la función tic() externa.
     Modificación a playsilop para que informe del instante en el que se recibe el primer bloque de datos
     Modificaciones varias a playsilop, para ejecutarse por duraciones fijas, dependiendo de una ventana
