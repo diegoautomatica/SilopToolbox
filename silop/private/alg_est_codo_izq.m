@@ -13,7 +13,7 @@
 
 %Creado: 12-02-2008 por Diego
 
-function [flex,pron] = alg_est_codo(previos, senhales, params) %#ok<INUSD>
+function [flex,pron] = alg_est_codo_izq(previos, senhales, params) %#ok<INUSD>
 
     flex=previos(:,1);
     pron=previos(:,2);
@@ -40,7 +40,7 @@ function [flex,pron] = alg_est_codo(previos, senhales, params) %#ok<INUSD>
         pronacion=atan2(Rot(2,3),Rot(3,3));
         
         flex(indice)=flexion*180/pi;
-        pron(indice)=-pronacion*180/pi;
+        pron(indice)=pronacion*180/pi;
         
    
     end
