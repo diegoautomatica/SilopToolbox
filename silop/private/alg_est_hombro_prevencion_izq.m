@@ -1,6 +1,9 @@
-%ALG_EST_HOMBRO Algoritmo para la estimacion de los ángulos del hombro
+%ALG_EST_HOMBRO Algoritmo para la estimacion de los ángulos del hombro izquierdo
 % mediante la tecnica del sensor virtual
-%
+% Se usa un modelo en el que flexion y abduccion se calculan repartiendo
+% la desviacion del brazo con respecto a la vertical, y que solo funciona
+% hasta los 125�
+%%
 %Se puede configurar mediante:
 %    addalgoritmo('alg_est_hombro', {'Hombro.a','Hombro.b','Hombro.c'}, {'a.Acc_X','a.Acc_Y','a.Acc_Z','a.MG_X','a.MG_Y','a.MG_Z','b.Acc_X','b.Acc_Y','b.Acc_Z','b.MG_X','b.MG_Y','b.MG_Z'}, []);
 %

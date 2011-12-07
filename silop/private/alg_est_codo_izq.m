@@ -1,4 +1,4 @@
-%ALG_EST_CODOv2 Algoritmo para la estimacion de los ángulos del codo
+%ALG_EST_CODOv2 Algoritmo para la estimacion de los ángulos del codo izquierdo
 % mediante la tecnica del sensor virtual
 %Cambio la colocacion del sensor. 
 %  Flexion giro en z
