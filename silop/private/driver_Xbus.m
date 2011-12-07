@@ -282,7 +282,11 @@ function leerXBusData(obj,event,XBusMaster) %#ok<INUSL>
         restantes=[];
     end
     if (isempty(SILOP_CONFIG.GLOBAL.FIRST_DATA))
-        SILOP_CONFIG.GLOBAL.FIRST_DATA=toc();
+        try
+            SILOP_CONFIG.GLOBAL.FIRST_DATA=toc();
+        catch %#ok<CTCH>
+            disp('Aviso: no se sincronizaran los datos con otros sistemas');
+        end
     end
     
     %Se leen los datos y se amoldan al formato de la matriz
