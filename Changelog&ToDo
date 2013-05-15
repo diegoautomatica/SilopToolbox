@@ -11,6 +11,7 @@ Bugs:
     alg_det_mov solo funciona a una frecuencia, sin indicarla
 	El driver Xbus no funciona cuando tiene dos IMUS y se le pide leer solo uno. Notificarlo.
 ToDo:
+	Probar git
 	Eliminar la función eval() en playsilop(). Necesita cambios en addalgoritmo
 	Algoritmos
 		Añadir dependencia de alg_est_mov a alg_det_event
