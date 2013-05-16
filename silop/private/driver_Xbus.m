@@ -128,11 +128,11 @@ function [xbus,senhales]=configuraxbus(parametros)
     % Actualizar los valores de las seï¿½ales
     switch (xbus.modo)
         case 0,
-            factor=9; %#ok<NASGU>
+            factor=9; 
         case 1,
-            factor=9+4; %#ok<NASGU>
+            factor=9+4; 
         case 2,
-            factor=9+9; %#ok<NASGU>
+            factor=9+9; 
     end;
         
     % Identificar sensores y asignar los valores de las columnas
@@ -140,6 +140,8 @@ function [xbus,senhales]=configuraxbus(parametros)
     id_disp=zeros(1,xbus.ndisp);
     for k=1:xbus.ndisp
         id_disp(k)=eval(xbus.sensores.Cadena(:,k));
+        %Aqui podriamos sacar el firmware de cada uno, y guardarlo en xbus
+        %o en senhales
     end
     
     posiciones=fieldnames(senhales);
@@ -183,6 +185,9 @@ function [xbus,senhales]=configuraxbus(parametros)
             end    
         end
     end
+    %Esta linea garantizaría que el sistema funciona aunque tengamos
+    %sensores de más. Necesita muchas pruebas.
+    %senhales.NUMEROSENHALES=factor*(xbus.ndisp-1)+10;
 end
 
 function XBusMaster=destruyexbusmaster(xb)
@@ -442,7 +447,7 @@ function [XBusMaster]=ReqConfiguration(XBusMaster)
         end
         XBusMaster.Conf.MDID=ack(5:8);
         XBusMaster.Conf.SampPeriod=115200/([256 1]*ack(9:10));
-        XBusMarter.Conf.OutputSkipFactor=[256 1]*ack(11:12);
+        XBusMaster.Conf.OutputSkipFactor=[256 1]*ack(11:12);
         XBusMaster.Conf.SyncMode=[256 1]*ack(13:14);
         XBusMaster.Conf.SyncSkipFactor=[256 1]*ack(15:16);
         XBusMaster.Conf.SyncOffset=(256.^[3 2 1 0])*ack(17:20);
@@ -607,4 +612,39 @@ function XBusMaster=SetMTOutputMode(XBusMaster, orientformat)
     end
     % Se actualiza la configuracion
     XBusMaster=ReqConfiguration(XBusMaster);
+end
+
+function XBusMaster=ReqFWRef(XBusMaster)
+    % Envia el mensaje ReqFWRev al objeto XBusMaster
+    % El proceso se queda bloqueado hasta recibir la informacion
+    % Cuerpo del mensaje (excepto el byte de checksum)
+    % Esto debería hacerse para cada MT, o solo para el primero
+    msg=[250,255,18,0];
+    % Se calcula el cheksum y se coloca al final
+    msg=[msg 256-mod(sum(msg(2:end)),256)];
+    % Se envia por el puerto serie 
+    if (XBusMaster.puerto.BytesAvailable>0)
+        % Vaciar el puerto 
+        disp(['>>> AVISO: Se descartaran ' int2str(XBusMaster.puerto.BytesAvailable) ' datos']);
+        fread(XBusMaster.puerto,XBusMaster.puerto.BytesAvailable,'uint8');
+    end
+    % El valor del TimeOut se fija a 1 segundo
+    XBusMaster.puerto.timeOut=1;
+    fwrite(XBusMaster.puerto,msg,'uint8','async');
+    % Se espera a recibir la contestacion
+    [ack,cnt,msg]=fread(XBusMaster.puerto,8,'uint8'); %#ok<*ASGLU>
+    if (~isempty(msg))
+        disp(msg);
+        error('no se ha recibido respuesta al comando ReqFWRev');
+    else
+        if (mod(sum(ack(2:end)),256)~=0)
+            error('Error de checksum durante el comando ReqFWRev');
+        else
+            if (ack(3)~=19)
+                error('Error en la secuencia de mensajes durante el comando seterrormode');
+            end
+        end
+    end
+    
+    %%Me falta leer los datos y usar la función
 end
