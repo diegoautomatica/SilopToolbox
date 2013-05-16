@@ -46,7 +46,7 @@ if (isempty(fh))
 end
 try
     % Wait for something to happen
-    uiwait(fh,0.8);
+    uiwait(fh,1);
     ch = get(fh,'Userdata') ;
     if isempty(ch),
         ch = NaN ; 
