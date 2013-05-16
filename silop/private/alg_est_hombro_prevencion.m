@@ -1,8 +1,5 @@
 %ALG_EST_HOMBRO Algoritmo para la estimacion de los Ã¡ngulos del hombro
 % mediante la tecnica del sensor virtual
-% Se usa un modelo en el que flexion y abduccion se calculan repartiendo
-% la desviacion del brazo con respecto a la vertical, y que solo funciona
-% hasta los 125º
 %
 %Se puede configurar mediante:
 %    addalgoritmo('alg_est_hombro', {'Hombro.a','Hombro.b','Hombro.c'}, {'a.Acc_X','a.Acc_Y','a.Acc_Z','a.MG_X','a.MG_Y','a.MG_Z','b.Acc_X','b.Acc_Y','b.Acc_Z','b.MG_X','b.MG_Y','b.MG_Z'}, []);
@@ -35,11 +32,12 @@ function [abd,flex,rot] = alg_est_hombro_prevencion(previos, senhales, params) %
         R=v*inv(V);
         
         %Estimacion antigua del hombro. La mantengo ya que no tengo otra
-        %definicion de la rotacion
+        %definicion de la rotacion. Realmente no se usa, y no se si los
+        %giros están bien
         angle_flex=atan2(R(2,1),R(2,2));
         angle_abd=atan2(-R(1,3),R(3,3));
         %X=mean([R(2,1)/sin(angle_flex),R(2,2)/cos(angle_flex),-R(1,3)/sin(angle_abd),R(3,3)/cos(angle_abd)]);
-        if (abs(angle_flex<pi/4))
+        if (abs(angle_flex)<pi/4)
             X=R(2,2)/cos(angle_flex);
         else
             X=R(2,1)/sin(angle_flex);
