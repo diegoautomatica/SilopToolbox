@@ -70,10 +70,11 @@ try
     while(parar==0)%getkey()~=27) %tecla ESC
         if (nargin==4)
             parar=(toc()>tiempodecaptura);
-            uiwait(stop.figure1,0.1);
+            %uiwait(stop.figure1,1);%Cambiado 1 por 0.1 para evitar warning Matlab 11
+            pause(0.1);
         end
         if (nargin==3)
-            uiwait(stop.figure1,0.1) ;
+            uiwait(stop.figure1,1) ;%Cambiado 1 por 0.1 para evitar warning Matlab 11
             stop=guidata(gcbo);
             if (isfield(stop,'parar'))
                 parar=stop.parar;
