@@ -17,8 +17,17 @@ function [flex,abd] = alg_est_muneca(previos, senhales, params) %#ok<INUSD>
 
     flex=previos(:,1);
     abd=previos(:,2);
+    angrot=0*pi/180;
+    rot=[1 0 0 ; 0 cos(angrot) sin(angrot); 0 -sin(angrot) cos(angrot)];
+    %rot=[cos(angrot), -sin(angrot),0; sin(angrot),cos(angrot),0;0,0,1];
+    rotinv=inv(rot);
+    
     angulo_sin_calcular = find(isnan(previos(:,1))); %#ok<EFIND> %Filas a�n no procesadas
     for indice=angulo_sin_calcular'
+        
+         
+        
+        
         %Base del antebrazo
         V1=senhales(indice,1:3)/norm(senhales(indice,1:3));
         tmp=senhales(indice,4:6)/norm(senhales(indice,4:6));
@@ -35,6 +44,7 @@ function [flex,abd] = alg_est_muneca(previos, senhales, params) %#ok<INUSD>
         
         %Rotacion
         Rot=v*inv(V);
+        Rot=rotinv*Rot*rot;
         
         flexion=atan2(Rot(3,1),Rot(3,3));
         abduccion=atan2(Rot(1,2),Rot(2,2));
