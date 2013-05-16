@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" DRIVER_SF_6D implementa todo el código necesario para el correcto funcionamiento del dispositivo " />
+<meta name="keywords" content=" addimu  " />
+<title>Documentation of  driver_SF_6D</title>
+</head>
+<body >
+<h1 >Documentation of  driver_SF_6D</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[retorno,senhales]=driver_SF_6D(operacion,parametros)</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ DRIVER_SF_6D implementa todo el código necesario para el correcto funcionamiento del dispositivo
+ Sparkfun Bluetooth 6DoF  IMU. 
+ No está pensado para llamarse por si mismo, sino para ser usado desde el
+ sistema de captura de la toolbox.
+
+
+ DRIVER_SF_6D implementa todo el código necesario para el correcto funcionamiento del dispositivo
+ Sparkfun Bluetooth 6DoF IMU. 
+ No está pensado para llamarse por si mismo, sino para ser usado desde el
+ sistema de captura de la toolbox.
+
+ 
+ Syntax: retorno=driver_SF_6D(operacion, parametros)
+ 
+ Output parameters:
+
+ Examples:
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Cross-Reference Information</H2>
+<table border="0" width="100%">
+<tr align="left">
+<th width="50%">This function calls</th>
+<th width="50%"></th>
+</tr>
+<tr valign="top"><td>
+<ul>
+<li><a class="mfun" href="../addimu.html">addimu</a></li>
+</ul>
+</td><td></td>
+</tr>
+</table>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function driver_SF_6D</h2>
+<pre>
+
+
+function [retorno,senhales]=driver_SF_6D(operacion,parametros)
+    senhales=[];
+    switch operacion
+        case 'create'
+            retorno=creasf6d(parametros);
+        case 'connect'
+            retorno=connectsf6d(parametros);
+        case 'configura'
+            [retorno,senhales]=configurasf6d(parametros);
+        case 'gotoconfig'
+            retorno=sf6dgotoconfig(parametros);
+        case 'gotomeasurement'
+            retorno=sf6dgotomeasurement(parametros);
+        case 'destruye'
+            retorno=[];
+            destruyesf6d(parametros);
+        otherwise
+            disp('el driver no soporta la operación indicada');
+            retorno=[];
+    end
+end
+
+function sf6d=creasf6d(parametros)
+    source=parametros{1};
+    freq=parametros{2};
+    if (freq~=83)
+        error('La única frecuencia soportada son 83Hz');
+    end
+    updateeach=parametros{3};
+    ns=parametros{4};
+    driver_opt=parametros{5};
+    if (length(driver_opt)&lt;1)
+        bps=57600;
+    else
+         bps=driver_opt(1);
+         if (bps~=57600)
+            error('bps no soportados por el dispositivo');
+         end
+    end
+    if (length(driver_opt)&lt;2)
+        modo=0;
+    else
+        modo=driver_opt(2);
+        if (modo~=0)
+            error('el driver tiene un único modo de funcionamiento');
+        end
+    end
+    <em class="mcom">% Calculamos el numero de muestras almacenadas en el buffer</em>
+    sf6d.freq=freq;
+    sf6d.buffer=updateeach*freq;
+    if (ns&gt;1)
+        error('Los sparkfun 6DoF sólo tienen un sensor, se han especificado demasiados IMUS')
+    end
+    try
+        sf6d.puerto=serial(source);
+    catch ME
+        disp ('Imposible conectarse al puerto serie');
+        rethrow (ME);
+    end
+    sf6d.modo=modo;
+    switch (sf6d.modo)
+        case 0,
+            sf6d.Data=13;
+            sf6d.DataLength=69;<em class="mcom">%bytes de cada mensaje</em>
+    end;
+    sf6d.bps=bps;
+end
+
+function sf6d=connectsf6d(parametros)
+    sf6d=parametros;
+    <em class="mcom">% Configurar el objeto serie</em>
+    sf6d.puerto.BaudRate=sf6d.bps;
+    sf6d.puerto.DataBits=8;
+    sf6d.puerto.FlowControl='none';
+    sf6d.puerto.Parity='none';
+    sf6d.puerto.StopBits=1;
+    sf6d.puerto.ReadAsyncMode = 'continuous';
+    sf6d.puerto.ByteOrder = 'littleEndian';
+    sf6d.puerto.BytesAvailableFcnCount = sf6d.DataLength*sf6d.buffer;
+    sf6d.puerto.BytesAvailableFcnMode = 'byte';
+    sf6d.puerto.InputBufferSize = 2*sf6d.DataLength*sf6d.buffer;
+    sf6d.puerto.OutputBufferSize = 512;
+    sf6d.puerto.Tag = 'SparkFun_6D';
+    sf6d.puerto.Timeout = 10;
+    fopen(sf6d.puerto);
+end
+
+function [sf6d,senhales]=configurasf6d(parametros)
+    sf6d=parametros{1};
+    senhales=parametros{2};
+    sensor=2;
+    disp('Los sparkfun 6DoF no soportan reorientacion por hardware');
+    disp('el driver podria implementarla por software en el futuro');
+    disp('se ignora la orientacion especificada mediante <a class="mfun" href="../addimu.html">addimu</a>');
+    posiciones=fieldnames(senhales);
+    senhales.(posiciones{sensor}).Pitch = 1;
+    disp(['Anadida senhal ',posiciones{sensor},'.Pitch']); 
+    senhales.(posiciones{sensor}).Pitch_2_5 = 2;
+    disp(['Anadida senhal ',posiciones{sensor},'.Pitch_2_5']); 
+    senhales.(posiciones{sensor}).Pitch_temp = 3;
+    disp(['Anadida senhal ',posiciones{sensor},'.Pitch_temp']); 
+    senhales.(posiciones{sensor}).Roll = 4;
+    disp(['Anadida senhal ',posiciones{sensor},'.Roll']); 
+    senhales.(posiciones{sensor}).Roll_2_5 = 5;
+    disp(['Anadida senhal ',posiciones{sensor},'.Roll_2_5']); 
+    senhales.(posiciones{sensor}).Roll_temp = 6;
+    disp(['Anadida senhal ',posiciones{sensor},'.Roll_temp']); 
+    senhales.(posiciones{sensor}).Yaw = 7;
+    disp(['Anadida senhal ',posiciones{sensor},'.Yaw']); 
+    senhales.(posiciones{sensor}).Yaw_2_5 = 8;
+    disp(['Anadida senhal ',posiciones{sensor},'.Yaw_2_5']); 
+    senhales.(posiciones{sensor}).Yaw_temp = 9;
+    disp(['Anadida senhal ',posiciones{sensor},'.Yaw_temp']); 
+    senhales.(posiciones{sensor}).Acc_X = 10;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_X']); 
+    senhales.(posiciones{sensor}).Acc_Y = 11;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Y']); 
+    senhales.(posiciones{sensor}).Acc_Z = 12;
+    disp(['Anadida senhal ',posiciones{sensor},'.Acc_Z']); 
+    senhales.(posiciones{sensor}).Batt = 13;
+    disp(['Anadida senhal ',posiciones{sensor},'.Batt']); 
+    senhales.NUMEROSENHALES=13;
+end
+
+
+function sf6d=destruyesf6d(sf6d)
+
+    try 
+        fclose(sf6d.puerto);
+    catch <em class="mcom">%#ok&lt;CTCH&gt;</em>
+    end
+    delete(sf6d.puerto);
+    clear sf6d
+    sf6d=[];
+end
+
+function sf6d=sf6dgotoconfig(sf6d)
+    <em class="mcom">%Limpiamos todo lo que puede quedar en el buffer de medidas anteriores</em>
+    sf6d.puerto.Timeout=1;
+    while (sf6d.puerto.BytesAvailable&gt;0)
+        <em class="mcom">% Vaciar el puerto </em>
+        <em class="mcom">% OJO!!! Los datos se perderan</em>
+        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(sf6d.puerto.BytesAvailable) ' datos']);
+        fread(sf6d.puerto, sf6d.puerto.BytesAvailable,'uint8');
+    end
+
+    <em class="mcom">% Envia el mensaje de paso a config. Espacio en blanco</em>
+    <em class="mcom">% Cuerpo del mensaje</em>
+    msg=[' '];  <em class="mcom">%#ok&lt;NBRAK&gt;</em>
+    <em class="mcom">% Se envia por el puerto serie </em>
+    fwrite(sf6d.puerto,msg,'uint8','async');
+    pause(1);
+    <em class="mcom">%Ya deberiamos estar en modo config.</em>
+    <em class="mcom">%comprobamos la respuesta.</em>
+    [ack,cnt,msg]=fread(sf6d.puerto, sf6d.puerto.BytesAvailable, 'uint8');
+    if (~isempty(msg))
+        error('no se ha recibido la respuesta al comando gotoconfig');
+    else
+        if (sum(ack(end-11:end))~=812) 
+            sum(ack(end-11:end))
+            error('Error de checksum durante gotoconfig');
+        end
+    end
+end
+
+
+
+<em class="mcom">%Funcion para el paso a modo medida</em>
+function sf6d=sf6dgotomeasurement(sf6d)
+    global SILOP_DATA_BUFFER;
+    SILOP_DATA_BUFFER=[];
+
+    <em class="mcom">% Cuerpo del mensaje (excepto el byte de checksum)</em>
+    msg=[7];  <em class="mcom">%Poner el número de ^g</em>
+    <em class="mcom">% Se envia por el puerto serie </em>
+    if (sf6d.puerto.BytesAvailable&gt;0)
+        <em class="mcom">% OJO!!! Los datos se perderan</em>
+        disp(['&gt;&gt;&gt; AVISO: Se descartaran ' int2str(sf6d.puerto.BytesAvailable) ' datos']);
+        fread(sf6d.puerto,sf6d.puerto.BytesAvailable,'uint8');
+    end
+    <em class="mcom">% El valor del TimeOut se fija a 2 segundos. si llegamos a el será debido a</em>
+    <em class="mcom">% un error</em>
+    sf6d.puerto.Timeout=2;
+    fwrite(sf6d.puerto,msg,'uint8','async');
+    fread(sf6d.puerto,15,'uint8');<em class="mcom">%eliminamos la cadena exiting...</em>
+    leersf6dDatahandle=@leersf6dData;
+    sf6d.puerto.BytesAvailableFcn={leersf6dDatahandle, sf6d};
+end
+
+
+<em class="mcom">%Funcion para laeer los datos del puerto serie. Llamada por una callback</em>
+function leersf6dData(obj,event,sf6d)  <em class="mcom">%#ok&lt;INUSL&gt;</em>
+    global SILOP_DATA_BUFFER;
+
+    [data,cnt,msg]=fread(obj,[sf6d.DataLength sf6d.buffer],'uint8');
+    if (~isempty(msg))
+        disp(msg);
+        error('error en la lectura de datos');
+    end
+    <em class="mcom">% Procesar los datos de 1 mensaje</em>
+    if (any(data(1,:)-'A'))
+        disp('&gt;&gt;&gt;&gt; ERROR durante la captura de datos. Perdida A inicial de trama');
+    end
+    if (any(data(67,:)-'Z'))
+        disp('&gt;&gt;&gt;&gt; ERROR durante la captura de datos. perdida Z final de trama');
+    end
+    <em class="mcom">% procesar la informacion</em>
+    for k=1:sf6d.buffer
+        texto=char(data(:,k));
+        SILOP_DATA_BUFFER=[SILOP_DATA_BUFFER; (strread(texto,'%*[^ ]%d','whitespace','bnr'))']; <em class="mcom">%#ok&lt;AGROW&gt;</em>
+    
+    end
+    disp(['leidos ', num2str(sf6d.buffer), ' datos']);
+end
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

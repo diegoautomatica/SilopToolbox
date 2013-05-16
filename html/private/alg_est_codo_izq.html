@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" ALG_EST_CODOv2 Algoritmo para la estimacion de los ángulos del codo izquierdo " />
+<meta name="keywords" content="   " />
+<title>Documentation of  alg_est_codo_izq</title>
+</head>
+<body >
+<h1 >Documentation of  alg_est_codo_izq</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[flex,pron] = alg_est_codo_izq(previos, senhales, params) %#ok<INUSD></pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ALG_EST_CODOv2 Algoritmo para la estimacion de los ángulos del codo izquierdo
+ mediante la tecnica del sensor virtual
+Cambio la colocacion del sensor. 
+  Flexion giro en z
+  Pronacion giro en x
+ y elaboro mis propias formulas
+
+Se puede configurar mediante:
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('<a class="mfun" href="../private/alg_est_codo.html">alg_est_codo</a>', {'Codo.Flex','Codo.Pron'}, {'a.Acc_X','a.Acc_Y','a.Acc_Z','a.MG_X','a.MG_Y','a.MG_Z','b.Acc_X','b.Acc_Y','b.Acc_Z','b.MG_X','b.MG_Y','b.MG_Z'}, []);
+
+Parametros: como todos los alg_ resultados anteriores, senales a usar y
+parametros (vacio)
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function alg_est_codo_izq</h2>
+<pre>
+
+
+<em class="mcom">%Creado: 12-02-2008 por Diego</em>
+
+function [flex,pron] = alg_est_codo_izq(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+
+    flex=previos(:,1);
+    pron=previos(:,2);
+    angulo_sin_calcular = find(isnan(previos(:,1))); %#ok&lt;EFIND&gt; <em class="mcom">%Filas a�n no procesadas</em>
+    for indice=angulo_sin_calcular'
+        V1=senhales(indice,1:3)/norm(senhales(indice,1:3));
+        tmp=senhales(indice,4:6)/norm(senhales(indice,4:6));
+        V2=cross(V1,tmp);V2=V2/norm(V2);
+        V3=cross(V1,V2);
+        V=[V1',V2',V3'];
+        
+        v1=senhales(indice,7:9)/norm(senhales(indice,7:9));
+        tmp=senhales(indice,10:12)/norm(senhales(indice,10:12));
+        v2=cross(v1,tmp);v2=v2/norm(v2);
+        v3=cross(v1,v2);
+        v=[v1',v2',v3'];
+        
+        <em class="mcom">%Rot=V*inv(v);</em>
+        Rot=v*inv(V);
+        
+        <em class="mcom">%flexion=-atan2(Rot(2,1),Rot(1,1));</em>
+        <em class="mcom">%pronacion=atan2(Rot(3,2),Rot(3,3));</em>
+        flexion=atan2(Rot(1,2),Rot(1,1));
+        pronacion=atan2(Rot(2,3),Rot(3,3));
+        
+        flex(indice)=flexion*180/pi;
+        pron(indice)=pronacion*180/pi;
+        
+   
+    end
+
+    
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

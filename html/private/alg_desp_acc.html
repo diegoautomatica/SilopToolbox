@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" ALG_DESP_ACC Algoritmo para estimar la aceleración de un punto " />
+<meta name="keywords" content="   " />
+<title>Documentation of  alg_desp_acc</title>
+</head>
+<body >
+<h1 >Documentation of  alg_desp_acc</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>[AccX,AccY,AccZ] = alg_desp_acc(previos, senhales, params) %#ok<INUSD></pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ALG_DESP_ACC Algoritmo para estimar la aceleración de un punto
+ de un solido rígo en base a la aceleración de otro punto y la 
+ velocidad angular
+
+Se puede configurar mediante:
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_desp_acc',{'codo.AabX','codo.AabY''codo.AabZ'},{'antebrazo.Acc_X','antebrazo.Acc_Y','antebrazo.Acc_Z','antebrazo.G_X','antebrazo.G_Y','antebrazo.G_Z'},[]);
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function alg_desp_acc</h2>
+<pre>
+
+
+<em class="mcom">%</em>
+<em class="mcom">%Parametros: como todos los alg_ resultados anteriores, senales a usar y</em>
+<em class="mcom">%parametros (vacio, por ahora)</em>
+
+function [AccX,AccY,AccZ] = alg_desp_acc(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+
+    AccX=previos(:,1);
+    AccY=previos(:,2);
+    AccZ=previos(:,3);
+    sc = find(isnan(previos(:,1))); %#ok&lt;EFIND&gt; <em class="mcom">%Filas a�n no procesadas</em>
+    sc=sc';
+    if (sc(1)&gt;10)
+        sc= [sc(1)-10:sc(1)-1,sc];
+    end
+    sc=sc';
+    if (~isempty(sc))
+        accx=senhales(sc,1);
+        accy=senhales(sc,2);
+        accz=senhales(sc,3);
+        acc=[accx,accy,accz];
+        wx=senhales(sc,4);
+        wy=senhales(sc,5);
+        wz=senhales(sc,6);
+        w=[wx,wy,wz];
+    
+        alfax=[0;diff(wx)]*50; <em class="mcom">%frecuencia debe ser un parametro</em>
+        alfay=[0;diff(wy)]*50; <em class="mcom">%frecuencia debe ser un parametro</em>
+        alfaz=[0;diff(wz)]*50; <em class="mcom">%frecuencia debe ser un parametro</em>
+    
+        <em class="mcom">%orden=8;filtro=ones(1,orden)/orden;</em>
+        <em class="mcom">%alfax=conv(alfax,filtro);</em>
+        <em class="mcom">%alfay=conv(alfay,filtro);</em>
+        <em class="mcom">%alfaz=conv(alfaz,filtro);</em>
+        <em class="mcom">%alfax=alfax(orden/2+1:end-orden/2+1);</em>
+        <em class="mcom">%alfay=alfay(orden/2+1:end-orden/2+1);</em>
+        <em class="mcom">%alfaz=alfaz(orden/2+1:end-orden/2+1);</em>
+        
+        alfa=[alfax,alfay,alfaz];
+        
+        r=ones(length(sc),1)*params;
+        Acc=acc-cross(alfa,r)-cross(w,cross(w,r));
+        AccX(sc)=Acc(:,1);
+        AccY(sc)=Acc(:,2);
+        AccZ(sc)=Acc(:,3);
+    end
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

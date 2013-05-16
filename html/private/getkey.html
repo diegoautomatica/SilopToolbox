@@ -88,7 +88,7 @@ if (isempty(fh))
 end
 try
     <em class="mcom">% Wait for something to happen</em>
-    uiwait(fh,0.8);
+    uiwait(fh,1);
     ch = get(fh,'Userdata') ;
     if isempty(ch),
         ch = NaN ; 

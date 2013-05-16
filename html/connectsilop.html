@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <meta name="description" content=" CONNECTSILOP Conecta el sistema de procesamiento con los sensores previamente especificados " />
-<meta name="keywords" content=" addimu driver_xbus silopdemo " />
+<meta name="keywords" content=" addimu driver_xbus driver_xbus silopdemo " />
 <title>Documentation of  connectsilop</title>
 </head>
 <body >
@@ -71,6 +71,7 @@
 <tr valign="top"><td>
 <ul>
 <li><a class="mfun" href="addimu.html">addimu</a></li>
+<li><a class="mfun" href="private/driver_Xbus.html">driver_Xbus</a></li>
 </ul>
 </td><td>
 <ul>
@@ -114,6 +115,7 @@ function connectsilop(driver, source, freq, updateeach, driver_opt)
         error('no se ha indicado ningún IMU mediante <a class="mfun" href="addimu.html">addimu</a>');
     end
     
+    funcionnecesaria=@<a class="mfun" href="private/driver_xbus.html">driver_Xbus</a>;<em class="mcom">%Para que se compile al usar mcc</em>
     driverfunction=str2func(['driver_',driver]);
     try
         SILOP_CONFIG.BUS.(driver)=driverfunction('create',{source,freq,updateeach,numerodeimus,driver_opt});

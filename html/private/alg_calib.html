@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="author of conversion perl script" content="Hartmut Pohlheim" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta name="description" content=" ALG_CALIB Algoritmo para calibrar una señal " />
+<meta name="keywords" content="   " />
+<title>Documentation of  alg_calib</title>
+</head>
+<body >
+<h1 >Documentation of  alg_calib</h1>
+<hr size="3" noshade="noshade" />
+
+<p align="center">Global Index (<a href = "../indexsgf.html">short</a> | <a href = "../indexlgf.html">long</a>)
+ | <a href="Contentsprivate.html">Local contents</a>
+ | Local Index (<a href = "indexslfprivate.html">short</a> | <a href = "indexllfprivate.html">long</a>)
+</p>
+
+<hr size="3" noshade="noshade" />
+<h2 >Function Synopsis</h2>
+<pre>resultado = alg_calib(previos, senhales, params) %#ok<INUSD></pre>
+<hr size="3" noshade="noshade" />
+<h2 >Help text</h2>
+<pre>
+ALG_CALIB Algoritmo para calibrar una señal
+
+ALG_CALIB Algoritmo para calibrar una señal
+Se puede configurar mediante:
+    <a class="mfun" href="../addalgoritmo.html">addalgoritmo</a>('alg_calib', {'COG.AccX'}, {'COG.AccXRaw'}, [s,o]);
+
+Parametros: como todos los alg_ resultados anteriores, senhales a usar, parametros(sensibilidad y offset) 
+ 
+</pre>
+<hr size="3" noshade="noshade" />
+<h2 >Listing of function alg_calib</h2>
+<pre>
+
+
+<em class="mcom">%Creado: </em>
+
+function resultado = alg_calib(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+
+    resultado = previos;
+    s=params(1);
+    o=params(2);
+    sc = find(isnan(resultado)); <em class="mcom">%Filas aun no procesadas</em>
+    if (~isempty(sc))
+        resultado(sc)=(senhales(sc)-o)/s;
+    end
+
+</pre>
+<hr size="3" noshade="noshade" />
+<!--navigate-->
+<!--copyright-->
+</body>
+</html>

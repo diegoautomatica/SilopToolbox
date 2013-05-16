@@ -60,13 +60,13 @@ function resultado = alg_est_dist_simur(previos, senhales, params) <em class="mc
         acel_z = senhales(:,1);
 	resultado = previos;
         
-	if (length(params)&lt;3)
+    if (length(params)&lt;3)
 		pie=0.15;
     else
         pie=params(3);
     end
-    
-	if (length(params)&lt;2)
+
+    if (length(params)&lt;2)
 		hsensor=0.8;
     else
         hsensor=params(2);
@@ -76,7 +76,7 @@ function resultado = alg_est_dist_simur(previos, senhales, params) <em class="mc
 		freq=100;
     else
         freq=params(1);
-	end
+    end
 	 
 
     eventos_hs=find(senhales(:,2));

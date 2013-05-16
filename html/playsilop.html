@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>playsilop(salvar,fichero)</pre>
+<pre>timeoffirstdata=playsilop(salvar,fichero,stop,tiempodecaptura)</pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -30,13 +30,18 @@
  con extension .sl
  
  Syntax: 
-   playsilop(salvar,fichero);
+   playsilop(salvar,fichero,handles);
 
    Parametros de entrada: 
 	    salvar  Indica si se deben guardar los datos a un archivo, 0=no, 1=las señales, 2=todos.
                Por defecto no se guardan.
        fichero Si se salvan los datos, este parametro permite especificar el fichero en el que se
            guardaran los datos. Por defecto se guardan en datos.sl
+       handles Parámetro opcional. Si no se proporciona se crea una figura
+           invisible desde la que detener el programa al pulsar ESC. En caso
+           contrario se espera que este parametro sean los handles de una
+           figura, en la que se pondrá el valor handles.parar=1 cuando se
+           desee detener el procesamiento.
 
    Parametros de salida: Ninguno 
 
@@ -74,7 +79,7 @@
 <em class="mcom">%           12.02.2008  modificaciones de Rafa para arrancar los XBus Master mediante <a class="mfun" href="archive/iniciacaptura.html">iniciacaptura</a>().</em>
 
 
-function playsilop(salvar,fichero)
+function timeoffirstdata=playsilop(salvar,fichero,stop,tiempodecaptura)
 
 
 global SILOP_CONFIG
@@ -105,18 +110,37 @@ try
         error('solo se puede emplear un driver simultaneamente');
     end
     driverfunction=str2func(['driver_',drivername{1}]);
+    SILOP_CONFIG.GLOBAL.FIRST_DATA=[];
     SILOP_CONFIG.BUS.(drivername{1})=driverfunction('gotomeasurement',SILOP_CONFIG.BUS.(drivername{1}));
-    
-    while(<a class="mfun" href="private/getkey.html">getkey</a>()~=27) <em class="mcom">%tecla ESC</em>
+    parar=0;
+    <em class="mcom">%if (nargin==4)</em>
+    <em class="mcom">%    tic();</em>
+    <em class="mcom">%end</em>
+    while(parar==0)%<a class="mfun" href="private/getkey.html">getkey</a>()~=27) <em class="mcom">%tecla ESC</em>
+        if (nargin==4)
+            parar=(toc()&gt;tiempodecaptura);
+            %uiwait(stop.figure1,1);<em class="mcom">%Cambiado 1 por 0.1 para evitar warning Matlab 11</em>
+            pause(0.1);
+        end
+        if (nargin==3)
+            uiwait(stop.figure1,1) ;<em class="mcom">%Cambiado 1 por 0.1 para evitar warning Matlab 11</em>
+            stop=guidata(gcbo);
+            if (isfield(stop,'parar'))
+                parar=stop.parar;
+            end;
+        end
+        if (nargin&lt;3)
+            parar=(<a class="mfun" href="private/getkey.html">getkey</a>()==27);
+        end
         hay_datos = ~isempty(SILOP_DATA_BUFFER);
         if(hay_datos)
-       		if(isnan(SILOP_DATA_BUFFER)) 
+            if(isnan(SILOP_DATA_BUFFER)) 
 			<em class="mcom">%En caso de emulación, el proceso simulado de muestro hace NaN la variable</em>
 			<em class="mcom">%cuando se acaban los datos</em>
        			break;
-       		end;
+            end;
    
-        	disp('procesando datos ...');
+        	<em class="mcom">%disp('procesando datos ...');</em>
   
        		%<em class="mcom">%Lo primero que se hace es almacenar la captura en una variable</em>
        		%<em class="mcom">%auxiliar y vaciar el buffer para dejar espacio a nuevas capturas.</em>
@@ -157,7 +181,7 @@ catch <em class="mcom">%#ok&lt;CTCH&gt;</em>
     <a class="mfun" href="stopsilop.html">stopsilop</a>();
     rethrow(s);
 end
-
+timeoffirstdata=SILOP_CONFIG.GLOBAL.FIRST_DATA;
 stopsilop();
 
 

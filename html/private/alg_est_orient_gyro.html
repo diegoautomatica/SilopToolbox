@@ -19,7 +19,7 @@
 
 <hr size="3" noshade="noshade" />
 <h2 >Function Synopsis</h2>
-<pre>resultado = alg_est_orient_gyro(previos, senhales, params, dependencias) %#ok<INUSD></pre>
+<pre>resultado = alg_est_orient_gyro(previos, senhales, params) %#ok<INUSD></pre>
 <hr size="3" noshade="noshade" />
 <h2 >Help text</h2>
 <pre>
@@ -58,7 +58,7 @@ Parametros: como todos los alg_ resultados anteriores, se�ales a usar, paramet
 
 <em class="mcom">%Creado: 01-02-2008 por Diego</em>
 
-function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias) <em class="mcom">%#ok&lt;INUSD&gt;</em>
+function resultado = alg_est_orient_gyro(previos, senhales, params) <em class="mcom">%#ok&lt;INUSD&gt;</em>
 
         giro = senhales;
 	resultado = previos;
@@ -68,8 +68,8 @@ function resultado = alg_est_orient_gyro(previos, senhales, params, dependencias
         
 	if (isempty(params))
 		resultado(mov_sin_calcular)=<a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>(giro(mov_sin_calcular));        
-	else 
-		resultado(mov_sin_calcular)=<a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>(giro(mov_sin_calcular),params); 
+    else
+        resultado(mov_sin_calcular)=<a class="mfun" href="../orientaciongiroscopo.html">orientaciongiroscopo</a>(giro(mov_sin_calcular),giro(mov_sin_calcular(1)-1),params); 
 	end       
 	end
         
